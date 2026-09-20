@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS meridian.stablecoin_pool_hourly (
     implied_price   DOUBLE    COMMENT 'Implied price of base token per quote token for this pair, e.g. USDC per USDT. NULL when is_valid_price = FALSE',
     raw_price_value STRING    COMMENT 'Original raw value from the source API before parsing (e.g. "NaN"), preserved verbatim for auditability',
     is_valid_price  BOOLEAN   COMMENT 'FALSE when the source returned a non-finite/degenerate price (e.g. NaN from a zero-amount trade leg). Rows are always kept regardless of this value.',
-    anomaly_flag    STRING    COMMENT 'Controlled vocabulary: NONE, NAN_PRICE, ZERO_AMOUNT_LEG, LOW_LIQUIDITY, OTHER',
+    anomaly_flag    STRING    COMMENT 'Controlled vocabulary: NONE, NAN_PRICE, ZERO_AMOUNT_LEG, LOW_LIQUIDITY, MULTI_LEG_TRADE, AMBIGUOUS_NET_DIRECTION, OTHER',
     source          STRING    COMMENT 'Data source, e.g. dune',
     ingested_at     TIMESTAMP COMMENT 'When this row was loaded into Hive'
 )
