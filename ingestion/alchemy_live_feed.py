@@ -175,23 +175,73 @@ def decode_uniswap_sync(log: dict, meta: dict) -> dict:
 
 
 def decode_uniswap_swap(log: dict, meta: dict) -> dict:
+    """
+    Uniswap V2's Swap event fires once per call to the pair's swap()
+    function, and amount{0,1}{In,Out} are derived purely from comparing the
+    pair's token balances before/after the call — NOT from any declared
+    trade "intent". A normal router multi-hop trade fires a SEPARATE Swap
+    event per pool it touches (confirmed: this is not why dual-sided legs
+    appear here), so a single event with both amount0In>0 and amount1In>0
+    (or both amount0Out>0 and amount1Out>0) means something more complex
+    than a plain A-for-B swap happened in the same call — observed in
+    practice on a real dual-leg example (tx 0xe5b9b8b3...) that turned out
+    to be a smart-order-router transaction also touching Uniswap V4 in the
+    same tx, where cross-protocol balance interactions bled into how this
+    pool's own balance delta was computed.
+
+    Picking whichever leg looks "dominant" and computing price from it
+    alone understates the real deviation: on that example, dominant-leg
+    picking gave 1.0012 (0.12% off parity) while netting the true effective
+    flow gives 1.0194 (1.94% off) — the dominant-leg number silently hid an
+    ~16x larger price move. So: compute price from NET effective flow
+    (amountIn - amountOut per side), and flag raw dual-sided-leg events with
+    anomaly_flag='MULTI_LEG_TRADE' regardless of whether netting resolves
+    to a valid price, so they're queryable/excludable rather than silently
+    blended into clean single-hop data.
+    """
     amount0_in, amount1_in, amount0_out, amount1_out = abi_decode(
         ["uint256", "uint256", "uint256", "uint256"], bytes.fromhex(log["data"][2:])
     )
+    is_multi_leg = (
+        (amount0_in > 0 and amount1_in > 0)
+        or (amount0_out > 0 and amount1_out > 0)
+    )
+
+    net0 = amount0_in - amount0_out  # >0: net token0 sold to pool; <0: net bought
+    net1 = amount1_in - amount1_out
+
+    if net0 > 0 and net1 < 0:
+        sold0_adj = net0 / (10 ** meta["decimals0"])
+        bought1_adj = -net1 / (10 ** meta["decimals1"])
+        price, is_valid, anomaly, raw_note = safe_ratio(sold0_adj, bought1_adj)
+    elif net1 > 0 and net0 < 0:
+        sold1_adj = net1 / (10 ** meta["decimals1"])
+        bought0_adj = -net0 / (10 ** meta["decimals0"])
+        price, is_valid, anomaly, raw_note = safe_ratio(bought0_adj, sold1_adj)
+    elif net0 == 0 and net1 == 0:
+        # No net movement at all — a genuine zero-amount/ghost event, not
+        # an ambiguous-direction one.
+        price, is_valid, anomaly, raw_note = (
+            None, False, "ZERO_AMOUNT_LEG", "net0=0 and net1=0 after netting"
+        )
+    else:
+        # Shouldn't happen under the AMM invariant (nets can't legitimately
+        # share a sign), but guarded rather than silently mis-priced.
+        price, is_valid, anomaly, raw_note = (
+            None, False, "AMBIGUOUS_NET_DIRECTION", f"net0={net0} net1={net1}"
+        )
+
+    if is_multi_leg and anomaly == "NONE":
+        anomaly = "MULTI_LEG_TRADE"
+
     a0in = amount0_in / (10 ** meta["decimals0"])
     a1in = amount1_in / (10 ** meta["decimals1"])
     a0out = amount0_out / (10 ** meta["decimals0"])
     a1out = amount1_out / (10 ** meta["decimals1"])
-    # Trade-level implied price: whichever side was sold vs bought
-    if a0in > 0 and a1out > 0:
-        price, is_valid, anomaly, raw_note = safe_ratio(a0in, a1out)
-    elif a1in > 0 and a0out > 0:
-        price, is_valid, anomaly, raw_note = safe_ratio(a0out, a1in)
-    else:
-        price, is_valid, anomaly, raw_note = None, False, "ZERO_AMOUNT_LEG", "no matching in/out pair"
     return {
         "amount0_in": a0in, "amount1_in": a1in,
         "amount0_out": a0out, "amount1_out": a1out,
+        "is_multi_leg": is_multi_leg,
         "implied_price": price,
         "is_valid_price": is_valid,
         "anomaly_flag": anomaly,
