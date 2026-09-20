@@ -1,0 +1,59 @@
+# --- Environment / secrets ---
+.env
+.env.local
+# .env.example is intentionally NOT ignored — it should be tracked
+
+# --- Hadoop / Hive / Spark runtime junk ---
+derby.log
+metastore_db/
+*.log
+spark-warehouse/
+hive.log
+hadoop-*.log
+yarn-*.log
+*.pid
+hs_err_pid*.log
+*.hprof
+**/logs/
+**/local_scratchdir/
+**/operation_logs/
+
+# --- Sqoop generated artifacts ---
+# Keep the folder tracked (via .gitkeep) but not the generated code itself
+sqoop/generated/*.java
+sqoop/generated/*.class
+!sqoop/generated/.gitkeep
+
+# --- Java build artifacts ---
+*.class
+*.jar
+
+# --- Python (for ingestion/streaming/mllib scripts) ---
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# --- Node (for the eventual dashboard) ---
+node_modules/
+.next/
+.env.local
+
+# --- OS / editor junk ---
+.DS_Store
+*.swp
+.idea/
+.vscode/
+
+# --- Claude Code local session state (not project content) ---
+.claude/
+
+# --- Large data files ---
+# Raw/processed data is fetched or regenerated, not committed.
+# Folders are kept tracked via .gitkeep; contents are ignored.
+data/raw/*
+data/processed/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+!data/README.md
