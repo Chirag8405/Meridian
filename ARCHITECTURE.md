@@ -5,15 +5,36 @@ the user-facing dashboard.
 
 ## 1. Data Sources Layer
 
-- On-chain transaction / pool-state data
+- On-chain transaction / pool-state data — split into two sources by
+  time horizon (see [DATA_SOURCES.md](DATA_SOURCES.md)):
+  - **Dune Analytics** for historical backfill (one-time, already run for
+    an initial validation window — see below)
+  - **Alchemy WebSocket** (direct RPC) for the live streaming feed (ongoing)
 - Stablecoin price feeds
 - Historical depeg incident records (curated)
 - Exchange price data
 
 ## 2. Data Integration Layer
 
-- Ingestion scripts pulling from chosen on-chain data source(s) — see
-  [DATA_SOURCES.md](DATA_SOURCES.md) (source selection pending)
+- **Historical backfill (Dune):** `ingestion/dune_test_pull.py` executes
+  ad-hoc SQL against Dune's `dex.trades` table via their SQL execution API,
+  aggregating pool trades into hourly buckets. Validated against the March
+  2023 USDC depeg (Curve 3pool) — the implied price series clearly captured
+  the drop to ~$0.88. This is a one-time/periodic backfill, not a running
+  process.
+- **Live streaming (Alchemy):** `ingestion/alchemy_live_feed.py` subscribes
+  to on-chain events over a WebSocket (`eth_subscribe` with a `logs` filter)
+  for the same pools the historical backfill covers, decoding each event as
+  it arrives. This is an ongoing process, intended to feed the Spark
+  Structured Streaming component (not yet built — see
+  [ROADMAP.md](ROADMAP.md)).
+  - Curve pools and Uniswap V2 pools have genuinely different event models:
+    Uniswap V2 emits both `Sync` (reserve state) and `Swap` (trade) events;
+    Curve only emits `TokenExchange` (trade) — there's no native
+    reserve-update event on Curve, so the live feed script synthesizes an
+    equivalent `RESERVE_SNAPSHOT` record via an `eth_call` to the pool's
+    `balances()` function after each trade, rather than pretending Curve has
+    a `Sync` event it doesn't.
 - Sqoop for transferring curated historical incident records from a staging
   relational DB
 
@@ -39,10 +60,16 @@ the user-facing dashboard.
 ## Workflow Diagram (Description)
 
 ```
-Data Sources  →  HDFS  →  Hive / MongoDB  →  Spark / MapReduce  →  Dashboard
+Dune (historical, one-time)  ─┐
+                               ├─→  HDFS  →  Hive / MongoDB  →  Spark / MapReduce  →  Dashboard
+Alchemy WS (live, ongoing)   ─┘
 ```
 
 Raw on-chain and market data lands in HDFS (and MongoDB for semi-structured
 documents), gets structured and partitioned in Hive, is processed by Spark
 and MapReduce jobs for statistics, clustering, ranking, and risk scoring, and
-the results surface on a live dashboard.
+the results surface on a live dashboard. Historical (Dune) and live
+(Alchemy) records share the same eventual Hive schema
+(`meridian.stablecoin_pool_hourly` — see [hive/schema.sql](hive/schema.sql)),
+distinguished by the `source` column (`dune` vs `alchemy_live`), so
+downstream analytics don't need to know which pipeline a row came from.
