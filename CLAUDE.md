@@ -56,7 +56,16 @@ on price charts.
 ## Conventions
 
 - All new Spark/Hive/MapReduce code goes under clearly separated module
-  directories (`ingestion/`, `hive/`, `spark/`, `streaming/`, `mllib/`)
+  directories (`ingestion/`, `hive/`, `spark/`, `streaming/`, `mllib/`,
+  `dashboard/` for the Next.js findings dashboard)
+- **The dashboard reads static JSON (`dashboard/data/*.json`), never Hive
+  live.** Measured 46-56s for a trivial single-table `COUNT(*)` even on a
+  warmed-up cluster — Hive runs on the MapReduce engine here (chosen to
+  avoid a Tez retry-loop bug, see Known Integration Fixes above), and its
+  per-query container/JVM startup cost dominates regardless of data volume.
+  `spark/export_dashboard_data.scala` materializes the dashboard's five
+  fixed queries into JSON; rerun it manually after any pipeline update,
+  same as every other batch job in this project.
 - Never modify system-wide `JAVA_HOME` or `archlinux-java` default
 - Don't install HBase/Zookeeper without explicit request
 - Document any new env var or config file change in `SETUP.md` immediately
