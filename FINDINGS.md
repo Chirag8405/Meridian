@@ -411,3 +411,130 @@ depeg peak hours.
    hours), which is a natural candidate for the eventual ML model to add
    on top of this baseline — not something to patch into the rule-based
    score after the fact.
+
+## ML crisis classifier: beats the baseline generalizing mild→severe, loses badly severe→mild
+
+**Computed in:** `spark/crisis_features.scala` (features/labels, stored in
+`meridian.crisis_features`) and `spark/crisis_classifier.scala` (training/
+evaluation, stored in `meridian.crisis_classifier_predictions` /
+`meridian.crisis_classifier_metrics`). Built specifically to test whether a
+trained model, given trend/velocity features, can fix the rule-based
+baseline's documented blind spot above (magnitude-only, no trajectory).
+
+### Design decisions, confirmed before implementing
+
+- **Trend/velocity features use time-based windows, not row-count ones.**
+  Real gaps exist in the hourly series (as low as 17% coverage for
+  UST_DAI — a row only exists if a qualifying trade happened that hour).
+  `price_severity_velocity` is the actual rate of change per elapsed hour
+  (NULL, not zero, when the previous row is >6h away), and the 3-hour
+  rolling mean/slope use a genuine `RANGE BETWEEN INTERVAL 3 HOURS
+  PRECEDING` frame so a gap doesn't silently stretch the window.
+- **Binary CALM/CRISIS labels, grounded in independently-known historical
+  crisis dates, not derived from any of our own severity metrics**
+  (`cluster_id`, `cluster_severity`, `risk_score`) — using our own scores
+  as ground truth would let a "beat the baseline" model partly learn to
+  just reproduce the baseline. USDC: CRISIS = 2023-03-08 to 03-15 only.
+  UST: **every row is CRISIS** — both the pre-window buildup (already
+  meaningfully unstable, per the no-reliable-baseline finding above) and
+  the post-window collapsed/pinned-near-zero period are treated as
+  not-calm, consistent with that same finding. This means UST contributes
+  zero CALM examples anywhere in this dataset.
+- **Leave-one-coin-out validation, asymmetric by necessity**: because UST
+  has no CALM rows to offer, `TEST_ON_UST` is a pure single-coin split
+  (train on USDC calm+crisis, test on USDC calm holdout + all of UST), but
+  `TEST_ON_USDC` is necessarily coin-blended for the CALM class (train on
+  USDC calm + all of UST-as-CRISIS, test on USDC calm holdout + USDC's own
+  crisis, held out entirely). This deviation from strict single-coin LOCO
+  is deliberate and documented here, not accidental.
+- **Feature set excludes `cluster_severity` and `risk_score`** (hand-
+  assigned crisis-severity judgments, too close to the label) but
+  initially included `wallet_concentration_severity` — this had to be
+  removed after the first training run; see below.
+
+### A leakage-adjacent feature had to be found and removed
+
+The first training run showed `wallet_concentration_severity` dominating
+Random Forest's feature importances (0.53–0.82, far ahead of everything
+else) — which on inspection was a red flag, not a good result. Unlike
+`price_severity`/`volume_trade_severity` (computed per-row), that feature
+is a **constant broadcast per named window**: every USDC row gets exactly
+0.1283 (calm) or 0.4339 (crisis) depending only on which window it falls
+in, and every UST row gets exactly 0.0. For USDC's training data, that's
+effectively a two-value direct proxy for the label itself, not a graded
+severity signal the model had to learn to interpret. Retrained without it.
+
+### Results (same held-out test rows, model vs. rule-based baseline)
+
+| direction | scorer | precision | recall | F1 | PR-AUC |
+|---|---|---|---|---|---|
+| TEST_ON_UST | logistic_regression | 0.992 | 0.850 | **0.915** | **0.918** |
+| TEST_ON_UST | random_forest | 0.894 | 0.826 | 0.858 | 0.899 |
+| TEST_ON_UST | rule_based_baseline | 0.988 | 0.759 | 0.858 | 0.836 |
+| TEST_ON_USDC | logistic_regression | 0.791 | 0.391 | 0.523 | 0.587 |
+| TEST_ON_USDC | random_forest | 0.717 | 0.532 | 0.611 | 0.610 |
+| TEST_ON_USDC | rule_based_baseline | 0.990 | 1.000 | **0.995** | **0.994** |
+
+**Direction TEST_ON_UST — the model genuinely beats the baseline.** A
+model trained *only* on USDC's milder, bank-run-style depeg pattern
+correctly flags 85% of UST's structurally different algorithmic-collapse
+crisis hours (Logistic Regression: F1 0.915, PR-AUC 0.918, both above the
+baseline's 0.858/0.836) at very high precision (0.992). This is genuine
+cross-coin generalization, not a coin-identity shortcut — the leaky
+feature that could have explained a false positive result here was already
+removed before this run.
+
+**Direction TEST_ON_USDC — the baseline wins decisively.** A model
+trained on UST's crisis pattern (which, per the label design above,
+includes everything from early destabilization to total collapse) misses
+roughly half of USDC's actual crisis hours (best recall 0.532) when
+tested against USDC's milder, partial depeg.
+
+The original design discussion flagged two possible contributing factors
+here: harder pattern transfer (severe→mild), and a training-size
+asymmetry. **Only the first holds up against the actual training data —
+the training-size concern doesn't apply to what was actually built and
+should be retracted, not repeated.** The training-size worry was valid
+against the *original* pre-redesign LOCO plan (each coin training on its
+own calm+crisis data, giving UST only ~1,050 rows), but the redesign
+confirmed for the leave-one-coin-out split (both directions draw CALM
+rows from the same 11,579-row USDC pool, since UST has none) resolved it:
+per the job log, `Direction TEST_ON_USDC` actually trains on **more**
+total rows (12,629 vs. 12,288) and **more** crisis-class rows (1,050 UST
+vs. 709 USDC) than `Direction TEST_ON_UST`, not fewer. So this direction's
+weaker result is attributable to harder pattern transfer alone — training
+on a severe/collapsed pattern doesn't transfer well to detecting a milder
+one, because the underlying failure modes are structurally different
+(algorithmic death spiral vs. collateral-backed bank-run), not because of
+a training-data shortage. The baseline's near-perfect performance here
+(F1 0.995) makes sense too: `price_severity` and `volume_trade_severity`
+were literally validated against USDC crisis data during the baseline's
+own construction, so this is close to in-distribution territory for it.
+
+### Did the trend/velocity features actually help? A more precise answer than "yes"
+
+Feature importances (Random Forest, both directions) after removing the
+leaky feature:
+
+| feature | TEST_ON_UST | TEST_ON_USDC |
+|---|---|---|
+| price_severity_rolling_mean_3h | 0.42 | 0.41 |
+| volume_trade_severity | 0.25 | 0.23 |
+| price_severity | 0.23 | 0.28 |
+| price_severity_velocity | 0.03 | 0.04 |
+| price_severity_rolling_slope_3h | 0.03 | 0.01 |
+| cluster_id (one-hot, summed) | 0.05 | 0.03 |
+| trend_available flag | ~0.00 | 0.01 |
+
+The **rolling mean** (a smoothed recent-severity average) is consistently
+the single most important feature in both directions — meaningfully ahead
+of the raw point-in-time `price_severity` it's smoothing. But the features
+built specifically to capture *directionality* — `price_severity_velocity`
+(hour-over-hour rate) and `price_severity_rolling_slope_3h` (3-hour trend)
+— contribute only marginally (0.01–0.04) in both models. **The honest
+finding is narrower than "trend/velocity fixed the baseline's blind
+spot": noise-reduction via smoothing helped meaningfully, but genuine
+trajectory/direction signal contributed only a small, secondary amount.**
+Whether a longer lookback window, a different velocity formulation, or
+more training data would change this is an open question for future work,
+not something this pass resolves.
