@@ -138,6 +138,13 @@ def safe_ratio(numerator: float, denominator: float):
     price = numerator / denominator
     if price != price or abs(price) == float("inf"):  # NaN/Inf check
         return None, False, "NAN_PRICE", str(price)
+    if price == 0.0:
+        # numerator was exactly 0 despite a nonzero denominator: a real
+        # trade/reserve state, but a genuinely zero/dust value — not a
+        # calculation error (that's NAN_PRICE), a real zero. Same
+        # ZERO_VALUE_TRADE treatment as the Dune backfill scripts: not a
+        # usable price, but not dropped either. Exact 0.0 only.
+        return None, False, "ZERO_VALUE_TRADE", "0.0"
     return price, True, "NONE", None
 
 

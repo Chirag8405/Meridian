@@ -178,6 +178,7 @@ def main():
     pair_counts = {}
     staging_rows = []
     nan_count = 0
+    zero_value_count = 0
 
     for row in rows:
         hour = row["hour"]
@@ -193,6 +194,16 @@ def main():
             nan_count += 1
             is_valid = "false"
             anomaly = "NAN_PRICE" if raw_price is not None else "ZERO_AMOUNT_LEG"
+            price_out = "\\N"
+        elif price == 0.0 and (volume_usd or 0.0) == 0.0:
+            # Same ZERO_VALUE_TRADE check as dune_backfill.py — a real
+            # trade executed at a genuinely zero/dust value, not a
+            # calculation error. Exact 0.0 only. This is the exact
+            # condition that found 221 rows in the original UST backfill
+            # (before this check existed) and none in the calm data.
+            zero_value_count += 1
+            is_valid = "false"
+            anomaly = "ZERO_VALUE_TRADE"
             price_out = "\\N"
         else:
             is_valid = "true"
@@ -219,6 +230,7 @@ def main():
     STAGING_FILE.write_text("\n".join(staging_rows) + "\n")
     print(f"Wrote {len(staging_rows)} staging rows to {STAGING_FILE}")
     print(f"NaN/invalid price rows: {nan_count}")
+    print(f"Zero-value trade rows: {zero_value_count}")
     print(f"Row counts per pair: {json.dumps(pair_counts, indent=2)}")
 
     usage_after = get_usage(api_key)
