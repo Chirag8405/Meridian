@@ -399,13 +399,15 @@ depeg peak hours.
    warning system), scores meaningfully lower simply because price hadn't
    collapsed yet.
 
-   **Known limitation, stated plainly**: this rule-based score measures
-   "how far from normal right now," not "how fast is this getting worse"
-   or "is this new information." It can't distinguish an asset actively
-   transitioning into collapse from one that collapsed long ago and is
-   just sitting there — both score high, but only the former is early-
-   warning-relevant. A trend/velocity term (e.g. rate of change in
-   price_dev over recent hours) would be needed to fix this, and is a
-   natural candidate for the eventual ML model to add on top of this
-   baseline, not something patched into the rule-based score after the
-   fact.
+   **Known limitation, stated plainly**: `price_severity` measures the
+   *magnitude* of deviation from peg, not trend or trajectory. It cannot
+   distinguish "actively destabilizing" (early-warning-relevant — this is
+   the behavior the whole project exists to catch early) from "already
+   fully collapsed and static" (no longer actionable — the warning would
+   be far too late). Worse, it currently scores the latter *higher* than
+   the former (0.967 vs. 0.475 avg `price_severity` above), which is
+   backwards for an early-warning use case. Fixing this needs a
+   trend/velocity term (e.g. rate of change in `price_dev` over recent
+   hours), which is a natural candidate for the eventual ML model to add
+   on top of this baseline — not something to patch into the rule-based
+   score after the fact.
