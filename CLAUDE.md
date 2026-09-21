@@ -60,6 +60,16 @@ on price charts.
 - Never modify system-wide `JAVA_HOME` or `archlinux-java` default
 - Don't install HBase/Zookeeper without explicit request
 - Document any new env var or config file change in `SETUP.md` immediately
+- **Launch any Spark/Hive job expected to run more than a couple minutes via
+  `nohup` (detached from the tool's own process lifecycle) by default — not
+  only after a timeout is hit.** Incident: an `INSERT` rewriting
+  `stablecoin_pool_hourly` to a non-ACID table completed its MapReduce stage
+  on YARN, but the client session was cut when the shell tool's own timeout
+  auto-backgrounded it, so the finalization step (moving staged output into
+  partitions, registering them in the metastore) never ran — the job showed
+  as "succeeded" while the target table silently stayed empty. Re-running
+  the same job via `nohup ... &`, detached from the start, completed
+  cleanly. Don't wait for a timeout to make this call.
 
 ## Further Reading
 
