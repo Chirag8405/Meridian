@@ -131,12 +131,26 @@ the user-facing dashboard.
   median of 4.36, every crisis-labeled category scores substantially
   higher (medians 12-39) — see FINDINGS.md for the full distribution and
   two notable nuances the validation surfaced.
-- **MLlib** for a future trained depeg-risk model, to be validated against
-  the rule-based baseline above — routes pairs through one of two scoring
-  paths based on `baseline_stats.baseline_status`
-  ([FINDINGS.md](FINDINGS.md)): deviation-from-own-baseline when a
-  reliable baseline exists, absolute-deviation-from-$1.00 plus
-  trend/velocity when it doesn't. Not built yet.
+- **MLlib crisis classifier** (`spark/crisis_features.scala` +
+  `spark/crisis_classifier.scala`, results in `meridian.crisis_features` /
+  `meridian.crisis_classifier_predictions` / `meridian.crisis_classifier_metrics`)
+  — trained specifically to fix the rule-based baseline's documented
+  blind spot (magnitude-only, no trend/trajectory). Binary CALM/CRISIS
+  labels grounded in independently-known historical crisis dates (not
+  derived from our own severity metrics, to keep the model-vs-baseline
+  comparison meaningful). Validated via leave-one-coin-out: train on
+  USDC, test on UST (and vice versa, necessarily coin-blended for the
+  CALM class since UST has no calm rows at all in this dataset). Result:
+  a model trained only on USDC's milder depeg genuinely **beats** the
+  baseline generalizing to UST's structurally different collapse (F1 0.915
+  vs. 0.858), but loses decisively in the harder reverse direction (severe
+  UST pattern → mild USDC pattern, F1 0.611 vs. 0.995). A first training
+  run surfaced a leakage-adjacent feature (`wallet_concentration_severity`,
+  a window-constant near-proxy for the label) that had to be found and
+  removed before these results could be trusted — see
+  [FINDINGS.md](FINDINGS.md) for the full writeup, including a more
+  precise-than-expected finding on whether the trend/velocity features
+  actually earned their place.
 
 ## 5. Application Layer
 
