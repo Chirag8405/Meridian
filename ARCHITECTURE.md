@@ -59,7 +59,36 @@ the user-facing dashboard.
   **Not every pair gets scored against its own baseline** — see
   [FINDINGS.md](FINDINGS.md) for why UST has no reliable baseline in this
   dataset, and the two-path design that implies for the risk model below.
-- **Spark** for PageRank-based wallet/pool influence ranking
+- **Spark (GraphX)** for PageRank-based wallet/pool influence ranking
+  (`spark/wallet_pagerank.scala`, results in `meridian.wallet_pagerank` /
+  `meridian.wallet_labels`). Requires wallet-level trade data
+  (`taker`/`tx_from`/`tx_to` per individual trade), which the hourly-
+  aggregated backfill doesn't have — a separate raw pull
+  (`ingestion/dune_wallet_pull.py` → `meridian.wallet_trades_raw`, ~135K
+  rows across the 4 tracked pools) feeds this specifically.
+  - **Bipartite construction**: nodes = wallets + pools, edges = trade
+    volume between a wallet and a pool, **bidirectional** (wallet→pool and
+    pool→wallet, both weighted by the same volume). A one-directional
+    wallet→pool graph is structurally degenerate for PageRank — pools
+    would accumulate all rank as pure sinks and never redistribute it
+    back, so wallets would only ever get the uniform teleportation score.
+    Bidirectional edges let rank flow both ways, the standard technique
+    for bipartite/recommender-graph PageRank.
+  - **Weighted PageRank is a custom implementation**: GraphX's built-in
+    `Graph.pageRank()` does not support edge weights — it normalizes
+    purely by out-degree. Since higher-volume wallet-pool relationships
+    are meant to carry more influence, this uses a hand-rolled
+    Pregel-based weighted PageRank (edge weights normalized to transition
+    probabilities per source vertex), not the convenience method.
+  - **A large fraction of top-ranked "wallets" are contracts, not
+    traders**: verified via `eth_getCode` (`meridian.wallet_labels`), not
+    inferred from address patterns — 29 of the top 35 ranked wallets
+    across all computed windows are contracts (routers, aggregators, or
+    other DeFi infrastructure), not EOAs. This is load-bearing for how
+    results should be read: high PageRank for a contract address means
+    "lots of trades route through this," not "this is an influential
+    trader." See [FINDINGS.md](FINDINGS.md) for the full breakdown and the
+    calm-vs-crisis wallet-concentration analysis.
 - **CURE/Canopy clustering** of historical depeg events by stress signature
 - **Spark Structured Streaming** for live pool-ratio/price monitoring
 - **MLlib** for depeg-risk scoring — routes pairs through one of two

@@ -91,3 +91,73 @@ The risk model should therefore route pairs down one of two paths based on
 This is a deliberate two-path design, not a workaround. Not built yet —
 flagging it here so it's designed in when the risk-scoring model is built,
 rather than discovered as a bug later.
+
+## Most top-ranked "influential wallets" are actually infrastructure, not traders
+
+**Computed in:** `spark/wallet_pagerank.scala`, addresses verified in
+`ingestion/wallet_contract_check.py`, stored in `meridian.wallet_pagerank`
+/ `meridian.wallet_labels`.
+
+### What we found
+
+Ran weighted PageRank on a bipartite wallet↔pool graph (135,164 individual
+trades across the 4 tracked pools, ~11,800 distinct wallets). Took the 35
+distinct addresses appearing in the top-15-overall or any window's top-10
+wallet ranking and checked each via `eth_getCode` — a verifiable on-chain
+fact, not a name-pattern guess.
+
+**29 of those 35 addresses (83%) are contracts, not EOAs.** Only 6 are
+plain wallets: `0x1090258d...`, `0x359377f7...`, `0x380e92c8...`,
+`0x474890e5...`, `0x561f551f...`, `0x6aa6316c...`. Several of the
+highest-ranked "wallets" have the "many leading zero bytes" address
+pattern (e.g. `0x00000000008c4fb1c9...`, `0x0000000000753a65f1...`,
+`0x0000000099cb7fc48a...`) — a known signature of CREATE2-mined vanity
+addresses used by gas-optimized routers/MEV bots to reduce calldata cost.
+One top-3 "wallet" in the USDC_CALM window, `0xb4e16d0168e52d35...`, is
+the Uniswap V2 USDC/WETH pool itself (identified earlier in this project,
+`ingestion/alchemy_live_feed.py`'s scoping work) — a pool acting as a
+"taker" against our tracked pools, almost certainly from multi-hop routing
+through it, not a real counterparty.
+
+**This is load-bearing for how the results should be read.** A high
+PageRank score for most of these addresses means "a lot of trade volume
+routes through this," not "this address represents an influential trader
+or whale." Presenting the raw ranking without this caveat would be
+misleading — it would look like a list of powerful market participants
+when it's mostly a list of DEX infrastructure. `meridian.wallet_labels`
+exists specifically so this distinction stays queryable rather than
+disappearing into an unlabeled ranking.
+
+### Calm-vs-crisis wallet-influence concentration
+
+The actual hypothesis under test: does wallet-influence concentrate into
+fewer hands during a crisis? Measured as (top-10-wallet PageRank mass) /
+(total wallet PageRank mass) per window:
+
+| Window | % mass in top 10 wallets |
+|---|---|
+| USDC_CALM | 12.83% |
+| **USDC_MAR2023_CRISIS** | **43.39%** |
+| UST_CALM | 60.56% |
+| UST_MAY2022_CRISIS | 52.57% |
+
+**USDC strongly supports the hypothesis**: concentration more than
+tripled during the crisis (12.83% → 43.39%) — consistent with a small set
+of large arbitrageurs/institutional players stepping in to trade the SVB-
+driven dislocation while smaller participants pulled back.
+
+**UST does not support the hypothesis — but this comparison isn't clean
+evidence either way.** Concentration was *slightly lower* during the
+crisis than "calm" (60.56% → 52.57%), the opposite direction from USDC.
+This should not be read as "UST didn't see the same concentration effect,"
+because `UST_CALM` inherits the exact contamination documented above: it
+isn't a genuine calm period, it's the pre-collapse instability and dead
+post-collapse tail blended together (see `baseline_status =
+'NO_RELIABLE_BASELINE'`). A more likely explanation is that UST trading
+was concentrated among a small set of large players/bots for its *entire*
+history in this dataset — before, during, and after the collapse — so the
+calm/crisis split doesn't cleanly separate "normal" from "stressed"
+behavior the way it does for USDC. This is consistent with, not
+contradictory to, UST's algorithmic-collapse structural finding above:
+there was no genuine "normal" period to compare against for concentration
+either.
