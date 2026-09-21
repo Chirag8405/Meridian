@@ -113,11 +113,30 @@ the user-facing dashboard.
     sweep, the sanity-check results, and why the high silhouette scores
     across nearly all k don't by themselves indicate a well-tuned k.
 - **Spark Structured Streaming** for live pool-ratio/price monitoring
-- **MLlib** for depeg-risk scoring — routes pairs through one of two
-  scoring paths based on `baseline_stats.baseline_status`
+- **Rule-based baseline risk score** (`spark/risk_scores_baseline.scala`,
+  results in `meridian.risk_scores_baseline`) — built deliberately *before*
+  any ML model training, so a trained model has a concrete, explainable
+  score to validate against rather than nothing. Composite `risk_score`
+  (0-100) combines four independently-normalized `[0,1]` components:
+  price deviation severity and volume/trade_count deviation severity
+  (reused from `meridian.stress_clusters`, weight 0.40/0.25), cluster
+  membership severity (a lookup table grounded in each cluster's actual
+  raw profile, weight 0.15 — deliberately low since cluster membership is
+  *derived from* the other features and a higher weight would double-count
+  the same signal), and top-10-wallet PageRank concentration for the row's
+  window (weight 0.20, zeroed for UST rows — see
+  [FINDINGS.md](FINDINGS.md) for why that signal is validated for USDC but
+  inverted/unreliable for UST). Validated against the known USDC Mar 2023
+  and UST May 2022 crisis windows: calm hours score tightly around a
+  median of 4.36, every crisis-labeled category scores substantially
+  higher (medians 12-39) — see FINDINGS.md for the full distribution and
+  two notable nuances the validation surfaced.
+- **MLlib** for a future trained depeg-risk model, to be validated against
+  the rule-based baseline above — routes pairs through one of two scoring
+  paths based on `baseline_stats.baseline_status`
   ([FINDINGS.md](FINDINGS.md)): deviation-from-own-baseline when a
   reliable baseline exists, absolute-deviation-from-$1.00 plus
-  trend/velocity when it doesn't
+  trend/velocity when it doesn't. Not built yet.
 
 ## 5. Application Layer
 

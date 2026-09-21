@@ -291,3 +291,123 @@ Net result: k=4 delivers on the actual goal — distinguishing calm from
 multiple distinct *types and stages* of stress (moderate vs. severe USDC
 price stress, and a wholly separate UST worthless-trade signature), not
 just a binary calm/crisis split.
+
+## Rule-based baseline risk score: validates against known crisis windows, and surfaces a new finding along the way
+
+**Computed in:** `spark/risk_scores_baseline.scala`, stored in
+`meridian.risk_scores_baseline`. Built deliberately *before* any ML model
+training, so a trained model has a concrete, explainable baseline to
+validate against rather than nothing.
+
+### Formula
+
+`risk_score` (0-100) = `100 * (0.40*price_severity + 0.25*volume_trade_severity
++ 0.15*cluster_severity + 0.20*wallet_concentration_severity)`, where each
+component is independently normalized to `[0,1]` first (see
+`hive/risk_scores_baseline_schema.sql` for the full per-component design and
+the reasoning behind each weight/cap — decided and confirmed before
+implementing, same as the clustering design). Two points worth restating
+here:
+
+- **Cluster severity is intentionally low-weighted (0.15)** relative to
+  price/volume (0.65 combined) — cluster membership is *derived from*
+  those same features via K-Means, so a higher weight would double-count
+  the same signal rather than add independent information.
+- **Wallet-concentration is zeroed out for all UST rows.** The signal is
+  validated as risk-increasing for USDC (12.83% calm → 43.39% crisis
+  concentration) but inverted for UST (60.56% "calm" → 52.57% crisis) — a
+  direct consequence of `UST_CALM`'s baseline contamination documented
+  above. Using it for UST would encode a backwards signal on every UST
+  row, so it contributes 0 there rather than something misleading.
+
+### Cluster → severity mapping
+
+Grounded in each cluster's actual raw price/volume/trade_count profile
+(not assumed — see the K-Means section above for the full table): cluster
+0 (calm) = 0.05, cluster 1 (moderate USDC stress) = 0.5, cluster 2 (severe
+USDC stress, most extreme z-score) = 0.85, cluster 3 (UST zero-value-trade
+signature) = 1.0. Cluster 3 ranks *above* cluster 2 despite a numerically
+smaller `price_dev` (-1.0 vs. -74σ), because it represents a categorically
+different, worse outcome — a literal $0 trade (total peg failure), not a
+statistically-extreme partial depeg.
+
+### Validation: known-calm vs. known-crisis score distributions
+
+| period | n | avg | median | min | max | p90 |
+|---|---|---|---|---|---|---|
+| RELIABLE_CALM | 13,844 | 4.73 | 4.36 | 3.34 | 62.78 | 6.11 |
+| USDC_CRISIS | 709 | 21.35 | 12.19 | 9.55 | 86.43 | 55.64 |
+| UST_CRISIS | 485 | 27.46 | 30.70 | 1.24 | 56.62 | 40.13 |
+| UST_OTHER | 565 | 30.79 | 38.77 | 1.45 | 56.62 | 56.62 |
+
+**The score does what it's supposed to**: calm hours sit tightly around a
+median of 4.36 (p90 only 6.11 — the calm cluster is genuinely quiet), while
+every crisis-labeled category sits far higher (medians 12–39, well above
+calm's p90). USDC's crisis max (86.43) correctly captures the acute SVB-
+depeg peak hours.
+
+**Two things worth explaining, not glossing over:**
+
+1. **UST_CRISIS's minimum (1.24) is lower than RELIABLE_CALM's minimum
+   (3.34)** — at first glance this looks backwards. It isn't a scoring
+   failure: it's a combination of (a) legitimate sub-hour variation within
+   the labeled crisis window, and (b) a direct, expected side effect of
+   zeroing `wallet_concentration_severity` for UST.
+
+   The actual lowest-scoring row is `UST_DAI / curve / 2022-05-07
+   21:00:00` — the first day of the hand-drawn crisis window. Its raw
+   values: `implied_price = $0.9952` (essentially still at peg),
+   `volume_usd = $996,957`, `trade_count = 8`, `is_valid_price = true`,
+   `cluster_id = 0` (the calm cluster — the clustering algorithm agrees,
+   independently). This pool genuinely hadn't been hit by the collapse yet
+   at that specific hour, even though its date falls inside the window —
+   the same "crisis windows aren't uniformly severe hour-to-hour" pattern
+   documented in the clustering section above.
+
+   Separately, `wallet_concentration_severity` contributes ~2.6 points to
+   every RELIABLE row's floor (0.20 × 12.83% × 100), a floor UST rows never
+   get since that component is zeroed for them. So an unremarkable UST
+   hour can score lower than an unremarkable USDC hour purely from that
+   confirmed design choice, on top of the genuine calm-hour effect above —
+   not a defect, but two compounding, explained causes rather than one.
+2. **`UST_OTHER` scores higher on average than the officially-labeled
+   `UST_CRISIS` window** (median 38.77 vs. 30.70). Part of this is the
+   cluster-3 row split noted in the clustering section: of the 221
+   zero-value-trade rows (severity 1.0 — the single biggest driver of a
+   high score), only 30 fall inside the hand-drawn 2022-05-07 to
+   2022-05-16 crisis window; 191 fall outside it, in `UST_OTHER`.
+
+   But splitting `UST_OTHER` by sub-period shows a second, more important
+   mechanism at work — and a genuine limitation of a pure deviation-based
+   score, not just a date-boundary artifact:
+
+   | sub-period | n | avg risk_score | avg price_severity |
+   |---|---|---|---|
+   | PRE_CRISIS_BUILDUP (2022-04-15 to 05-06) | 425 | 26.31 | 0.475 |
+   | POST_CRISIS_DEAD (2022-05-17 to 06-15) | 140 | 44.39 | 0.967 |
+
+   The post-collapse period — UST sitting dead at a few cents, per the
+   baseline-contamination finding above — scores nearly **twice as high**
+   as the actual pre-crisis buildup period, and its `price_severity` is
+   almost fully saturated (0.967 of a max 1.0). This is because
+   `price_severity = min(|implied_price - 1.00|, 1.0)` is a pure magnitude
+   measure: it has no notion of trend, velocity, or "already fully
+   realized" vs. "just now emerging." A stablecoin sitting permanently
+   near $0.04 scores about as high, indefinitely, as the literal moment of
+   a $0 trade — while the pre-crisis buildup period, still near-peg but
+   destabilizing (arguably the more actionable signal for an *early*-
+   warning system), scores meaningfully lower simply because price hadn't
+   collapsed yet.
+
+   **Known limitation, stated plainly**: `price_severity` measures the
+   *magnitude* of deviation from peg, not trend or trajectory. It cannot
+   distinguish "actively destabilizing" (early-warning-relevant — this is
+   the behavior the whole project exists to catch early) from "already
+   fully collapsed and static" (no longer actionable — the warning would
+   be far too late). Worse, it currently scores the latter *higher* than
+   the former (0.967 vs. 0.475 avg `price_severity` above), which is
+   backwards for an early-warning use case. Fixing this needs a
+   trend/velocity term (e.g. rate of change in `price_dev` over recent
+   hours), which is a natural candidate for the eventual ML model to add
+   on top of this baseline — not something to patch into the rule-based
+   score after the fact.
