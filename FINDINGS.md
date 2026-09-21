@@ -484,18 +484,32 @@ cross-coin generalization, not a coin-identity shortcut — the leaky
 feature that could have explained a false positive result here was already
 removed before this run.
 
-**Direction TEST_ON_USDC — the baseline wins decisively.** A model trained
-on UST's crisis pattern (which, per the label design above, includes
-everything from early destabilization to total collapse) misses roughly
-half of USDC's actual crisis hours (best recall 0.532) when tested against
-USDC's milder, partial depeg. This is the harder direction predicted in
-the original design discussion — training on a severe/collapsed pattern
-doesn't transfer well to detecting a milder one, and the result confirms
-that rather than reflecting a fixable modeling mistake. The baseline's
-near-perfect performance here (F1 0.995) makes sense too: `price_severity`
-and `volume_trade_severity` were literally validated against USDC crisis
-data during the baseline's own construction, so this is close to
-in-distribution territory for it.
+**Direction TEST_ON_USDC — the baseline wins decisively.** A model
+trained on UST's crisis pattern (which, per the label design above,
+includes everything from early destabilization to total collapse) misses
+roughly half of USDC's actual crisis hours (best recall 0.532) when
+tested against USDC's milder, partial depeg.
+
+The original design discussion flagged two possible contributing factors
+here: harder pattern transfer (severe→mild), and a training-size
+asymmetry. **Only the first holds up against the actual training data —
+the training-size concern doesn't apply to what was actually built and
+should be retracted, not repeated.** The training-size worry was valid
+against the *original* pre-redesign LOCO plan (each coin training on its
+own calm+crisis data, giving UST only ~1,050 rows), but the redesign
+confirmed for the leave-one-coin-out split (both directions draw CALM
+rows from the same 11,579-row USDC pool, since UST has none) resolved it:
+per the job log, `Direction TEST_ON_USDC` actually trains on **more**
+total rows (12,629 vs. 12,288) and **more** crisis-class rows (1,050 UST
+vs. 709 USDC) than `Direction TEST_ON_UST`, not fewer. So this direction's
+weaker result is attributable to harder pattern transfer alone — training
+on a severe/collapsed pattern doesn't transfer well to detecting a milder
+one, because the underlying failure modes are structurally different
+(algorithmic death spiral vs. collateral-backed bank-run), not because of
+a training-data shortage. The baseline's near-perfect performance here
+(F1 0.995) makes sense too: `price_severity` and `volume_trade_severity`
+were literally validated against USDC crisis data during the baseline's
+own construction, so this is close to in-distribution territory for it.
 
 ### Did the trend/velocity features actually help? A more precise answer than "yes"
 
