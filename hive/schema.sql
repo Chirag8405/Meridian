@@ -28,6 +28,21 @@
 --         vocabulary, since "invalid" alone doesn't say *why* (thin
 --         liquidity vs. a genuine zero-amount leg vs. something else we
 --         haven't seen yet).
+--   - ZERO_VALUE_TRADE vs. NAN_PRICE vs. ZERO_AMOUNT_LEG — three distinct
+--     mechanisms, not the same thing wearing different names:
+--       - NAN_PRICE: the price calculation itself was undefined (e.g. 0/0).
+--       - ZERO_AMOUNT_LEG: a specific multi-leg swap decode case (see
+--         alchemy_live_feed.py) where a leg's amount was zero.
+--       - ZERO_VALUE_TRADE: implied_price = 0.0 AND volume_usd = 0.0
+--         *together* — a real trade actually executed, but at a genuinely
+--         zero/dust value (observed during the May 2022 UST collapse: 221
+--         rows, none in the calm USDC/USDT/DAI data). Not a calculation
+--         error — treated as not-a-usable-price (is_valid_price=FALSE,
+--         implied_price set NULL, same as NAN_PRICE) because feature
+--         engineering shouldn't treat "0.0" as a real price point, but the
+--         row itself, and the fact that a zero-value trade happened at that
+--         hour, is a potential crisis-severity signal worth keeping.
+--         Exact 0.0 only, no near-zero threshold.
 
 CREATE DATABASE IF NOT EXISTS meridian;
 
@@ -41,7 +56,7 @@ CREATE TABLE IF NOT EXISTS meridian.stablecoin_pool_hourly (
     implied_price   DOUBLE    COMMENT 'Implied price of base token per quote token for this pair, e.g. USDC per USDT. NULL when is_valid_price = FALSE',
     raw_price_value STRING    COMMENT 'Original raw value from the source API before parsing (e.g. "NaN"), preserved verbatim for auditability',
     is_valid_price  BOOLEAN   COMMENT 'FALSE when the source returned a non-finite/degenerate price (e.g. NaN from a zero-amount trade leg). Rows are always kept regardless of this value.',
-    anomaly_flag    STRING    COMMENT 'Controlled vocabulary: NONE, NAN_PRICE, ZERO_AMOUNT_LEG, LOW_LIQUIDITY, OTHER',
+    anomaly_flag    STRING    COMMENT 'Controlled vocabulary: NONE, NAN_PRICE, ZERO_AMOUNT_LEG, ZERO_VALUE_TRADE, LOW_LIQUIDITY, MULTI_LEG_TRADE, AMBIGUOUS_NET_DIRECTION, OTHER',
     source          STRING    COMMENT 'Data source, e.g. dune',
     ingested_at     TIMESTAMP COMMENT 'When this row was loaded into Hive'
 )
