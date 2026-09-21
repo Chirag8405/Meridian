@@ -74,5 +74,8 @@ on price charts.
 ## Further Reading
 
 Refer to [ARCHITECTURE.md](ARCHITECTURE.md), [LAB_MAPPING.md](LAB_MAPPING.md),
-[SCOPE.md](SCOPE.md), [DATA_SOURCES.md](DATA_SOURCES.md), and
-[ROADMAP.md](ROADMAP.md) for full project context before starting new work.
+[SCOPE.md](SCOPE.md), [DATA_SOURCES.md](DATA_SOURCES.md),
+[ROADMAP.md](ROADMAP.md), and [FINDINGS.md](FINDINGS.md) (genuine
+analytical findings from the data, e.g. UST having no reliable baseline —
+read before building the risk-scoring model) for full project context
+before starting new work.

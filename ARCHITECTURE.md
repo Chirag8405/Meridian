@@ -47,11 +47,26 @@ the user-facing dashboard.
 
 ## 4. Analytics & Management Layer
 
-- **MapReduce** for baseline liquidity/price-deviation statistics
+- **Spark** for baseline (calm-market) and crisis-window liquidity/price-
+  deviation statistics (`spark/baseline_crisis_stats.scala`, results in
+  `meridian.baseline_stats` / `meridian.crisis_stats`) — chosen over
+  MapReduce for this computation once it stopped being lab-constrained,
+  since percentiles and stddev are native Spark SQL aggregates rather than
+  hand-rolled MapReduce logic. A separate MapReduce job may still be built
+  to satisfy Lab 3's specific requirement (see
+  [LAB_MAPPING.md](LAB_MAPPING.md)) — that's a lab-coverage need distinct
+  from this actual statistics computation, which is now Spark's job.
+  **Not every pair gets scored against its own baseline** — see
+  [FINDINGS.md](FINDINGS.md) for why UST has no reliable baseline in this
+  dataset, and the two-path design that implies for the risk model below.
 - **Spark** for PageRank-based wallet/pool influence ranking
 - **CURE/Canopy clustering** of historical depeg events by stress signature
 - **Spark Structured Streaming** for live pool-ratio/price monitoring
-- **MLlib** for depeg-risk scoring
+- **MLlib** for depeg-risk scoring — routes pairs through one of two
+  scoring paths based on `baseline_stats.baseline_status`
+  ([FINDINGS.md](FINDINGS.md)): deviation-from-own-baseline when a
+  reliable baseline exists, absolute-deviation-from-$1.00 plus
+  trend/velocity when it doesn't
 
 ## 5. Application Layer
 
