@@ -161,3 +161,133 @@ behavior the way it does for USDC. This is consistent with, not
 contradictory to, UST's algorithmic-collapse structural finding above:
 there was no genuine "normal" period to compare against for concentration
 either.
+
+## Stress-pattern clustering (K-Means): separates by severity and coin, not just calm/crisis
+
+**Computed in:** `spark/stress_clustering.scala`, stored in
+`meridian.stress_clusters` / `meridian.stress_cluster_profiles`.
+
+### Feature design: the UST fix had to extend beyond price
+
+The original proposal was to give `NO_RELIABLE_BASELINE` (UST) pairs a
+peg-deviation feature in place of a baseline z-score for **price** only,
+consistent with the two-path risk-scoring design above. Checking
+`baseline_stats` directly showed the same contamination problem applies to
+**volume and trade_count** too: UST's `mean_volume_usd` /
+`mean_trade_count` are computed over the identical pre/post-collapse
+blended window as its price stats (e.g. `UST_USDC.mean_volume_usd =
+$222,907.58` spans the non-calm window documented above), so scoring UST
+volume/trade_count against those numbers would silently reintroduce the
+exact problem the price fix was meant to solve.
+
+**Fix applied**: extended the two-path design to all three deviation
+features, not just price. `NO_RELIABLE_BASELINE` pairs' volume/trade_count
+are z-scored against a **fresh, self-referential full-history mean/stddev
+for that pair** (computed directly from the raw hourly data), not against
+`baseline_stats`.
+
+### Row counts — zero UST rows silently dropped
+
+15,607 total `(pair, project, hour)` rows → 4 excluded (`NAN_PRICE`,
+genuinely undefined 0/0, RELIABLE pairs only) → **15,603 rows feed
+clustering**, all four features populated for every row. RELIABLE =
+14,553; UST = 1,050 (829 valid-price + 221 `ZERO_VALUE_TRADE` rows,
+imputed to `price_dev = -1.0` since a real trade executed at
+~$0 — directionally correct and distinct from the z-score range used
+elsewhere). One side finding: `anomaly_binary` is zero-variance within the
+RELIABLE group (no RELIABLE row carries any flag besides the excluded
+`NAN_PRICE` ones) — in this dataset it only does discriminating work on
+UST's `ZERO_VALUE_TRADE` rows (21% of the UST group).
+
+### k selection: elbow + silhouette, k=2..10
+
+| k | WSSSE | silhouette |
+|---|---|---|
+| 2 | 46769.53 | 0.9501 |
+| 3 | 22226.06 | 0.9838 |
+| 4 | 18299.96 | 0.9848 |
+| 5 | 14081.28 | 0.9862 |
+| 6 | 12421.00 | 0.8844 |
+| 7 | 10198.04 | 0.9868 |
+| 8 | 8493.30 | 0.9149 |
+| 9 | 7692.53 | 0.9153 |
+| 10 | 8143.72 | 0.8763 |
+
+Silhouette is high (0.88–0.99) across nearly every k tested — this is not
+evidence that any k is a good fit. The feature space is one dense "calm"
+mass plus far-flung outlier hours in standardized z-score terms, so almost
+any partition trivially separates outliers from the mass with a high
+average silhouette. k=6 and k=10 show real instability (silhouette dips,
+and WSSSE actually *increases* from k=9→k=10 — a sign of a poor local
+optimum, not a structural break in the data).
+
+**Chose k=4**: sits at the point where WSSSE's percentage decrease starts
+flattening, has strong silhouette (0.9848), and was sanity-checked against
+the known crisis windows (below) before committing to it.
+
+### Sanity check: does k=4 separate crisis from calm?
+
+| period | cluster | count |
+|---|---|---|
+| USDC_CALM | 0 | 13,841 |
+| USDC_CALM | 1 | 3 |
+| USDC_CRISIS | 0 | 637 |
+| USDC_CRISIS | 1 | 60 |
+| USDC_CRISIS | 2 | 12 |
+| UST_CRISIS | 0 | 455 |
+| UST_CRISIS | 3 | 30 |
+| UST_OTHER | 0 | 374 |
+| UST_OTHER | 3 | 191 |
+
+Cluster 0 absorbs ~98% of all rows, including most nominal "crisis-window"
+hours — expected, since a crisis *date range* includes many hours that
+aren't themselves extreme (depegs escalate and recover, they aren't
+uniformly severe throughout their labeled window). The three small
+clusters aren't noise: they separate cleanly by **severity and coin**,
+not just a binary calm/crisis split — cluster 2 (12 rows) is USDC's most
+extreme hours, cluster 1 (60 rows) is moderately-stressed USDC hours, and
+cluster 3 (221 rows) is a UST-specific stress signature distinct from
+USDC entirely. This matches the actual goal (distinguishing *types/stages*
+of crisis behavior) better than a coarser k would have.
+
+### What each cluster actually represents
+
+`meridian.stress_cluster_profiles` (full 15,603-row dataset, `k=4`):
+
+| cluster | n_rows | avg price_dev | avg volume_dev | avg trade_count_dev | pct_ust | usdc_crisis | ust_crisis |
+|---|---|---|---|---|---|---|---|
+| 0 | 15,307 | -0.10 | 0.03 | 0.11 | 5.4% | 637 | 455 |
+| 1 | 63 | -18.77 | 30.05 | 40.58 | 0% | 60 | 0 |
+| 2 | 12 | -74.21 | 18.50 | 59.43 | 0% | 12 | 0 |
+| 3 | 221 | -1.00 | -0.46 | -0.48 | 100% | 0 | 30 |
+
+Reading this against the crisis-window sanity check above:
+
+- **Cluster 0 — baseline/quiet**: near-zero deviation on every feature,
+  98.1% of all rows. This includes hours *inside* the officially-labeled
+  crisis windows (637 USDC, 455 UST) that simply weren't extreme by these
+  features — confirms depeg windows aren't uniformly severe hour-to-hour.
+- **Cluster 1 — moderate USDC stress**: 63 rows, exclusively RELIABLE
+  pairs, large but not extreme deviation (price ~19σ below baseline,
+  volume/trade_count ~30-40σ above) — a volume/activity surge with a real
+  but partial price dip. 60 of 63 fall inside the USDC Mar 2023 window.
+- **Cluster 2 — severe USDC stress**: only 12 rows, the most extreme price
+  deviation observed (~74σ), all 12 inside the USDC crisis window — the
+  acute peak of the SVB-driven depeg.
+- **Cluster 3 — UST zero-value-trade signature**: 221 rows, `avg_price_dev
+  = -1.00` *exactly* and `pct_ust_rows = 100%` — this cluster is precisely
+  and completely the 221 imputed `ZERO_VALUE_TRADE` rows, nothing more and
+  nothing less. Every zero-value UST trade landed here, and no other row
+  did. This is a clean validation of the imputation choice: treating a
+  genuinely-zero-value trade as `price_dev = -1.0` gave the algorithm a
+  distinct, coherent signature rather than noise scattered across other
+  clusters — and it's the one cluster that isn't purely about price
+  severity, since 91% of these rows (191/221) fall *outside* the
+  officially-labeled UST crisis window (2022-05-07 to 2022-05-16),
+  confirming zero-value trades occurred both during and after the
+  officially-dated crisis window.
+
+Net result: k=4 delivers on the actual goal — distinguishing calm from
+multiple distinct *types and stages* of stress (moderate vs. severe USDC
+price stress, and a wholly separate UST worthless-trade signature), not
+just a binary calm/crisis split.

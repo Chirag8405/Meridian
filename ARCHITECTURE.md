@@ -89,7 +89,29 @@ the user-facing dashboard.
     "lots of trades route through this," not "this is an influential
     trader." See [FINDINGS.md](FINDINGS.md) for the full breakdown and the
     calm-vs-crisis wallet-concentration analysis.
-- **CURE/Canopy clustering** of historical depeg events by stress signature
+- **K-Means clustering (MLlib)** of hourly stress signatures
+  (`spark/stress_clustering.scala`, results in `meridian.stress_clusters` /
+  `meridian.stress_cluster_profiles`). CURE/Canopy have no native MLlib
+  support and weren't worth hand-rolling once lab-mapping stopped being a
+  project goal, so this uses standardized K-Means instead.
+  - **Unit of clustering is (pair, project, hour)**, not the 2 crisis
+    events themselves — too small an n to cluster meaningfully. Features:
+    price/volume/trade_count deviation plus an anomaly-flag indicator.
+  - **Two-path feature design, extended beyond the original price-only
+    proposal**: RELIABLE pairs get z-scores against their own
+    `baseline_stats` (calm-window) mean/stddev. `NO_RELIABLE_BASELINE`
+    (UST) pairs get peg-deviation for price (no calm baseline to score
+    against) — and, since `baseline_stats`' own volume/trade_count numbers
+    for UST are contaminated by the same pre/post-collapse blended window
+    as its price numbers, volume/trade_count use a fresh self-referential
+    full-history mean/stddev instead of `baseline_stats`. No UST rows are
+    silently dropped; only the 4 genuinely-undefined `NAN_PRICE` rows are
+    excluded (RELIABLE pairs only).
+  - **k=4, chosen empirically** via elbow (WSSSE) + silhouette sweep over
+    k=2..10, sanity-checked against the known USDC Mar 2023 and UST May
+    2022 crisis windows — see [FINDINGS.md](FINDINGS.md) for the full
+    sweep, the sanity-check results, and why the high silhouette scores
+    across nearly all k don't by themselves indicate a well-tuned k.
 - **Spark Structured Streaming** for live pool-ratio/price monitoring
 - **MLlib** for depeg-risk scoring — routes pairs through one of two
   scoring paths based on `baseline_stats.baseline_status`
