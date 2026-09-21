@@ -222,6 +222,7 @@ def main():
         pool_row_counts[pool["name"]] = len(rows)
 
         nan_count = 0
+        zero_value_count = 0
         for row in rows:
             hour = row["hour"]  # e.g. "2023-03-11 07:00:00.000 UTC"
             dt = hour.split(" ")[0]
@@ -236,6 +237,16 @@ def main():
                 is_valid = "false"
                 anomaly = "NAN_PRICE" if raw_price is not None else "ZERO_AMOUNT_LEG"
                 price_out = "\\N"  # Hive NULL in TEXTFILE
+            elif price == 0.0 and (volume_usd or 0.0) == 0.0:
+                # A real trade executed, but at a genuinely zero/dust value —
+                # not a calculation error (that's NAN_PRICE), a real zero.
+                # Exact 0.0 only, no near-zero threshold. Same treatment as
+                # NaN rows: not a usable price, but the row (and the fact a
+                # zero-value trade happened) is kept, not dropped.
+                zero_value_count += 1
+                is_valid = "false"
+                anomaly = "ZERO_VALUE_TRADE"
+                price_out = "\\N"
             else:
                 is_valid = "true"
                 anomaly = "NONE"
@@ -257,7 +268,8 @@ def main():
                 pair,                                   # pair (partition)
                 dt,                                     # dt (partition)
             ]))
-        print(f"  NaN/invalid price rows: {nan_count}\n")
+        print(f"  NaN/invalid price rows: {nan_count}")
+        print(f"  Zero-value trade rows: {zero_value_count}\n")
 
     STAGING_FILE.write_text("\n".join(staging_rows) + "\n")
     print(f"Wrote {len(staging_rows)} staging rows to {STAGING_FILE}")
