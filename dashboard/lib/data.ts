@@ -29,6 +29,14 @@ export type TimelinePoint = {
   volume_usd: number;
 };
 
+export type LivePricePoint = {
+  pair: string;
+  project: string;
+  window_start_ts: string;
+  implied_price: number;
+  volume_usd: number;
+};
+
 export type ClassifierMetricRow = {
   direction: "TEST_ON_UST" | "TEST_ON_USDC";
   scorer: "logistic_regression" | "random_forest" | "rule_based_baseline";
@@ -71,6 +79,7 @@ type DashboardData = {
   current_risk_live: LiveRiskRow[];
   usdc_crisis_timeline: TimelinePoint[];
   ust_crisis_timeline: TimelinePoint[];
+  live_price_timeline: LivePricePoint[];
   classifier_metrics: ClassifierMetricRow[];
   wallet_rankings: WalletRankingRow[];
   metadata: Metadata;
@@ -106,6 +115,17 @@ export async function getUsdcTimeline(): Promise<TimelinePoint[]> {
 
 export async function getUstTimeline(): Promise<TimelinePoint[]> {
   return (await getDashboardData()).ust_crisis_timeline;
+}
+
+export async function getLivePriceTimeline(): Promise<LivePricePoint[]> {
+  // Defaults to [] rather than trusting the field exists — unlike the
+  // other fields here, this one can legitimately be absent for a real,
+  // transitional reason: it only exists once both the Supabase table
+  // (supabase/schema.sql) and the Render backend (backend/main.py) have
+  // been updated and redeployed, which doesn't happen atomically with a
+  // frontend deploy. Missing data degrades to LivePriceChart's own empty
+  // state instead of crashing the whole page.
+  return (await getDashboardData()).live_price_timeline ?? [];
 }
 
 export async function getClassifierMetrics(): Promise<ClassifierMetricRow[]> {

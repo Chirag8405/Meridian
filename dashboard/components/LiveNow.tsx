@@ -1,8 +1,9 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
-import type { LiveRiskRow } from "@/lib/data";
+import type { LiveRiskRow, LivePricePoint } from "@/lib/data";
 import RiskGauge from "./RiskGauge";
+import LivePriceChart from "./LivePriceChart";
 
 // The idiomatic way to detect "has this mounted on the client" — avoids
 // the effect+setState anti-pattern (which can cascade renders) entirely,
@@ -35,12 +36,31 @@ const SOURCE_LABEL: Record<string, string> = {
   alchemy_getlogs_replay: "gap-filled",
 };
 
-export default function LiveNow({ rows }: { rows: LiveRiskRow[] }) {
+export default function LiveNow({
+  rows,
+  priceTimeline,
+}: {
+  rows: LiveRiskRow[];
+  priceTimeline: LivePricePoint[];
+}) {
   // Avoid an SSR/static-export hydration mismatch: "now" at build time and
   // "now" at view time are different instants (this page is a static
   // export, viewed possibly days after it was built) — render nothing
   // time-dependent until mounted on the viewer's own clock.
   const mounted = useMounted();
+
+  // Live tracking is USDC-only (see spark/stream_alchemy_live.scala) —
+  // exactly two pairs, each on two DEXs, confirmed grouping (one chart per
+  // pair, two lines each) rather than one combined chart or four separate
+  // ones.
+  const byPair = (pair: string) => ({
+    pair,
+    series: [
+      { label: "curve", dash: false, points: priceTimeline.filter((p) => p.pair === pair && p.project === "curve") },
+      { label: "uniswap_v2", dash: true, points: priceTimeline.filter((p) => p.pair === pair && p.project === "uniswap_v2") },
+    ],
+  });
+  const chartsData = [byPair("USDC_DAI"), byPair("USDC_USDT")];
 
   return (
     <section aria-labelledby="live-heading" className="max-w-5xl mx-auto px-5 pt-10 pb-2">
@@ -92,6 +112,23 @@ export default function LiveNow({ rows }: { rows: LiveRiskRow[] }) {
           ))}
         </div>
       )}
+
+      <div className="mt-8">
+        <h3 className="font-sans font-semibold text-[14px] text-text-primary mb-1">
+          Live price, as it&apos;s trading right now
+        </h3>
+        <p className="font-sans text-[12.5px] text-text-muted mb-4 max-w-2xl">
+          Each finalized hourly window&apos;s implied price, updated as the streaming consumer
+          emits new windows. Unlike the crisis charts below, the price axis here is zoomed to
+          the actual range of live readings, not a fixed $0–$1.05 — a real crisis would still
+          be unmistakable, but small day-to-day movement stays visible too.
+        </p>
+        <div className="flex flex-col sm:flex-row gap-8 sm:gap-10">
+          {chartsData.map(({ pair, series }) => (
+            <LivePriceChart key={pair} pair={pair} series={series} />
+          ))}
+        </div>
+      </div>
     </section>
   );
 }

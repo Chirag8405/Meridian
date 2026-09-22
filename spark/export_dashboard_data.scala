@@ -1,6 +1,6 @@
 // Exports the small, pre-known slices of project data the dashboard needs
 // into static JSON files under dashboard/data/. Not a general-purpose
-// export — seven fixed queries, one per dashboard section, matching exactly
+// export — eight fixed queries, one per dashboard section, matching exactly
 // what the dashboard renders. Rerun manually after any pipeline update; see
 // docs/ARCHITECTURE.md's Application Layer section for why this is a batch
 // export rather than the dashboard querying Hive live (measured 46-56s for
@@ -96,7 +96,18 @@ val wallets = wp.filter($"window_label".isin("USDC_MAR2023_CRISIS", "UST_MAY2022
   .orderBy("window_label", "rank_within_window")
 writeJson("wallet_rankings.json", arrayJson(wallets.toJSON.collect()))
 
-// 7. Metadata: when this export ran and what the underlying dataset covers
+// 7. Live price timeline: every finalized hourly window from the live
+// streaming consumer, per (pair, project) — feeds a live price chart
+// alongside the historical crisis charts. Same source filter as
+// current_risk_live above, but every row, not just the latest. UST never
+// appears here (no live pool activity), same reasoning as #2.
+val livePriceTimeline = spark.table("meridian.stablecoin_pool_hourly")
+  .filter($"source".isin("alchemy_live", "alchemy_getlogs_replay") && $"is_valid_price" === true)
+  .select($"pair", $"project", $"window_start_ts", $"implied_price", $"volume_usd")
+  .orderBy("pair", "project", "window_start_ts")
+writeJson("live_price_timeline.json", arrayJson(livePriceTimeline.toJSON.collect()))
+
+// 8. Metadata: when this export ran and what the underlying dataset covers
 // — feeds the "historical replay, not live" framing on the dashboard.
 val meta = s"""{"exported_at":"${Instant.now()}","dataset_end_usdc":"2023-05-31","dataset_end_ust":"2022-06-15","usdc_crisis_window":["2023-03-08","2023-03-15"],"ust_crisis_window":["2022-05-07","2022-05-16"]}"""
 writeJson("metadata.json", meta)
