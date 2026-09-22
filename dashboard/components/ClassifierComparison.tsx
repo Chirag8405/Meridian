@@ -77,9 +77,11 @@ export default function ClassifierComparison({ rows }: { rows: ClassifierMetricR
         Trained the other way, it lost.
       </h2>
       <p className="font-sans text-[13px] text-text-muted mb-8 max-w-2xl">
-        Leave-one-coin-out validation: train a classifier on one coin&apos;s crisis pattern,
-        test it on the other&apos;s, entirely unseen. Both directions reported — the weaker
-        result is not omitted.
+        A machine-learning model was trained on one coin&apos;s crisis pattern, then tested on
+        the other&apos;s — a coin it never saw during training. Both directions are reported
+        below, including the one where it lost, not just the flattering result. Longer bars
+        mean a better balance of catching real crisis hours without too many false alarms
+        (the F1 score); the numbers underneath spell that balance out directly.
       </p>
       <div className="flex flex-col sm:flex-row gap-10 sm:gap-12">
         <DirectionPanel

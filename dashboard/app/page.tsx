@@ -8,6 +8,7 @@ import {
   getMetadata,
 } from "@/lib/data";
 import SnapshotBanner from "@/components/SnapshotBanner";
+import IntroExplainer from "@/components/IntroExplainer";
 import LiveNow from "@/components/LiveNow";
 import RiskStrip from "@/components/RiskStrip";
 import CrisisChart from "@/components/CrisisChart";
@@ -36,9 +37,7 @@ export default async function Home() {
         </div>
       </header>
 
-      <div className="mt-4">
-        <SnapshotBanner meta={meta} />
-      </div>
+      <IntroExplainer />
 
       <LiveNow rows={liveRisk} />
       <RiskStrip rows={currentRisk} />
@@ -48,8 +47,10 @@ export default async function Home() {
           USDC recovered. UST didn&apos;t.
         </h2>
         <p className="font-sans text-[13px] text-text-muted mb-8 max-w-2xl">
-          Both charts share the same $0–$1.05 price axis, so the depth of each collapse is
-          directly comparable, not just the numbers beside it.
+          Two real depegs, plotted on the same $0–$1.05 price axis so the depth of each
+          collapse is directly comparable. USDC (March 2023) lost its peg for days after its
+          issuer disclosed exposure to Silicon Valley Bank, then fully recovered. UST (May
+          2022), an algorithmic stablecoin with no such backing, collapsed and never came back.
         </p>
         <div className="flex flex-col sm:flex-row gap-10 sm:gap-12">
           <CrisisChart
@@ -68,7 +69,9 @@ export default async function Home() {
       <ClassifierComparison rows={metrics} />
       <WalletRankings rows={wallets} />
 
-      <footer className="max-w-5xl mx-auto px-5 py-10 border-t border-border">
+      <SnapshotBanner meta={meta} />
+
+      <footer className="max-w-5xl mx-auto px-5 py-6 border-t border-border">
         <p className="font-mono text-[11px] text-text-muted">
           Data exported {new Date(meta.exported_at).toLocaleString("en-US", {
             dateStyle: "medium",

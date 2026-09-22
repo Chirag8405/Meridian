@@ -1,4 +1,5 @@
 import type { CurrentRiskRow } from "@/lib/data";
+import RiskGauge from "./RiskGauge";
 
 function formatDt(dt: string) {
   return new Date(dt + "T00:00:00Z").toLocaleDateString("en-US", {
@@ -15,9 +16,11 @@ export default function RiskStrip({ rows }: { rows: CurrentRiskRow[] }) {
         Risk score, last observed reading per pair
       </h2>
       <p className="font-sans text-[13px] text-text-muted mb-5 max-w-2xl">
-        Composite 0–100 score from the rule-based baseline (price/volume deviation, stress
-        cluster, wallet concentration). Each pair&apos;s own dataset ends on a different date —
-        the reading shown is that pair&apos;s last available hour, not &quot;today.&quot;
+        A 0–100 score built from four signals: how far price has moved off $1, how unusual
+        trading volume is, which stress pattern a K-Means model assigns the hour to, and how
+        concentrated trading is among a few wallets. Each pair&apos;s own dataset ends on a
+        different date — the reading shown is that pair&apos;s last available hour, not
+        &quot;today.&quot;
       </p>
       <div className="flex flex-wrap border-t border-l border-border">
         {rows.map((r) => {
@@ -37,6 +40,7 @@ export default function RiskStrip({ rows }: { rows: CurrentRiskRow[] }) {
               >
                 {r.risk_score.toFixed(1)}
               </div>
+              <RiskGauge score={r.risk_score} />
               <div className="mt-2 text-[11px] font-sans">
                 {elevated ? (
                   <span className="text-accent font-medium">elevated · no reliable baseline</span>
