@@ -66,6 +66,45 @@ CREATE TABLE IF NOT EXISTS live_price_timeline (
     PRIMARY KEY (pair, project, window_start_ts)
 );
 
+-- One row per documented crisis event -- computed once by
+-- spark/evaluation_summary.scala (full methodology: docs/FINDINGS.md's
+-- "Does the risk score provide genuine early warning" section), re-run
+-- only if the methodology or underlying data changes, not on every batch
+-- cycle like the live-tracking tables above.
+CREATE TABLE IF NOT EXISTS evaluation_summary (
+    event_label                      TEXT NOT NULL PRIMARY KEY,
+    crisis_start                     TEXT NOT NULL,
+    crisis_end                       TEXT NOT NULL,
+    threshold_basis                  TEXT NOT NULL,
+    calm_mean                        DOUBLE PRECISION,
+    calm_stdev                       DOUBLE PRECISION,
+    calm_n                           BIGINT,
+    elevated_threshold               DOUBLE PRECISION NOT NULL,
+    -- TIMESTAMPTZ, not bare TIMESTAMP, matching every other timestamp
+    -- column in this schema -- confirmed necessary the hard way: a plain
+    -- TIMESTAMP column has no zone info, so PostgREST serializes it
+    -- without a UTC offset/Z suffix, and a bare ISO string with no offset
+    -- gets parsed by JavaScript's Date as LOCAL time, not UTC -- silently
+    -- shifting every displayed time by the viewer's own UTC offset.
+    depeg_onset_ts                   TIMESTAMPTZ,
+    first_warning_ts                 TIMESTAMPTZ,
+    lead_time_hours                  DOUBLE PRECISION NOT NULL,
+    false_alarm_count                INT NOT NULL,
+    peak_score                       DOUBLE PRECISION NOT NULL,
+    min_score_during_crisis          DOUBLE PRECISION NOT NULL,
+    crisis_hours_total               INT NOT NULL,
+    crisis_hours_below_threshold     INT NOT NULL,
+    recovery_detected                BOOLEAN NOT NULL,
+    recovery_ts                      TIMESTAMPTZ,
+    recovery_delay_hours             DOUBLE PRECISION,
+    recovery_na_permanent_collapse   BOOLEAN NOT NULL,
+    depeg_magnitude_pct              DOUBLE PRECISION NOT NULL,
+    min_price                        DOUBLE PRECISION NOT NULL,
+    calm_avg_volume_usd              DOUBLE PRECISION NOT NULL,
+    crisis_avg_volume_usd            DOUBLE PRECISION NOT NULL,
+    calm_caveat                      TEXT
+);
+
 CREATE TABLE IF NOT EXISTS classifier_metrics (
     direction         TEXT NOT NULL,
     scorer            TEXT NOT NULL,
@@ -121,6 +160,7 @@ ALTER TABLE current_risk_live ENABLE ROW LEVEL SECURITY;
 ALTER TABLE usdc_crisis_timeline ENABLE ROW LEVEL SECURITY;
 ALTER TABLE ust_crisis_timeline ENABLE ROW LEVEL SECURITY;
 ALTER TABLE live_price_timeline ENABLE ROW LEVEL SECURITY;
+ALTER TABLE evaluation_summary ENABLE ROW LEVEL SECURITY;
 ALTER TABLE classifier_metrics ENABLE ROW LEVEL SECURITY;
 ALTER TABLE wallet_rankings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE metadata ENABLE ROW LEVEL SECURITY;
@@ -135,6 +175,8 @@ DROP POLICY IF EXISTS "public read" ON ust_crisis_timeline;
 CREATE POLICY "public read" ON ust_crisis_timeline FOR SELECT USING (true);
 DROP POLICY IF EXISTS "public read" ON live_price_timeline;
 CREATE POLICY "public read" ON live_price_timeline FOR SELECT USING (true);
+DROP POLICY IF EXISTS "public read" ON evaluation_summary;
+CREATE POLICY "public read" ON evaluation_summary FOR SELECT USING (true);
 DROP POLICY IF EXISTS "public read" ON classifier_metrics;
 CREATE POLICY "public read" ON classifier_metrics FOR SELECT USING (true);
 DROP POLICY IF EXISTS "public read" ON wallet_rankings;

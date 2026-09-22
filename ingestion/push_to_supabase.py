@@ -48,6 +48,7 @@ TABLE_FILES = {
     "classifier_metrics.json": "classifier_metrics",
     "wallet_rankings.json": "wallet_rankings",
     "live_price_timeline.json": "live_price_timeline",
+    "evaluation_summary.json": "evaluation_summary",
 }
 
 
@@ -79,7 +80,7 @@ def replace_table(base_url: str, headers: dict, table: str, rows: list):
     pk_col = {
         "current_risk": "pair", "current_risk_live": "pair",
         "usdc_crisis_timeline": "window_start_ts", "ust_crisis_timeline": "window_start_ts",
-        "live_price_timeline": "pair",
+        "live_price_timeline": "pair", "evaluation_summary": "event_label",
         "classifier_metrics": "direction", "wallet_rankings": "window_label",
     }[table]
     del_resp = requests.delete(

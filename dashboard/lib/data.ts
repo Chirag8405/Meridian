@@ -58,6 +58,34 @@ export type WalletRankingRow = {
   label: string | null;
 };
 
+export type EvaluationSummaryRow = {
+  event_label: string;
+  crisis_start: string;
+  crisis_end: string;
+  threshold_basis: "self" | "cross_pair_from_usdc";
+  calm_mean: number | null;
+  calm_stdev: number | null;
+  calm_n: number | null;
+  elevated_threshold: number;
+  depeg_onset_ts: string | null;
+  first_warning_ts: string | null;
+  lead_time_hours: number;
+  false_alarm_count: number;
+  peak_score: number;
+  min_score_during_crisis: number;
+  crisis_hours_total: number;
+  crisis_hours_below_threshold: number;
+  recovery_detected: boolean;
+  recovery_ts: string | null;
+  recovery_delay_hours: number | null;
+  recovery_na_permanent_collapse: boolean;
+  depeg_magnitude_pct: number;
+  min_price: number;
+  calm_avg_volume_usd: number;
+  crisis_avg_volume_usd: number;
+  calm_caveat: string | null;
+};
+
 export type LiveRiskRow = {
   pair: string;
   project: string;
@@ -80,6 +108,7 @@ type DashboardData = {
   usdc_crisis_timeline: TimelinePoint[];
   ust_crisis_timeline: TimelinePoint[];
   live_price_timeline: LivePricePoint[];
+  evaluation_summary: EvaluationSummaryRow[];
   classifier_metrics: ClassifierMetricRow[];
   wallet_rankings: WalletRankingRow[];
   metadata: Metadata;
@@ -126,6 +155,13 @@ export async function getLivePriceTimeline(): Promise<LivePricePoint[]> {
   // frontend deploy. Missing data degrades to LivePriceChart's own empty
   // state instead of crashing the whole page.
   return (await getDashboardData()).live_price_timeline ?? [];
+}
+
+export async function getEvaluationSummary(): Promise<EvaluationSummaryRow[]> {
+  // Same reasoning as getLivePriceTimeline(): a real transitional absence
+  // (new Supabase table/Render deploy not applied everywhere yet), not a
+  // bug — degrades to the evaluation page's own empty state.
+  return (await getDashboardData()).evaluation_summary ?? [];
 }
 
 export async function getClassifierMetrics(): Promise<ClassifierMetricRow[]> {
