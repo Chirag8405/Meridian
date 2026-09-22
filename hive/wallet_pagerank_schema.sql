@@ -1,5 +1,5 @@
 -- PageRank result tables for the bipartite wallet/pool influence analysis
--- (see spark/wallet_pagerank.scala and ARCHITECTURE.md's Analytics layer
+-- (see spark/wallet_pagerank.scala and docs/ARCHITECTURE.md's Analytics layer
 -- section for the bipartite construction rationale). Reads from
 -- meridian.wallet_trades_raw (hive/wallet_trades_raw_schema.sql).
 

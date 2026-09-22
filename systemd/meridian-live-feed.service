@@ -1,6 +1,6 @@
 [Unit]
 Description=Meridian: Alchemy live feed ingester (ingestion/alchemy_live_feed.py)
-Documentation=file:///home/chirag/Desktop/Meridian/ARCHITECTURE.md
+Documentation=file:///home/chirag/Desktop/Meridian/docs/ARCHITECTURE.md
 After=network-online.target
 Wants=network-online.target
 # Caps restart attempts to avoid a hard crash-loop (e.g. a genuinely

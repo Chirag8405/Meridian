@@ -48,14 +48,14 @@ val baselineDf = df.filter(
 
 // baseline_status / baseline_status_note: distinct from small_sample_flag.
 // All three UST pairs clear n>=30 but have no genuine calm period anywhere
-// in the dataset's time range (2022-04-15 to 2022-06-15) — see FINDINGS.md
+// in the dataset's time range (2022-04-15 to 2022-06-15) — see docs/FINDINGS.md
 // for the full analysis. Sub-period numbers below were computed directly
 // against meridian.stablecoin_pool_hourly, split at the crisis window
 // boundaries (pre: before 2022-05-07, post: after 2022-05-16).
 val ustNotes = Map(
-  "UST_USDC" -> "No genuine calm period in dataset (2022-04-15 to 2022-06-15). Pre-crisis-window sub-period (2022-04-15 to 2022-05-06): n=157, mean=$0.769, stddev=0.250 (already unstable, well before the 2022-05-07 crisis boundary). Post-crisis-window sub-period (2022-05-17 to 2022-06-15): n=66, mean=$0.047, stddev=0.031 (collapsed, not recovered). See FINDINGS.md.",
-  "UST_USDT" -> "No genuine calm period in dataset (2022-04-15 to 2022-06-15). Pre-crisis-window sub-period (2022-04-15 to 2022-05-06): n=48, mean=$0.808, stddev=0.312 (already unstable, well before the 2022-05-07 crisis boundary). Post-crisis-window sub-period (2022-05-17 to 2022-06-15): n=11, mean=$0.044, stddev=0.035 (collapsed, not recovered). See FINDINGS.md.",
-  "UST_DAI" -> "No genuine calm period in dataset (2022-04-15 to 2022-06-15). Pre-crisis-window sub-period (2022-04-15 to 2022-05-06): n=64, mean=$1.0016, stddev=0.0018 (looks calm in isolation, but low volume and immediately followed by total collapse — not a reliable standalone baseline). Post-crisis-window sub-period (2022-05-17 to 2022-06-15): n=28, mean=$0.035, stddev=0.027 (collapsed, not recovered). See FINDINGS.md."
+  "UST_USDC" -> "No genuine calm period in dataset (2022-04-15 to 2022-06-15). Pre-crisis-window sub-period (2022-04-15 to 2022-05-06): n=157, mean=$0.769, stddev=0.250 (already unstable, well before the 2022-05-07 crisis boundary). Post-crisis-window sub-period (2022-05-17 to 2022-06-15): n=66, mean=$0.047, stddev=0.031 (collapsed, not recovered). See docs/FINDINGS.md.",
+  "UST_USDT" -> "No genuine calm period in dataset (2022-04-15 to 2022-06-15). Pre-crisis-window sub-period (2022-04-15 to 2022-05-06): n=48, mean=$0.808, stddev=0.312 (already unstable, well before the 2022-05-07 crisis boundary). Post-crisis-window sub-period (2022-05-17 to 2022-06-15): n=11, mean=$0.044, stddev=0.035 (collapsed, not recovered). See docs/FINDINGS.md.",
+  "UST_DAI" -> "No genuine calm period in dataset (2022-04-15 to 2022-06-15). Pre-crisis-window sub-period (2022-04-15 to 2022-05-06): n=64, mean=$1.0016, stddev=0.0018 (looks calm in isolation, but low volume and immediately followed by total collapse — not a reliable standalone baseline). Post-crisis-window sub-period (2022-05-17 to 2022-06-15): n=28, mean=$0.035, stddev=0.027 (collapsed, not recovered). See docs/FINDINGS.md."
 )
 
 val baselineAggCols = statsAgg

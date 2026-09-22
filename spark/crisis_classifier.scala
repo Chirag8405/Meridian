@@ -1,7 +1,7 @@
 // Trains and evaluates the ML crisis classifier, comparing it against the
 // rule-based baseline (meridian.risk_scores_baseline) on identical held-out
 // test rows. Design decided and confirmed with the user before writing this
-// (see FINDINGS.md for the full report: label grounding, feature
+// (see docs/FINDINGS.md for the full report: label grounding, feature
 // exclusions, the leave-one-coin-out split and its Direction-2 asymmetry) —
 // not written speculatively.
 //
@@ -55,7 +55,7 @@ val withFeatures = cf
 // on inspection it behaves as a near-direct label proxy rather than a
 // graded severity signal, and dominated Random Forest's feature
 // importances (0.53-0.82) in a way that likely reflected that shortcut
-// rather than genuine trend-based generalization. See FINDINGS.md.
+// rather than genuine trend-based generalization. See docs/FINDINGS.md.
 val featureCols = Array(
   "price_severity", "volume_trade_severity",
   "velocity_imputed", "trend_available_num", "rolling_mean_imputed", "rolling_slope_imputed",

@@ -56,8 +56,12 @@ on price charts.
 ## Conventions
 
 - All new Spark/Hive/MapReduce code goes under clearly separated module
-  directories (`ingestion/`, `hive/`, `spark/`, `streaming/`, `mllib/`,
-  `dashboard/` for the Next.js findings dashboard)
+  directories: `ingestion/` (batch + live data ingestion), `hive/` (DDL),
+  `spark/` (all batch jobs, ML, and the Structured Streaming consumer —
+  `streaming/`/`mllib/` were never split out as separate directories;
+  everything landed in `spark/`), `dashboard/` (Next.js findings
+  dashboard), `backend/` (FastAPI live-data API), `supabase/` (schema for
+  the live backend)
 - **The dashboard never queries Hive live.** Measured 46-56s for a trivial
   single-table `COUNT(*)` even on a warmed-up cluster — Hive runs on the
   MapReduce engine here (chosen to avoid a Tez retry-loop bug, see Known
@@ -73,13 +77,13 @@ on price charts.
   Render) serves and Next.js Server Components fetch at request time
   (`revalidate: 60`). Rerun `push_to_supabase.py` after every
   `export_dashboard_data.scala` run — the JSON files updating alone
-  changes nothing downstream. See `SETUP.md`'s "Live backend (Supabase +
+  changes nothing downstream. See `docs/SETUP.md`'s "Live backend (Supabase +
   Render)" section for the full provisioning sequence and
-  `ARCHITECTURE.md`'s Application Layer section for why this design was
+  `docs/ARCHITECTURE.md`'s Application Layer section for why this design was
   chosen over the alternatives.
 - Never modify system-wide `JAVA_HOME` or `archlinux-java` default
 - Don't install HBase/Zookeeper without explicit request
-- Document any new env var or config file change in `SETUP.md` immediately
+- Document any new env var or config file change in `docs/SETUP.md` immediately
 - **Launch any Spark/Hive job expected to run more than a couple minutes via
   `nohup` (detached from the tool's own process lifecycle) by default — not
   only after a timeout is hit.** Incident: an `INSERT` rewriting
@@ -102,7 +106,7 @@ on price charts.
   default).
 - **Never re-fit an ML model on historical+live data combined if the
   historical fit's results are already published/reported.** See
-  FINDINGS.md's "Guarantee" section — this project persists frozen model
+  docs/FINDINGS.md's "Guarantee" section — this project persists frozen model
   artifacts (`spark/models/`) and scores new data via `.transform()` only,
   specifically to avoid silently invalidating already-analyzed results.
   Verify (don't assume) a persisted model reproduces the original
@@ -110,9 +114,9 @@ on price charts.
 
 ## Further Reading
 
-Refer to [ARCHITECTURE.md](ARCHITECTURE.md), [LAB_MAPPING.md](LAB_MAPPING.md),
-[SCOPE.md](SCOPE.md), [DATA_SOURCES.md](DATA_SOURCES.md),
-[ROADMAP.md](ROADMAP.md), and [FINDINGS.md](FINDINGS.md) (genuine
+Refer to [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md), [docs/LAB_MAPPING.md](docs/LAB_MAPPING.md),
+[docs/SCOPE.md](docs/SCOPE.md), [docs/DATA_SOURCES.md](docs/DATA_SOURCES.md),
+[docs/ROADMAP.md](docs/ROADMAP.md), and [docs/FINDINGS.md](docs/FINDINGS.md) (genuine
 analytical findings from the data, e.g. UST having no reliable baseline —
 read before building the risk-scoring model) for full project context
 before starting new work.

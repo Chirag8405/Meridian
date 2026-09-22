@@ -1,7 +1,7 @@
 // Reads dashboard data from the Render backend (backend/main.py), which
 // reads from Supabase (populated by ingestion/push_to_supabase.py) —
 // replaces the earlier static-JSON-at-build-time approach. Design
-// confirmed before implementing (see ARCHITECTURE.md's Application Layer
+// confirmed before implementing (see docs/ARCHITECTURE.md's Application Layer
 // section for the full report): fetched from Server Components
 // (server-to-server, Vercel -> Render, never the browser), so no CORS is
 // needed, with a 60s revalidate window — reflects new data automatically

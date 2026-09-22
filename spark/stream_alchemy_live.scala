@@ -1,6 +1,6 @@
 // Spark Structured Streaming consumer for the Alchemy live feed
 // (ingestion/alchemy_live_feed.py). Design decided and confirmed with the
-// user before writing this (see FINDINGS.md/ARCHITECTURE.md for the full
+// user before writing this (see docs/FINDINGS.md/ARCHITECTURE.md for the full
 // live-streaming design report) — not written speculatively.
 //
 // Architecture: no native WebSocket source exists in Structured Streaming
@@ -20,7 +20,7 @@
 // assignments before being saved). This job NEVER re-fits K-Means on
 // historical+live data combined — doing so would risk silently shifting
 // the already-published historical cluster assignments documented in
-// FINDINGS.md (cluster 2: 12 rows, cluster 3: exactly the 221
+// docs/FINDINGS.md (cluster 2: 12 rows, cluster 3: exactly the 221
 // ZERO_VALUE_TRADE rows, etc.). Those numbers are frozen as of the
 // original fit and this job will never alter them.
 //

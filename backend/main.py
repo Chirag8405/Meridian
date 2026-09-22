@@ -3,7 +3,7 @@ Meridian dashboard read API — deployed on Render, reads from Supabase
 (populated by ingestion/push_to_supabase.py), serves the same combined
 data shape the dashboard's static JSON exports used to provide.
 
-Design (confirmed with the user before implementing, see ARCHITECTURE.md's
+Design (confirmed with the user before implementing, see docs/ARCHITECTURE.md's
 Application Layer section for the full report):
   - Read-only: uses Supabase's publishable key (respects Row Level
     Security — see supabase/schema.sql's SELECT-only policies), never the

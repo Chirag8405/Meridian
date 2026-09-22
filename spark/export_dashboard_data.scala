@@ -2,7 +2,7 @@
 // into static JSON files under dashboard/data/. Not a general-purpose
 // export — seven fixed queries, one per dashboard section, matching exactly
 // what the dashboard renders. Rerun manually after any pipeline update; see
-// ARCHITECTURE.md's Application Layer section for why this is a batch
+// docs/ARCHITECTURE.md's Application Layer section for why this is a batch
 // export rather than the dashboard querying Hive live (measured 46-56s for
 // a trivial single-table COUNT(*) even on a warmed-up cluster — Hive here
 // runs on the MapReduce engine, chosen early in this project to avoid a
@@ -62,7 +62,7 @@ writeJson("current_risk_live.json", arrayJson(currentRiskLive.toJSON.collect()))
 println(s"  (${currentRiskLive.count()} live-sourced row(s) — 0 is expected until the streaming consumer has emitted at least one hourly window)")
 
 // 3. USDC crisis timeline: USDC_USDT / curve, the pair this project's
-// backfill was originally validated against (ARCHITECTURE.md).
+// backfill was originally validated against (docs/ARCHITECTURE.md).
 val usdcTimeline = spark.table("meridian.stablecoin_pool_hourly")
   .filter($"pair" === "USDC_USDT" && $"project" === "curve" &&
           $"dt" >= "2023-03-08" && $"dt" <= "2023-03-15" && $"is_valid_price" === true)
