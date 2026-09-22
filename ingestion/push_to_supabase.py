@@ -34,8 +34,12 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 ENV_FILE = PROJECT_ROOT / ".env"
 DATA_DIR = PROJECT_ROOT / "dashboard" / "data"
 
-# JSON filename -> Supabase table name. metadata.json is a single object,
-# not an array — handled separately below (single-row table).
+# JSON filename -> Supabase table name, in push order. metadata.json is a
+# single object, not an array — handled separately below (single-row
+# table). No error isolation between entries (see main()) — one table's
+# failure aborts the rest, so a newly-added table (schema not yet applied
+# on a given Supabase project) goes last, not in the middle, so it can't
+# block already-working tables from updating.
 TABLE_FILES = {
     "current_risk.json": "current_risk",
     "current_risk_live.json": "current_risk_live",
@@ -43,6 +47,7 @@ TABLE_FILES = {
     "ust_crisis_timeline.json": "ust_crisis_timeline",
     "classifier_metrics.json": "classifier_metrics",
     "wallet_rankings.json": "wallet_rankings",
+    "live_price_timeline.json": "live_price_timeline",
 }
 
 
@@ -74,6 +79,7 @@ def replace_table(base_url: str, headers: dict, table: str, rows: list):
     pk_col = {
         "current_risk": "pair", "current_risk_live": "pair",
         "usdc_crisis_timeline": "window_start_ts", "ust_crisis_timeline": "window_start_ts",
+        "live_price_timeline": "pair",
         "classifier_metrics": "direction", "wallet_rankings": "window_label",
     }[table]
     del_resp = requests.delete(

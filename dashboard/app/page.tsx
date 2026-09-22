@@ -3,6 +3,7 @@ import {
   getLiveRisk,
   getUsdcTimeline,
   getUstTimeline,
+  getLivePriceTimeline,
   getClassifierMetrics,
   getWalletRankings,
   getMetadata,
@@ -21,6 +22,7 @@ export default async function Home() {
   const liveRisk = await getLiveRisk();
   const usdcTimeline = await getUsdcTimeline();
   const ustTimeline = await getUstTimeline();
+  const livePriceTimeline = await getLivePriceTimeline();
   const metrics = await getClassifierMetrics();
   const wallets = await getWalletRankings();
 
@@ -39,7 +41,7 @@ export default async function Home() {
 
       <IntroExplainer />
 
-      <LiveNow rows={liveRisk} />
+      <LiveNow rows={liveRisk} priceTimeline={livePriceTimeline} />
       <RiskStrip rows={currentRisk} />
 
       <section aria-labelledby="crisis-heading" className="max-w-5xl mx-auto px-5 py-10 border-t border-border">
