@@ -4,8 +4,14 @@ Documentation=file:///home/chirag/Desktop/Meridian/ARCHITECTURE.md
 # Requires HDFS/YARN/Hive metastore already running (~/bigdata/start-all.sh) —
 # those aren't managed by systemd in this project (deliberately, per
 # CLAUDE.md's existing manual-startup convention), so this only waits on
-# the network, not on those daemons. If they aren't up yet, this service
-# will fail fast and retry via Restart=on-failure below, rather than hang.
+# the network, not on those daemons directly. If they aren't up yet, the
+# ExecStartPre check below fails fast and Restart=on-failure retries —
+# confirmed necessary, not hypothetical: without it, spark-shell -i still
+# exits 0 even when its Hive metastore calls throw (the Scala REPL catches
+# the exception, prints it, and falls through to EOF on stdin under
+# systemd), so Restart=on-failure never triggered at all and the service
+# just went silently inactive. An ExecStartPre failure IS treated as a
+# real start failure by systemd, unlike that swallowed in-script exception.
 After=network-online.target
 Wants=network-online.target
 StartLimitIntervalSec=1800
@@ -14,6 +20,10 @@ StartLimitBurst=10
 [Service]
 Type=simple
 WorkingDirectory=/home/chirag/Desktop/Meridian
+# Point-in-time check for Hive metastore (9083) and HiveServer2 (10000) —
+# one shot per attempt, relying on Restart=on-failure/RestartSec below for
+# the retry cadence rather than polling internally here.
+ExecStartPre=/bin/bash -c 'ss -tln | grep -qE ":9083[[:space:]]" && ss -tln | grep -qE ":10000[[:space:]]"'
 ExecStart=/bin/bash -c 'source /home/chirag/bigdata/env.sh && exec $SPARK_HOME/bin/spark-shell -i /home/chirag/Desktop/Meridian/spark/stream_alchemy_live.scala'
 Restart=on-failure
 RestartSec=30
