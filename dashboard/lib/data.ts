@@ -1,12 +1,18 @@
-import fs from "fs";
-import path from "path";
+// Reads dashboard data from the Render backend (backend/main.py), which
+// reads from Supabase (populated by ingestion/push_to_supabase.py) —
+// replaces the earlier static-JSON-at-build-time approach. Design
+// confirmed before implementing (see ARCHITECTURE.md's Application Layer
+// section for the full report): fetched from Server Components
+// (server-to-server, Vercel -> Render, never the browser), so no CORS is
+// needed, with a 60s revalidate window — reflects new data automatically
+// without a rebuild, without hitting Render/Supabase on every page view.
+//
+// One combined fetch, not seven — Next.js automatically dedupes identical
+// fetch() calls (same URL + options) within a render, so each getter
+// below can call getDashboardData() independently and only one real
+// network request happens per page render.
 
-const DATA_DIR = path.join(process.cwd(), "data");
-
-function readJson<T>(name: string): T {
-  const raw = fs.readFileSync(path.join(DATA_DIR, name), "utf-8");
-  return JSON.parse(raw) as T;
-}
+const RENDER_API_URL = process.env.RENDER_API_URL;
 
 export type CurrentRiskRow = {
   pair: string;
@@ -60,30 +66,56 @@ export type Metadata = {
   ust_crisis_window: [string, string];
 };
 
-export function getCurrentRisk(): CurrentRiskRow[] {
-  return readJson<CurrentRiskRow[]>("current_risk.json");
+type DashboardData = {
+  current_risk: CurrentRiskRow[];
+  current_risk_live: LiveRiskRow[];
+  usdc_crisis_timeline: TimelinePoint[];
+  ust_crisis_timeline: TimelinePoint[];
+  classifier_metrics: ClassifierMetricRow[];
+  wallet_rankings: WalletRankingRow[];
+  metadata: Metadata;
+};
+
+async function getDashboardData(): Promise<DashboardData> {
+  if (!RENDER_API_URL) {
+    throw new Error(
+      "RENDER_API_URL is not set — this must be configured as a Vercel environment variable, " +
+        "pointing at the deployed Render backend (e.g. https://meridian-api.onrender.com)."
+    );
+  }
+  const res = await fetch(`${RENDER_API_URL}/api/dashboard-data`, {
+    next: { revalidate: 60 },
+  });
+  if (!res.ok) {
+    throw new Error(`Render backend returned ${res.status}: ${await res.text()}`);
+  }
+  return res.json();
 }
 
-export function getLiveRisk(): LiveRiskRow[] {
-  return readJson<LiveRiskRow[]>("current_risk_live.json");
+export async function getCurrentRisk(): Promise<CurrentRiskRow[]> {
+  return (await getDashboardData()).current_risk;
 }
 
-export function getUsdcTimeline(): TimelinePoint[] {
-  return readJson<TimelinePoint[]>("usdc_crisis_timeline.json");
+export async function getLiveRisk(): Promise<LiveRiskRow[]> {
+  return (await getDashboardData()).current_risk_live;
 }
 
-export function getUstTimeline(): TimelinePoint[] {
-  return readJson<TimelinePoint[]>("ust_crisis_timeline.json");
+export async function getUsdcTimeline(): Promise<TimelinePoint[]> {
+  return (await getDashboardData()).usdc_crisis_timeline;
 }
 
-export function getClassifierMetrics(): ClassifierMetricRow[] {
-  return readJson<ClassifierMetricRow[]>("classifier_metrics.json");
+export async function getUstTimeline(): Promise<TimelinePoint[]> {
+  return (await getDashboardData()).ust_crisis_timeline;
 }
 
-export function getWalletRankings(): WalletRankingRow[] {
-  return readJson<WalletRankingRow[]>("wallet_rankings.json");
+export async function getClassifierMetrics(): Promise<ClassifierMetricRow[]> {
+  return (await getDashboardData()).classifier_metrics;
 }
 
-export function getMetadata(): Metadata {
-  return readJson<Metadata>("metadata.json");
+export async function getWalletRankings(): Promise<WalletRankingRow[]> {
+  return (await getDashboardData()).wallet_rankings;
+}
+
+export async function getMetadata(): Promise<Metadata> {
+  return (await getDashboardData()).metadata;
 }
