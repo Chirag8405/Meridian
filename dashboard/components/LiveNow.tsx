@@ -2,6 +2,7 @@
 
 import { useSyncExternalStore } from "react";
 import type { LiveRiskRow } from "@/lib/data";
+import RiskGauge from "./RiskGauge";
 
 // The idiomatic way to detect "has this mounted on the client" — avoids
 // the effect+setState anti-pattern (which can cascade renders) entirely,
@@ -47,14 +48,18 @@ export default function LiveNow({ rows }: { rows: LiveRiskRow[] }) {
         <h2 id="live-heading" className="font-sans font-semibold text-[17px] text-text-primary">
           Live now
         </h2>
-        <span className="font-sans text-[11px] font-medium px-1.5 py-0.5 border border-text-primary text-text-primary">
+        <span className="flex items-center gap-1 font-sans text-[11px] font-medium px-1.5 py-0.5 border border-text-primary text-text-primary">
+          <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" aria-hidden="true" />
           live
         </span>
       </div>
       <p className="font-sans text-[13px] text-text-muted mb-5 max-w-2xl">
-        Streamed directly from the Alchemy WebSocket feed, scored against the same frozen
-        clustering model as the historical data. UST doesn&apos;t appear here — it has no live
-        pool activity to track.
+        Every bar below is a live reading of the same 0–100 risk score used throughout this
+        page, computed right now from real trades happening on-chain — not historical data.
+        The marker on each bar shows where a real historical crisis has averaged, for scale.
+        Streamed from a WebSocket feed of on-chain trades, scored against the same frozen
+        model as the case studies below. UST doesn&apos;t appear here — it has no live pool
+        activity to track (see the note at the bottom of this page).
       </p>
 
       {rows.length === 0 ? (
@@ -76,6 +81,7 @@ export default function LiveNow({ rows }: { rows: LiveRiskRow[] }) {
               <div className="font-mono text-[26px] font-medium leading-none text-text-primary">
                 {r.risk_score.toFixed(1)}
               </div>
+              <RiskGauge score={r.risk_score} />
               <div className="mt-2 font-mono text-[10px] text-text-muted" suppressHydrationWarning>
                 {mounted ? `updated ${relativeTime(r.window_start_ts)}` : " "}
               </div>
