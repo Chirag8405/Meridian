@@ -153,3 +153,68 @@ scratch/metastore/log dirs).
 - State file: `data/raw/alchemy_live_stream_state.json` (last-processed
   block number, for gap-fill on reconnect/restart).
 - Checkpoint: `spark/checkpoints/stream_alchemy_live/` (HDFS).
+
+## Live backend (Supabase + Render) — replaces static-JSON-at-build-time
+
+Design confirmed before implementing — see ARCHITECTURE.md's Application
+Layer section for the full report (data size, auth model, why Server
+Component fetch over client-side/proxy, why no fallback yet). This
+section is the exact provisioning sequence — **these steps require your
+own account access and can't be done by an agent**: creating the Supabase
+project, deploying the Render service, and creating the UptimeRobot
+monitor all happen in consoles this project has no credentials or browser
+access to. Do them in this order — doing them out of order means the
+Vercel build fails (see the last bullet for why that's expected, not a bug).
+
+1. **Create the Supabase project** (free tier). In the SQL Editor, run
+   `supabase/schema.sql` once — creates the 7 tables + Row Level Security
+   policies (public `SELECT` only; writes require the secret key, which
+   bypasses RLS).
+2. **Collect two keys** from Supabase's API settings: `sb_secret_...`
+   (bypasses RLS, full write access) and `sb_publishable_...` (respects
+   RLS, read-only in practice given the schema's policies). Confirmed via
+   Supabase's own docs that new projects default to this naming as of
+   2026, not the legacy `anon`/`service_role` names — both still work
+   during Supabase's transition period, but building against the current
+   names is the right call.
+3. **Local `.env`**: set `SUPABASE_URL` and `SUPABASE_SECRET_KEY` (the
+   secret key — this is a write credential, local machine only, never on
+   Render or Vercel). Run once to populate initial data:
+   ```
+   source .venv/bin/activate   # or wherever this project's Python venv lives
+   python3 ingestion/push_to_supabase.py
+   ```
+   Rerun this after every `spark/export_dashboard_data.scala` run — same
+   "batch job, rerun by hand" model as the rest of this project. Nothing
+   downstream shows anything meaningful until this has run at least once.
+4. **Deploy the Render backend**: new Web Service pointed at this repo,
+   root directory `backend/`, build command `pip install -r
+   requirements.txt`, start command `uvicorn main:app --host 0.0.0.0
+   --port $PORT`. Set two environment variables on Render:
+   `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` (the *publishable* key
+   here, not the secret one — the backend only ever reads). Confirm
+   `https://<your-service>.onrender.com/health` returns
+   `{"status":"ok","supabase":"reachable"}` before moving on — this
+   endpoint genuinely queries Supabase, not a stub, so a working response
+   here means the whole chain (Render ↔ Supabase) is actually verified,
+   not just "the process started."
+5. **UptimeRobot**: create an HTTP(s) monitor against that `/health` URL,
+   5-minute interval, free tier. This is what keeps Render from spinning
+   down after 15 minutes idle *and* generates real Supabase traffic that
+   keeps its free-tier project from pausing after 7 days of inactivity —
+   both rely on `/health` doing a genuine query, confirmed in step 4.
+   **Flagging the real cost of this, not hiding it**: Render's free tier
+   grants 750 instance-hours/month; staying awake 24/7 this way consumes
+   ~720-744 of those hours — fine for a single service with no other
+   Render usage on the account, worth knowing if that changes.
+6. **Vercel environment variable**: set `RENDER_API_URL` to the Render
+   service's base URL (`https://<your-service>.onrender.com`, no trailing
+   slash) in Vercel's project settings — **before** triggering a build,
+   not after. The dashboard fetches this at build time too, not just at
+   runtime (confirmed design: `revalidate: 60` means Next.js performs
+   static generation at build time as the initial cache, then revalidates
+   in the background after the interval passes — it's not
+   `force-dynamic`). A build triggered before Render is live and correctly
+   configured will fail cleanly with a clear error naming the missing
+   config or unreachable backend, not deploy something broken silently —
+   confirmed by testing locally without `RENDER_API_URL` set.

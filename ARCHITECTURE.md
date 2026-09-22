@@ -220,26 +220,69 @@ the user-facing dashboard.
 - **Next.js findings dashboard** (`dashboard/`, see
   [README](dashboard/README.md)) — a technical-reviewer-facing page
   presenting the project's real, already-computed results: current
-  `risk_score` per pair, the USDC/UST crisis timelines on a shared price
-  axis, the ML classifier's honest win/loss comparison against the
-  baseline, and the wallet PageRank contract-vs-EOA finding. **Not a live
-  tool** — it reads static JSON (`dashboard/data/*.json`) materialized by
-  `spark/export_dashboard_data.scala`, not Hive directly. Confirmed via
-  measurement (46-56s for a trivial single-table `COUNT(*)`, even on a
-  warmed-up cluster) that live Hive queries are unsuitable for a
-  request-driven page — Hive runs on the MapReduce execution engine here
-  (see Known Integration Fixes in [CLAUDE.md](CLAUDE.md)), and its
-  per-query container/JVM startup cost dominates regardless of data
-  volume. The export is rerun manually after any pipeline update, same
-  operating model as every other batch job in this project — there is no
-  streaming consumer yet, so the dashboard states its own data vintage
-  prominently rather than posing as live.
+  `risk_score` per pair (including the live Alchemy feed's
+  `current_risk_live`, updated by the streaming consumer — see the Live
+  streaming subsection in [SETUP.md](SETUP.md)), the USDC/UST crisis
+  timelines on a shared price axis, the ML classifier's honest win/loss
+  comparison against the baseline, and the wallet PageRank
+  contract-vs-EOA finding. It never queries Hive directly, live or
+  otherwise — confirmed via measurement (46-56s for a trivial
+  single-table `COUNT(*)`, even on a warmed-up cluster) that live Hive
+  queries are unsuitable for a request-driven page, since Hive runs on
+  the MapReduce execution engine here (see Known Integration Fixes in
+  [CLAUDE.md](CLAUDE.md)) and its per-query container/JVM startup cost
+  dominates regardless of data volume.
+
+  **Deployed data flow (Supabase + Render), replacing the earlier
+  static-JSON-at-build-time approach:** `spark/export_dashboard_data.scala`
+  still materializes the same fixed queries into JSON under
+  `dashboard/data/*.json` (rerun manually after any pipeline update, same
+  operating model as every other batch job in this project) — but that
+  JSON is now an intermediate artifact, not what the deployed page reads.
+  `ingestion/push_to_supabase.py` pushes it to a free-tier Supabase
+  Postgres project (`supabase/schema.sql`; public read-only via Row Level
+  Security, writes via a secret key that bypasses RLS, run locally only —
+  see `.env.example`). A small FastAPI service (`backend/main.py`),
+  deployed on Render's free tier, reads Supabase with a read-only
+  publishable key and exposes `GET /api/dashboard-data` (all 7 tables,
+  one combined response) and `GET /health` (a genuine Supabase query, not
+  a stub). The Vercel-deployed dashboard's Next.js Server Components
+  fetch that endpoint server-to-server with a 60-second revalidate window
+  (`dashboard/lib/data.ts`) — this was chosen specifically over a
+  client-side fetch or a Vercel API-route proxy because server-to-server
+  calls aren't subject to browser CORS, so no CORS configuration is
+  needed anywhere in this chain. New data therefore reaches the deployed
+  dashboard within 60 seconds of a `push_to_supabase.py` run, with no git
+  push or rebuild required — except that **Render must already be live
+  and correctly configured with valid Supabase credentials before a
+  Vercel build runs**, since `revalidate` fetches are also used for
+  build-time static generation; a build triggered before that will fail
+  cleanly rather than deploy something broken (confirmed by testing
+  locally with `RENDER_API_URL` unset). Full provisioning steps in
+  SETUP.md's "Live backend (Supabase + Render)" section.
+
+  Two free-tier constraints worth flagging explicitly, not burying:
+  Supabase's free project pauses after 7 days with no traffic (recoverable
+  from its dashboard, but an avoidable interruption) and Render's free web
+  service spins down after 15 minutes idle, adding a cold-start delay to
+  the next request. Both are addressed with a single UptimeRobot monitor
+  (free tier, 5-minute interval) pinging Render's `/health`, which in turn
+  genuinely queries Supabase on every ping — real traffic to both, not a
+  keepalive stub. The real cost: Render's free tier grants 750 instance-
+  hours/month, and staying awake 24/7 this way consumes roughly 720-744 of
+  those hours — effectively the entire monthly allowance. That's fine for
+  a single Render service with no other usage on the account, but would
+  become a real constraint if this account hosts anything else on Render.
+
+  No fallback to static JSON is implemented if Render is unreachable at
+  request time — a deliberate, confirmed scope decision to ship the pure
+  replacement first rather than add fallback complexity speculatively.
 
 ## Workflow Diagram (Description)
 
 ```
 Dune (historical, one-time)  ─┐
-                               ├─→  HDFS  →  Hive / MongoDB  →  Spark / MapReduce  →  JSON export  →  Dashboard
+                               ├─→  HDFS  →  Hive / MongoDB  →  Spark / MapReduce  →  JSON export  →  Supabase  →  Render API  →  Dashboard
 Alchemy WS (live, ongoing)   ─┘
 ```
 
@@ -252,4 +295,8 @@ schema (`meridian.stablecoin_pool_hourly` — see
 (`dune` vs `alchemy_live`), so downstream analytics don't need to know
 which pipeline a row came from. The dashboard does not query any of this
 live — a batch export step materializes the small, pre-known slice of
-results it needs into static JSON, which is what the page actually reads.
+results it needs into JSON, which `ingestion/push_to_supabase.py` pushes
+to Supabase; the deployed dashboard reads from there via the Render API,
+polling every 60 seconds, rather than reading the JSON file directly (see
+the Application Layer section above for the full chain and its free-tier
+constraints).

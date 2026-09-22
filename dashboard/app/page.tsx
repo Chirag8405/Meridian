@@ -14,14 +14,14 @@ import CrisisChart from "@/components/CrisisChart";
 import ClassifierComparison from "@/components/ClassifierComparison";
 import WalletRankings from "@/components/WalletRankings";
 
-export default function Home() {
-  const meta = getMetadata();
-  const currentRisk = getCurrentRisk();
-  const liveRisk = getLiveRisk();
-  const usdcTimeline = getUsdcTimeline();
-  const ustTimeline = getUstTimeline();
-  const metrics = getClassifierMetrics();
-  const wallets = getWalletRankings();
+export default async function Home() {
+  const meta = await getMetadata();
+  const currentRisk = await getCurrentRisk();
+  const liveRisk = await getLiveRisk();
+  const usdcTimeline = await getUsdcTimeline();
+  const ustTimeline = await getUstTimeline();
+  const metrics = await getClassifierMetrics();
+  const wallets = await getWalletRankings();
 
   return (
     <main>
