@@ -8,6 +8,7 @@ import {
   getWalletRankings,
   getMetadata,
 } from "@/lib/data";
+import Link from "next/link";
 import SnapshotBanner from "@/components/SnapshotBanner";
 import IntroExplainer from "@/components/IntroExplainer";
 import LiveNow from "@/components/LiveNow";
@@ -37,6 +38,12 @@ export default async function Home() {
             Stablecoin depeg &amp; liquidity-stress early warning — findings dashboard
           </p>
         </div>
+        <Link
+          href="/evaluation"
+          className="font-sans text-[12px] font-medium px-2.5 py-1 border border-text-primary text-text-primary hover:bg-fill shrink-0"
+        >
+          Evaluation →
+        </Link>
       </header>
 
       <IntroExplainer />
