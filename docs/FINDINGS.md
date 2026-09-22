@@ -539,6 +539,83 @@ Whether a longer lookback window, a different velocity formulation, or
 more training data would change this is an open question for future work,
 not something this pass resolves.
 
+## Does the risk score provide genuine early warning, not just after-the-fact detection?
+
+Every finding above establishes that `risk_score` correctly separates calm
+from crisis periods. None of it establishes *when* — whether an elevated
+reading appears before, during, or only after a depeg is already visible
+on a price chart. That's a different, harder question, and it's the one
+that actually justifies calling this an early-warning system rather than
+just a labeling exercise. This measures it directly, against real data,
+not asserted.
+
+**Method** (deliberately independent of `risk_score` itself, to avoid a
+circular result): a genuine "elevated" threshold — calm-period mean +
+2·standard deviations of `risk_score`, computed only from
+`baseline_status = 'RELIABLE'` rows outside the labeled crisis window —
+against an objective, price-based depeg onset — the first **sustained**
+(≥2 consecutive hours) hour where `|implied_price - $1| ≥ 1%`, or the
+price is invalid/zero-value. Both the signal and the onset require
+sustained (≥2h), not single-hour, crossings: a single-hour
+`implied_price = $1.1666` print on 2023-03-08 (`is_valid_price = true`,
+`anomaly_flag = NONE` — a thin-trade artifact none of the existing
+anomaly categories catch) would otherwise be mistaken for either. Run
+against the full available history for each pair (USDC_USDT/curve:
+Dec 2022–May 2023; UST_USDC/curve: Apr–Jun 2022), not just the labeled
+crisis windows, so lead time and false-alarm rate are both measured
+against real surrounding data.
+
+### USDC (March 2023): the claim holds, with a measured number attached
+
+- Elevated threshold: 7.18 (calm mean 4.37, stdev 1.40, n=4,107 calm hours)
+- First sustained warning signal: **2023-03-08 00:00 UTC** (score 9.90)
+- Sustained price-based depeg onset: **2023-03-11 00:00 UTC** ($0.9887)
+- **Lead time: 72 hours (3 days)**
+- 12 other sustained-elevation episodes across ~6 months of surrounding
+  data (false alarms by this definition) — all brief, peaks 7.7–11.2,
+  well below the crisis peak of 81.18, so clearly distinguishable in
+  magnitude from the real event
+- Stayed elevated for all 168 hours of the labeled crisis window, no dips
+- Recovery (score back under threshold, price back within 1% of $1)
+  detected 25 hours after the labeled window ends
+
+### UST (May 2022): the claim does *not* hold — and that's the more important result
+
+Computing UST's own "calm" mean/stdev would be circular: this document
+already establishes (see "UST has no reliable baseline" above) that UST
+has no period in this dataset representing genuine calm behavior. Instead,
+UST_USDC's series is checked against the **same fixed 7.18 threshold
+derived from USDC's calm distribution** — both use the same 0-100
+`risk_score` scale, so this is a legitimate cross-pair reference, not an
+apples-to-oranges comparison.
+
+By that fixed threshold, UST_USDC is *already above it at the very first
+available hour of data* — 2022-04-15, three full weeks before the labeled
+crisis window even starts — with 34 separate sustained-elevation episodes
+before the window begins (peak score 56.31). Measured lead time: **zero**,
+because there's no genuine "before" to measure from within this dataset —
+not "the system failed to warn," but "the available data starts already
+inside the elevated state." Whether real advance warning existed further
+back than 2022-04-15 is a real open question this dataset can't answer,
+since the data doesn't extend further back — stated plainly, not glossed
+over.
+
+### What this means for how this project should be described
+
+The honest, defensible claim is: **this system provides measured,
+non-trivial early warning (72 hours) for a temporary, bank-run-style
+depeg (USDC) with a low false-alarm rate, and correctly fails to provide
+meaningful lead time for an asset that was already destabilized before
+this dataset's coverage begins (UST) — a real distinction the system
+draws, not a limitation it hides.** That is meaningfully different from
+(and more defensible than) an unqualified claim that the system "detects
+depegs early," which would imply a guarantee this single-pair, two-event
+measurement can't support. It's also different from framing this as
+machine-learning prediction: this measurement is entirely about the
+rule-based `risk_score`, not the classifier, and rests on two historical
+events — real evidence for what it is, not a validated general-purpose
+predictor.
+
 ## Guarantee: the published K-Means cluster assignments are frozen, permanently
 
 **Computed in:** `spark/persist_clustering_model.scala`, models saved under
