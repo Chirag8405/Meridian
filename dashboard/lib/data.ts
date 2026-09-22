@@ -44,6 +44,14 @@ export type WalletRankingRow = {
   label: string | null;
 };
 
+export type LiveRiskRow = {
+  pair: string;
+  project: string;
+  risk_score: number;
+  window_start_ts: string;
+  source: "alchemy_live" | "alchemy_getlogs_replay";
+};
+
 export type Metadata = {
   exported_at: string;
   dataset_end_usdc: string;
@@ -54,6 +62,10 @@ export type Metadata = {
 
 export function getCurrentRisk(): CurrentRiskRow[] {
   return readJson<CurrentRiskRow[]>("current_risk.json");
+}
+
+export function getLiveRisk(): LiveRiskRow[] {
+  return readJson<LiveRiskRow[]>("current_risk_live.json");
 }
 
 export function getUsdcTimeline(): TimelinePoint[] {

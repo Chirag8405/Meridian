@@ -14,6 +14,12 @@ StartLimitBurst=20
 [Service]
 Type=simple
 WorkingDirectory=/home/chirag/Desktop/Meridian
+# Python block-buffers stdout when it's not a TTY (i.e. always, under
+# systemd) — without this, print() output sits in the buffer indefinitely
+# for a low-output long-running process, making journalctl useless for
+# real-time monitoring. Found by actually checking the logs after start,
+# not assumed to be fine.
+Environment=PYTHONUNBUFFERED=1
 ExecStart=/home/chirag/Desktop/Meridian/.venv/bin/python3 /home/chirag/Desktop/Meridian/ingestion/alchemy_live_feed.py
 Restart=on-failure
 RestartSec=15

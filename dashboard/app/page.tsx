@@ -1,5 +1,6 @@
 import {
   getCurrentRisk,
+  getLiveRisk,
   getUsdcTimeline,
   getUstTimeline,
   getClassifierMetrics,
@@ -7,6 +8,7 @@ import {
   getMetadata,
 } from "@/lib/data";
 import SnapshotBanner from "@/components/SnapshotBanner";
+import LiveNow from "@/components/LiveNow";
 import RiskStrip from "@/components/RiskStrip";
 import CrisisChart from "@/components/CrisisChart";
 import ClassifierComparison from "@/components/ClassifierComparison";
@@ -15,6 +17,7 @@ import WalletRankings from "@/components/WalletRankings";
 export default function Home() {
   const meta = getMetadata();
   const currentRisk = getCurrentRisk();
+  const liveRisk = getLiveRisk();
   const usdcTimeline = getUsdcTimeline();
   const ustTimeline = getUstTimeline();
   const metrics = getClassifierMetrics();
@@ -37,6 +40,7 @@ export default function Home() {
         <SnapshotBanner meta={meta} />
       </div>
 
+      <LiveNow rows={liveRisk} />
       <RiskStrip rows={currentRisk} />
 
       <section aria-labelledby="crisis-heading" className="max-w-5xl mx-auto px-5 py-10 border-t border-border">
