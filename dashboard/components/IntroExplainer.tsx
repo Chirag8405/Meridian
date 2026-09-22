@@ -8,7 +8,13 @@ export default function IntroExplainer() {
           <strong className="text-text-primary font-semibold">depeg</strong>. By the time that
           shows up on a price chart, the damage is often already done. This page tracks how
           on-chain trading behavior — not price — looked in the run-up to two real depegs, and
-          uses the same method to score current trading in real time below.
+          uses the same method to score current trading in real time below. Measured (not
+          assumed) against USDC&apos;s 2023 depeg, this signal rose a full{" "}
+          <strong className="text-text-primary font-semibold">3 days</strong> before price broke.
+          Tested the same way against UST&apos;s 2022 collapse, it found no such lead time — UST
+          was already unstable before this project&apos;s data even begins, a real limit stated
+          plainly, not glossed over. See the methodology in{" "}
+          <code className="font-mono text-[11.5px]">docs/FINDINGS.md</code>.
         </p>
         <p className="font-sans text-[12px] leading-relaxed text-text-muted mt-2 max-w-3xl">
           Every risk number on this page is on the same 0–100 scale: 0 is a normal, quiet

@@ -3,10 +3,15 @@
 ## Project Overview
 
 Meridian is a Big Data Analytics mini-project — a DeFi stablecoin depeg and
-liquidity-stress early warning system. It ingests on-chain and market data to
-detect early signals of stablecoin depeg events (like TerraUSD's May 2022
-collapse or USDC's March 2023 SVB-related depeg) before they become visible
-on price charts.
+liquidity-stress early-warning framework. It ingests on-chain and market data
+and computes a rule-based, multi-signal stress score, validated against two
+real historical events (TerraUSD's May 2022 collapse, USDC's March 2023
+SVB-related depeg). This is a measured claim, not an assumed one: see
+docs/FINDINGS.md's "Does the risk score provide genuine early warning"
+section for the actual lead-time/false-alarm analysis — it finds real
+72-hour lead time on USDC, and zero on UST (which was already destabilized
+before this dataset's coverage begins), and both results are reported, not
+just the favorable one.
 
 ## Tech Stack and Exact Versions
 
