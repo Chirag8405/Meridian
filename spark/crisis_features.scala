@@ -1,7 +1,7 @@
 // Builds meridian.crisis_features — trend/velocity features and ground-truth
 // labels for the ML crisis classifier (spark/crisis_classifier.scala).
 // Design decided and confirmed with the user before writing this (see
-// FINDINGS.md for the full report) — not written speculatively.
+// docs/FINDINGS.md for the full report) — not written speculatively.
 
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.functions._
@@ -18,7 +18,7 @@ val base = rsb.join(sc, Seq("pair", "project", "window_start_ts"))
 
 // Ground-truth label: from historically-known crisis date windows only —
 // NOT from cluster_id/cluster_severity/risk_score. USDC's pre/post-crisis
-// data is genuinely calm (FINDINGS.md), so only the official window counts.
+// data is genuinely calm (docs/FINDINGS.md), so only the official window counts.
 // UST has no genuine calm period anywhere in this dataset (the
 // NO_RELIABLE_BASELINE finding) — confirmed with the user: every UST row
 // is CRISIS, including the pre-window buildup and the post-window

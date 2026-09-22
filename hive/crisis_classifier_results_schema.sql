@@ -1,8 +1,8 @@
 -- Results tables for the ML crisis classifier (spark/crisis_classifier.scala).
--- See hive/crisis_features_schema.sql and FINDINGS.md for the full design
+-- See hive/crisis_features_schema.sql and docs/FINDINGS.md for the full design
 -- (label grounding, feature exclusions, and the leave-one-coin-out split).
 --
--- Two LOCO directions, asymmetric by necessity (see FINDINGS.md):
+-- Two LOCO directions, asymmetric by necessity (see docs/FINDINGS.md):
 --   - direction = 'TEST_ON_UST': pure single-coin LOCO. Train on USDC
 --     (calm minus a chronological holdout, + USDC's own crisis rows).
 --     Test on the USDC calm holdout + all of UST (100% CRISIS-labeled,

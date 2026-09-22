@@ -1,5 +1,5 @@
 -- Stress-signature clustering results (K-Means, see spark/stress_clustering.scala
--- and ARCHITECTURE.md's Analytics layer section for the design rationale).
+-- and docs/ARCHITECTURE.md's Analytics layer section for the design rationale).
 --
 -- Design notes (flagged and confirmed with the user before implementing):
 --   - Unit of clustering is (pair, project, window_start_ts) from
@@ -25,7 +25,7 @@
 --     and distinct from the z-score range used elsewhere). Zero UST rows
 --     are silently dropped.
 --   - k=4, chosen empirically (elbow + silhouette sweep k=2..10, see
---     FINDINGS.md) and sanity-checked against the known USDC Mar 2023 and
+--     docs/FINDINGS.md) and sanity-checked against the known USDC Mar 2023 and
 --     UST May 2022 crisis windows: it separates calm hours from a
 --     mild-USDC-stress cluster, a severe-USDC-stress cluster, and a
 --     distinct UST-stress cluster — i.e. it distinguishes stress *type and
@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS meridian.stress_clusters (
     trade_count_dev   DOUBLE    COMMENT 'z-score vs baseline_stats mean_trade_count (RELIABLE) or vs this pair''s own fresh full-history mean/stddev (NO_RELIABLE_BASELINE)',
     anomaly_flag      STRING    COMMENT 'Source anomaly_flag carried through for context (controlled vocabulary, see hive/schema.sql)',
     anomaly_binary     DOUBLE    COMMENT '1.0 if anomaly_flag != NONE else 0.0 — the 4th clustering feature',
-    k                 INT       COMMENT 'Number of clusters used for this run (4, empirically chosen — see FINDINGS.md)',
+    k                 INT       COMMENT 'Number of clusters used for this run (4, empirically chosen — see docs/FINDINGS.md)',
     cluster_id        INT       COMMENT 'Assigned cluster, 0..k-1. Meaningless on its own — join to meridian.stress_cluster_profiles for interpretation',
     computed_at       TIMESTAMP COMMENT 'When this row was computed'
 )

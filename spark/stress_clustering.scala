@@ -1,6 +1,6 @@
 // Stress-signature clustering (K-Means via MLlib) over Meridian's hourly
 // pool data. Design decided and confirmed with the user before writing this
-// (see FINDINGS.md for the full report: feature computability, UST-handling
+// (see docs/FINDINGS.md for the full report: feature computability, UST-handling
 // approach, row counts, and k-selection justification) — not written
 // speculatively.
 //
@@ -23,7 +23,7 @@
 //
 // k=4: empirically chosen via elbow (WSSSE) + silhouette sweep over
 // k=2..10, sanity-checked against the known USDC Mar 2023 / UST May 2022
-// crisis windows. See FINDINGS.md for the full sweep and justification.
+// crisis windows. See docs/FINDINGS.md for the full sweep and justification.
 
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.functions._

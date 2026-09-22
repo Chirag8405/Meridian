@@ -3,7 +3,7 @@
 -- against, rather than training blind with no reference point.
 --
 -- Design notes (flagged and confirmed with the user before implementing,
--- see FINDINGS.md for the full writeup and validation results):
+-- see docs/FINDINGS.md for the full writeup and validation results):
 --
 --   - Four independently-normalized [0,1] components, weighted and summed
 --     to a 0-100 risk_score:
@@ -30,7 +30,7 @@
 --          total peg failure) = 1.0. Cluster 3 ranks above cluster 2
 --          despite a smaller raw price_dev value, because it represents a
 --          categorically worse real-world outcome (complete, not partial,
---          depeg) — see FINDINGS.md for the reasoning.
+--          depeg) — see docs/FINDINGS.md for the reasoning.
 --       4. wallet_concentration_severity (weight 0.20) — top-10-wallet
 --          PageRank mass % (meridian.wallet_pagerank) for the window this
 --          row falls in, normalized /100. ONLY available at window
@@ -43,7 +43,7 @@
 --          the concentration signal is validated as risk-increasing for
 --          USDC (12.83% calm -> 43.39% crisis) but INVERTED for UST
 --          (60.56% "calm" -> 52.57% crisis) because UST_CALM inherits the
---          same baseline contamination documented in FINDINGS.md — using
+--          same baseline contamination documented in docs/FINDINGS.md — using
 --          it for UST would encode a backwards signal for every UST row.
 --
 --   - Weights (0.40 / 0.25 / 0.15 / 0.20) deliberately keep cluster_severity

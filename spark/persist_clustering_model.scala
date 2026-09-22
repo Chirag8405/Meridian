@@ -3,7 +3,7 @@
 // assignment) against the SAME frozen clusters, rather than the streaming
 // job re-fitting K-Means on historical+live data combined — which would
 // risk silently shifting the already-published historical cluster
-// assignments in FINDINGS.md. Confirmed design, not assumed (see FINDINGS.md
+// assignments in docs/FINDINGS.md. Confirmed design, not assumed (see docs/FINDINGS.md
 // "ML crisis classifier" section context and the live-streaming design
 // discussion for the reasoning).
 //

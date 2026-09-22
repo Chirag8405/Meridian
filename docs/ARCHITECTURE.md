@@ -218,7 +218,7 @@ the user-facing dashboard.
 ## 5. Application Layer
 
 - **Next.js findings dashboard** (`dashboard/`, see
-  [README](dashboard/README.md)) — a technical-reviewer-facing page
+  [README](../dashboard/README.md)) — a technical-reviewer-facing page
   presenting the project's real, already-computed results: current
   `risk_score` per pair (including the live Alchemy feed's
   `current_risk_live`, updated by the streaming consumer — see the Live
@@ -230,7 +230,7 @@ the user-facing dashboard.
   single-table `COUNT(*)`, even on a warmed-up cluster) that live Hive
   queries are unsuitable for a request-driven page, since Hive runs on
   the MapReduce execution engine here (see Known Integration Fixes in
-  [CLAUDE.md](CLAUDE.md)) and its per-query container/JVM startup cost
+  [CLAUDE.md](../CLAUDE.md)) and its per-query container/JVM startup cost
   dominates regardless of data volume.
 
   **Deployed data flow (Supabase + Render), replacing the earlier
@@ -291,7 +291,7 @@ documents), gets structured and partitioned in Hive, is processed by Spark
 and MapReduce jobs for statistics, clustering, ranking, and risk scoring.
 Historical (Dune) and live (Alchemy) records share the same eventual Hive
 schema (`meridian.stablecoin_pool_hourly` — see
-[hive/schema.sql](hive/schema.sql)), distinguished by the `source` column
+[hive/schema.sql](../hive/schema.sql)), distinguished by the `source` column
 (`dune` vs `alchemy_live`), so downstream analytics don't need to know
 which pipeline a row came from. The dashboard does not query any of this
 live — a batch export step materializes the small, pre-known slice of

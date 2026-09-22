@@ -74,7 +74,7 @@ export default async function Home() {
             dateStyle: "medium",
             timeStyle: "short",
           })}
-          . Source: Hadoop/Hive/Spark pipeline, see project FINDINGS.md and ARCHITECTURE.md.
+          . Source: Hadoop/Hive/Spark pipeline, see project docs/FINDINGS.md and docs/ARCHITECTURE.md.
         </p>
       </footer>
     </main>

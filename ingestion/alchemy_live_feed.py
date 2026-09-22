@@ -7,7 +7,7 @@ decode_curve_token_exchange, safe_ratio) is UNCHANGED from that script,
 reused verbatim rather than reimplemented, per the confirmed design.
 
 Design decided and confirmed with the user before writing this (see
-FINDINGS.md / ARCHITECTURE.md for the full live-streaming design report) —
+docs/FINDINGS.md / docs/ARCHITECTURE.md for the full live-streaming design report) —
 not written speculatively. Key points that shaped this rewrite:
 
 - Runs INDEFINITELY (not the old fixed TEST_DURATION_SECONDS test run),

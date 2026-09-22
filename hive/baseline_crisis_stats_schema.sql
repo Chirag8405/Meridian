@@ -28,7 +28,7 @@
 --     the post-crisis-window sub-period is just UST sitting near-worthless,
 --     not recovered. This is a distinct failure mode from small-sample —
 --     the sample is fine, the underlying period just isn't calm. See
---     FINDINGS.md for the full sub-period breakdown per pair. Marked
+--     docs/FINDINGS.md for the full sub-period breakdown per pair. Marked
 --     explicitly (not left as an implicit gap) because a downstream risk
 --     model can't tell "no baseline exists" from "baseline says this is
 --     normal" unless the data says so.

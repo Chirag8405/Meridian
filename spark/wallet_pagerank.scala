@@ -31,7 +31,7 @@
 //    wallets forced into comparison) with different crisis dates, so each
 //    gets its own calm/crisis pair rather than one blended "crisis" run.
 //
-// 4. UST_CALM inherits the same caveat as FINDINGS.md: there is no
+// 4. UST_CALM inherits the same caveat as docs/FINDINGS.md: there is no
 //    genuine calm period for UST in this dataset (see baseline_stats).
 //    The UST_CALM window here means "outside the 2022-05-07/16 crisis
 //    window", not "verified calm" — reported with that caveat, not

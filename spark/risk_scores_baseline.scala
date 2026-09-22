@@ -1,7 +1,7 @@
 // Rule-based/heuristic baseline risk score — built BEFORE any ML model
 // training, so a trained model has something concrete to validate against.
 // Design decided and confirmed with the user before writing this (see
-// FINDINGS.md for the full report and hive/risk_scores_baseline_schema.sql
+// docs/FINDINGS.md for the full report and hive/risk_scores_baseline_schema.sql
 // for the per-component rationale) — not written speculatively.
 //
 // risk_score (0-100) = 100 * (

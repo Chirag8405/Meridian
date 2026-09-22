@@ -3,7 +3,7 @@ Pushes the dashboard's local JSON exports (dashboard/data/*.json, written
 by spark/export_dashboard_data.scala) to Supabase, so the live Render
 backend has something fresh to serve. Run this manually right after the
 Spark export, same "batch job, rerun by hand" operating model as
-everything else in this project — see SETUP.md's "Live backend
+everything else in this project — see docs/SETUP.md's "Live backend
 (Supabase + Render)" section for the full workflow.
 
 Uses Supabase's REST API (PostgREST) via plain HTTP, not a Postgres

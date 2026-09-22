@@ -4,7 +4,7 @@
 -- exactly — one table per export, not a general-purpose schema.
 --
 -- Design (confirmed with the user before implementing, see
--- ARCHITECTURE.md's Application Layer section for the full report):
+-- docs/ARCHITECTURE.md's Application Layer section for the full report):
 --   - Data volume is tiny (68KB across all 7 JSON exports, confirmed
 --     empirically) — comfortably under Supabase's 500MB free-tier cap by
 --     ~7,000x, even accounting for row/index overhead.

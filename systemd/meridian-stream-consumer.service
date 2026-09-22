@@ -1,6 +1,6 @@
 [Unit]
 Description=Meridian: Spark Structured Streaming consumer (spark/stream_alchemy_live.scala)
-Documentation=file:///home/chirag/Desktop/Meridian/ARCHITECTURE.md
+Documentation=file:///home/chirag/Desktop/Meridian/docs/ARCHITECTURE.md
 # Requires HDFS/YARN/Hive metastore already running (~/bigdata/start-all.sh) —
 # those aren't managed by systemd in this project (deliberately, per
 # CLAUDE.md's existing manual-startup convention), so this only waits on

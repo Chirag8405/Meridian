@@ -1,10 +1,10 @@
 -- Feature table for the ML crisis classifier (spark/crisis_classifier.scala),
 -- built to specifically address the rule-based baseline's documented
 -- limitation: magnitude-only scoring with no concept of trend/trajectory
--- (see FINDINGS.md, "Rule-based baseline risk score" section, item 2).
+-- (see docs/FINDINGS.md, "Rule-based baseline risk score" section, item 2).
 --
 -- Design notes (flagged and confirmed with the user before implementing,
--- see FINDINGS.md for the full report):
+-- see docs/FINDINGS.md for the full report):
 --
 --   - Trend/velocity features use TIME-BASED windows, not row-count-based
 --     ones. Real gaps exist in the hourly series (an hour only gets a row
@@ -25,7 +25,7 @@
 --     ground truth would let a "beat the baseline" model partly learn to
 --     just reproduce the baseline, invalidating the comparison. USDC:
 --     CRISIS = 2023-03-08 to 2023-03-15 only (USDC's pre/post-crisis data
---     is genuinely calm, per FINDINGS.md). UST: CRISIS = every row in the
+--     is genuinely calm, per docs/FINDINGS.md). UST: CRISIS = every row in the
 --     dataset — UST_BUILDUP (pre-existing instability before the official
 --     window) and UST_COLLAPSED (pinned near $0.03-0.05 after it) are
 --     both CRISIS, not CALM, by the same "not genuinely safe" reasoning

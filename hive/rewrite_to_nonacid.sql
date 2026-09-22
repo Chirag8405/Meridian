@@ -9,7 +9,7 @@
 -- more importantly, a real risk to Spark's ability to read it cleanly later.
 -- Spark's Hive integration has known limitations with Hive ACID tables, and
 -- this project already invested real effort getting Spark 3.5.5 to speak to
--- Hive 3.1.3's metastore correctly (see SETUP.md / CLAUDE.md) — not worth
+-- Hive 3.1.3's metastore correctly (see docs/SETUP.md / CLAUDE.md) — not worth
 -- risking for the analytics work ahead (PageRank, clustering, MLlib).
 
 -- Reading FROM the current ACID table needs these settings.
