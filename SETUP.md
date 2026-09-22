@@ -118,3 +118,38 @@ scratch/metastore/log dirs).
 - `~/bigdata/start-all.sh`: starts HDFS, YARN, Hive metastore, HiveServer2
 - `~/bigdata/stop-all.sh`: stops all of the above
 - Spark and Sqoop need no daemon — invoked directly per job/command
+
+## Live streaming (Alchemy feed + Spark Structured Streaming consumer)
+
+- **CoinGecko**: no API key needed. `COINGECKO_API_KEY` stays empty in
+  `.env`/`.env.example` — the live feed ingester uses CoinGecko's keyless
+  public `/simple/price` endpoint, confirmed sufficient at this call
+  volume (a handful of calls/minute against a 5-15 calls/min keyless
+  limit). Would only need a key if call volume grows substantially later.
+- **Clustering model persistence**: `spark/persist_clustering_model.scala`
+  must be run once (already done) before the streaming consumer can start
+  — it saves `spark/models/stress_clustering/{scaler,kmeans}` to HDFS
+  (not local disk — resolves against Spark's default filesystem). See
+  FINDINGS.md's "Guarantee" section for why this exists.
+- **systemd `--user` services** (`systemd/*.service` in this repo, copied
+  to `~/.config/systemd/user/`):
+  ```
+  cp systemd/meridian-live-feed.service systemd/meridian-stream-consumer.service \
+     ~/.config/systemd/user/
+  systemctl --user daemon-reload
+  loginctl enable-linger "$(whoami)"   # one-time — services stop on
+                                        # logout otherwise (confirmed
+                                        # Linger=no by default on this
+                                        # machine)
+  systemctl --user enable --now meridian-live-feed.service
+  # start the streaming consumer only after start-all.sh has HDFS/Hive up —
+  # it is not itself managed by systemd, per this project's existing
+  # manual-startup convention:
+  systemctl --user enable --now meridian-stream-consumer.service
+  ```
+- Landing directory for decoded events: `data/raw/alchemy_live_stream/`
+  (gitignored, local filesystem — read by Spark via an explicit `file://`
+  path, since Spark's default filesystem is HDFS, not local disk).
+- State file: `data/raw/alchemy_live_stream_state.json` (last-processed
+  block number, for gap-fill on reconnect/restart).
+- Checkpoint: `spark/checkpoints/stream_alchemy_live/` (HDFS).

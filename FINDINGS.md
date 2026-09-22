@@ -538,3 +538,38 @@ trajectory/direction signal contributed only a small, secondary amount.**
 Whether a longer lookback window, a different velocity formulation, or
 more training data would change this is an open question for future work,
 not something this pass resolves.
+
+## Guarantee: the published K-Means cluster assignments are frozen, permanently
+
+**Computed in:** `spark/persist_clustering_model.scala`, models saved under
+`spark/models/stress_clustering/` (HDFS). Read by
+`spark/stream_alchemy_live.scala`.
+
+This is a documented guarantee, not just an implementation detail — stated
+explicitly because the live-streaming design created a real risk of
+silently violating it otherwise.
+
+**The guarantee**: the historical K-Means cluster assignments reported
+throughout this document (cluster 0 = 15,307 rows, cluster 1 = 63, cluster
+2 = 12, cluster 3 = exactly the 221 `ZERO_VALUE_TRADE` rows, and every
+number derived from them — the crisis-classifier feature set, the
+rule-based baseline's `cluster_severity` component) will **never be
+altered by a future pipeline run**. `stress_clustering.scala`'s original
+`K-Means.fit()` was run exactly once; `persist_clustering_model.scala`
+re-fits the identical pipeline on the identical data, **verifies** (not
+assumes) that the re-fit reproduces the published `meridian.stress_clusters`
+assignments row-for-row before saving anything (confirmed: 15,603 rows
+compared, 0 mismatches), and persists the resulting `StandardScalerModel`
+and `KMeansModel` to disk. Every consumer of live/current data — the
+Structured Streaming consumer, and any future batch job scoring new
+rows — must use `.transform()` against these frozen models (nearest-centroid
+assignment) and must never call `.fit()` on historical+live data combined.
+
+**Why this matters**: `KMeans.fit()` is not idempotent-by-construction —
+re-fitting on a differently-composed dataset (historical + accumulating
+live rows) could shift centroid positions and therefore reassign cluster
+membership for rows already published and analyzed in this document. A
+pipeline that silently re-fit periodically would mean every number in the
+"Stress-pattern clustering" section above could quietly become inaccurate
+over time without anyone noticing — exactly the failure mode this
+guarantee exists to prevent.
