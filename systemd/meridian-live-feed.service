@@ -1,0 +1,22 @@
+[Unit]
+Description=Meridian: Alchemy live feed ingester (ingestion/alchemy_live_feed.py)
+Documentation=file:///home/chirag/Desktop/Meridian/ARCHITECTURE.md
+After=network-online.target
+Wants=network-online.target
+# Caps restart attempts to avoid a hard crash-loop (e.g. a genuinely
+# invalid ALCHEMY_API_KEY) spinning forever — 20 restarts within 10
+# minutes is already far more than a transient-network-blip scenario
+# would ever need (the script's own reconnect-with-backoff logic handles
+# those without needing systemd to restart the process at all).
+StartLimitIntervalSec=600
+StartLimitBurst=20
+
+[Service]
+Type=simple
+WorkingDirectory=/home/chirag/Desktop/Meridian
+ExecStart=/home/chirag/Desktop/Meridian/.venv/bin/python3 /home/chirag/Desktop/Meridian/ingestion/alchemy_live_feed.py
+Restart=on-failure
+RestartSec=15
+
+[Install]
+WantedBy=default.target

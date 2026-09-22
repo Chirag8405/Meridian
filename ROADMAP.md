@@ -10,8 +10,16 @@ Phased checklist for Meridian.
 - [ ] Spark: PageRank on wallet/pool network
 - [ ] Spark: CURE/Canopy clustering of depeg events
 - [ ] Data stream algorithm implementation (Bloom filter / DGIM)
-- [ ] Spark Structured Streaming: live pool-ratio/price monitoring
-- [ ] MLlib depeg-risk model, validated against UST/USDC historical cases
+- [x] Spark Structured Streaming: live pool-ratio/price monitoring
+      (`spark/stream_alchemy_live.scala` + `ingestion/alchemy_live_feed.py`
+      running under systemd `--user` services — see ARCHITECTURE.md's
+      Analytics layer and SETUP.md's "Live streaming" section). Scores
+      live rows via the frozen K-Means model (never re-fits — see
+      FINDINGS.md's "Guarantee" section). Dashboard "current" view (a
+      distinct section from the historical crisis-timeline charts, per
+      the confirmed design) not yet built — data plumbing is in place,
+      UI section still open.
+- [x] MLlib depeg-risk model, validated against UST/USDC historical cases
       - Validate against `meridian.risk_scores_baseline` (the rule-based
         baseline, see FINDINGS.md), not just against the raw historical
         cases directly — it's the concrete point of comparison this was

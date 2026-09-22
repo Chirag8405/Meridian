@@ -23,11 +23,19 @@ the user-facing dashboard.
   the drop to ~$0.88. This is a one-time/periodic backfill, not a running
   process.
 - **Live streaming (Alchemy):** `ingestion/alchemy_live_feed.py` subscribes
-  to on-chain events over a WebSocket (`eth_subscribe` with a `logs` filter)
-  for the same pools the historical backfill covers, decoding each event as
-  it arrives. This is an ongoing process, intended to feed the Spark
-  Structured Streaming component (not yet built — see
-  [ROADMAP.md](ROADMAP.md)).
+  to on-chain events over a WebSocket (`eth_subscribe` with a `logs`
+  filter) across 4 pools — Curve 3pool (covers USDC_USDT + USDC_DAI) +
+  Uniswap V2 USDC_USDT + Uniswap V2 USDC_DAI, full parity with the
+  historical backfill's coverage (UST is dead — no live pool activity to
+  track). Runs indefinitely under a systemd `--user` service
+  (`systemd/meridian-live-feed.service`), not a one-shot process. Feeds
+  `spark/stream_alchemy_live.scala` (see the Analytics layer below) via
+  small, atomically-renamed JSON files in a landing directory — not a
+  direct connection, since Spark Structured Streaming has no native
+  WebSocket source (confirmed against Spark's docs before designing this;
+  only File, Kafka, and testing-only Socket/Rate sources exist, and Kafka
+  is new infrastructure this project has deliberately avoided, same
+  precedent as the "no HBase/Zookeeper" descoping).
   - Curve pools and Uniswap V2 pools have genuinely different event models:
     Uniswap V2 emits both `Sync` (reserve state) and `Swap` (trade) events;
     Curve only emits `TokenExchange` (trade) — there's no native
@@ -35,6 +43,28 @@ the user-facing dashboard.
     equivalent `RESERVE_SNAPSHOT` record via an `eth_call` to the pool's
     `balances()` function after each trade, rather than pretending Curve has
     a `Sync` event it doesn't.
+  - **Resilience**: a WebSocket subscription does not replay missed
+    events — a machine sleep/disconnect of hours+ loses events from the
+    push stream entirely. On reconnect (in-process, with backoff) or
+    process restart, the gap is filled via `eth_getLogs` for the missed
+    block range, tagged `source='alchemy_getlogs_replay'` (vs
+    `'alchemy_live'` for genuine real-time push events) so the two stay
+    distinguishable downstream. Alchemy's free tier caps `eth_getLogs` at
+    a 10-block range per call (confirmed empirically, not documented
+    upfront) — chunked automatically, since the whole point of gap-fill is
+    recovering from potentially thousands of missed blocks.
+  - **USD volume**: historical `volume_usd` came from Dune's own real
+    market-price valuation; live on-chain events only give token-to-token
+    ratios. Fetches a live USD reference price per stablecoin from
+    CoinGecko's keyless public API (confirmed no API key needed at this
+    call volume) rather than assuming 1 stablecoin == $1, which would be
+    wrong exactly during an active depeg.
+  - **Event timestamps**: every record carries `event_ts` (the real
+    on-chain block timestamp, via `eth_getBlockByNumber`), not just
+    `received_at` (when this process happened to observe it) — required
+    for correctness, since a gap-filled event recovered hours or days late
+    would otherwise get bucketed into the wrong hour if windowed on
+    `received_at`.
 - Sqoop for transferring curated historical incident records from a staging
   relational DB
 
@@ -112,7 +142,40 @@ the user-facing dashboard.
     2022 crisis windows — see [FINDINGS.md](FINDINGS.md) for the full
     sweep, the sanity-check results, and why the high silhouette scores
     across nearly all k don't by themselves indicate a well-tuned k.
-- **Spark Structured Streaming** for live pool-ratio/price monitoring
+- **Spark Structured Streaming** live consumer
+  (`spark/stream_alchemy_live.scala`) — watches the landing directory
+  `ingestion/alchemy_live_feed.py` writes to (File source; no native
+  WebSocket source exists in Structured Streaming), aggregates to the same
+  hourly grain as the batch pipeline (10-minute trigger — a freshness
+  choice, not a resource-conservation one, since a streaming query's
+  micro-batches are cheap ticks within one long-running application, not
+  fresh job launches like Hive-on-MapReduce elsewhere in this project),
+  and appends into the SAME Hive tables the batch pipeline uses
+  (`meridian.stablecoin_pool_hourly`, `meridian.risk_scores_baseline`).
+  Same storage as the historical data, but the dashboard presents this as
+  a separate "current" view rather than splicing 2026 live readings onto
+  the March 2023/May 2022 crisis-timeline charts — a ~3+ year gap spliced
+  into one chart would be misleading regardless of how it's labeled, and
+  `baseline_stats` itself was computed from Dec 2022-May 2023 data, so
+  scoring current readings against it without re-validation is a separate,
+  flagged (not yet resolved) methodological question.
+  - **Cluster assignment never re-fits K-Means.** Live rows are scored via
+    `.transform()` against the frozen `StandardScalerModel`/`KMeansModel`
+    persisted by `spark/persist_clustering_model.scala` (verified
+    byte-identical to the published `meridian.stress_clusters` assignments
+    before being saved — 15,603 rows compared, 0 mismatches). See
+    FINDINGS.md's "Guarantee" section — re-fitting on historical+live
+    combined would risk silently shifting the already-published historical
+    cluster numbers this document reports elsewhere.
+  - **Watermark (2h) + append output mode**, not update mode: emits each
+    hourly window's aggregate exactly once, only after the watermark has
+    passed it, avoiding multiple partial-row inserts for the same hour
+    that a plain (non-ACID) Hive table can't de-duplicate.
+  - Runs indefinitely under a systemd `--user` service
+    (`systemd/meridian-stream-consumer.service`), same rationale as the
+    live feed ingester above — `nohup` (this project's convention for
+    single long batch jobs) has no auto-restart on crash or reboot, which
+    matters for something meant to run indefinitely, not just once.
 - **Rule-based baseline risk score** (`spark/risk_scores_baseline.scala`,
   results in `meridian.risk_scores_baseline`) — built deliberately *before*
   any ML model training, so a trained model has a concrete, explainable

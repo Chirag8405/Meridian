@@ -79,6 +79,23 @@ on price charts.
   as "succeeded" while the target table silently stayed empty. Re-running
   the same job via `nohup ... &`, detached from the start, completed
   cleanly. Don't wait for a timeout to make this call.
+- **`nohup` is for one-shot batch jobs. Anything meant to run indefinitely
+  (a live feed, a streaming consumer) goes under systemd `--user`**
+  (`systemd/*.service`, installed to `~/.config/systemd/user/`) —
+  `nohup` alone gives no auto-restart on crash and no auto-start on
+  reboot, which matters for something that's supposed to keep running
+  unattended, not just survive one tool call's timeout.
+  `loginctl enable-linger $(whoami)` is required for a user service to
+  keep running after logout, not just while logged in — a real, separate
+  setup step, confirmed not automatic on this machine (`Linger=no` by
+  default).
+- **Never re-fit an ML model on historical+live data combined if the
+  historical fit's results are already published/reported.** See
+  FINDINGS.md's "Guarantee" section — this project persists frozen model
+  artifacts (`spark/models/`) and scores new data via `.transform()` only,
+  specifically to avoid silently invalidating already-analyzed results.
+  Verify (don't assume) a persisted model reproduces the original
+  published output before trusting it for anything downstream.
 
 ## Further Reading
 
