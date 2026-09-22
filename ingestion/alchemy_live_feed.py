@@ -102,32 +102,75 @@ def load_api_key() -> str:
     sys.exit("ALCHEMY_API_KEY not set in .env")
 
 
+RPC_MAX_ATTEMPTS = 5
+RPC_RETRY_BASE_DELAY = 1.0  # seconds; doubles each attempt, capped below
+RPC_RETRY_MAX_DELAY = 16.0
+# Alchemy's "Too many requests" JSON-RPC error code -- distinct from e.g.
+# the >10-block eth_getLogs range error (-32600, see ETH_GETLOGS_MAX_BLOCK_RANGE
+# below), which is structural and would fail identically on every retry.
+JSONRPC_RATE_LIMIT_CODE = -32005
+
+
+class JsonRpcError(RuntimeError):
+    def __init__(self, message: str, code: int | None):
+        super().__init__(message)
+        self.code = code
+
+
+def _rpc_call(http_url: str, method: str, params: list, timeout: int = 15):
+    """POSTs a JSON-RPC request, retrying with exponential backoff on
+    transient failures: connection errors, timeouts, 5xx/429 HTTP responses,
+    and Alchemy's rate-limit JSON-RPC error code. Gap-fill (eth_get_logs's
+    chunking below, plus per-log eth_block_timestamp lookups) can issue
+    hundreds of these sequential calls for a multi-hour gap -- without this,
+    a single blip anywhere in that sequence aborted the entire gap-fill
+    attempt, discarding all its progress and forcing a full restart-and-redo
+    (confirmed happening in practice: a DNS blip during reconnect gap-fill
+    crashed the process outright). Non-transient JSON-RPC errors (bad
+    params, invalid block range) are NOT retried -- they're structural and
+    would fail identically every time, so retrying would just waste calls."""
+    delay = RPC_RETRY_BASE_DELAY
+    for attempt in range(1, RPC_MAX_ATTEMPTS + 1):
+        try:
+            resp = requests.post(
+                http_url,
+                json={"jsonrpc": "2.0", "id": 1, "method": method, "params": params},
+                timeout=timeout,
+            )
+            resp.raise_for_status()
+            body = resp.json()
+            if "error" in body:
+                err = body["error"]
+                code = err.get("code") if isinstance(err, dict) else None
+                raise JsonRpcError(f"{method} error: {err}", code)
+            return body["result"]
+        except requests.exceptions.HTTPError as e:
+            # A structural client error (e.g. Alchemy's >10-block eth_getLogs
+            # range returns HTTP 400 -- see ETH_GETLOGS_MAX_BLOCK_RANGE below)
+            # would fail identically every retry, so only 429/5xx are worth
+            # retrying here.
+            last_exc = e
+            status = e.response.status_code if e.response is not None else None
+            retryable = status == 429 or (status is not None and 500 <= status < 600)
+        except requests.exceptions.RequestException as e:
+            last_exc, retryable = e, True
+        except JsonRpcError as e:
+            last_exc, retryable = e, (e.code == JSONRPC_RATE_LIMIT_CODE)
+
+        if not retryable or attempt == RPC_MAX_ATTEMPTS:
+            raise last_exc
+        print(f"[rpc-retry] {method} attempt {attempt}/{RPC_MAX_ATTEMPTS} failed ({last_exc!r}), "
+              f"retrying in {delay:.1f}s...")
+        time.sleep(delay)
+        delay = min(delay * 2, RPC_RETRY_MAX_DELAY)
+
+
 def eth_call(http_url: str, to_address: str, data: str) -> str:
-    resp = requests.post(
-        http_url,
-        json={
-            "jsonrpc": "2.0",
-            "id": 1,
-            "method": "eth_call",
-            "params": [{"to": to_address, "data": data}, "latest"],
-        },
-        timeout=15,
-    )
-    resp.raise_for_status()
-    body = resp.json()
-    if "error" in body:
-        raise RuntimeError(f"eth_call error: {body['error']}")
-    return body["result"]
+    return _rpc_call(http_url, "eth_call", [{"to": to_address, "data": data}, "latest"])
 
 
 def eth_block_number(http_url: str) -> int:
-    resp = requests.post(
-        http_url,
-        json={"jsonrpc": "2.0", "id": 1, "method": "eth_blockNumber", "params": []},
-        timeout=15,
-    )
-    resp.raise_for_status()
-    return int(resp.json()["result"], 16)
+    return int(_rpc_call(http_url, "eth_blockNumber", []), 16)
 
 
 _block_ts_cache: dict[int, str] = {}
@@ -144,17 +187,10 @@ def eth_block_timestamp(http_url: str, block_number: int) -> str:
     gap-fill run share the same or nearby blocks."""
     if block_number in _block_ts_cache:
         return _block_ts_cache[block_number]
-    resp = requests.post(
-        http_url,
-        json={"jsonrpc": "2.0", "id": 1, "method": "eth_getBlockByNumber",
-              "params": [hex(block_number), False]},
-        timeout=15,
-    )
-    resp.raise_for_status()
-    body = resp.json()
-    if "error" in body or not body.get("result"):
-        raise RuntimeError(f"eth_getBlockByNumber error for block {block_number}: {body.get('error')}")
-    ts_unix = int(body["result"]["timestamp"], 16)
+    result = _rpc_call(http_url, "eth_getBlockByNumber", [hex(block_number), False])
+    if not result:
+        raise RuntimeError(f"eth_getBlockByNumber returned no result for block {block_number}")
+    ts_unix = int(result["timestamp"], 16)
     ts_iso = datetime.fromtimestamp(ts_unix, tz=timezone.utc).isoformat()
     _block_ts_cache[block_number] = ts_iso
     return ts_iso
@@ -169,26 +205,12 @@ ETH_GETLOGS_MAX_BLOCK_RANGE = 10  # Alchemy free tier hard limit, confirmed
 
 
 def _eth_get_logs_single(http_url: str, address: str, topics: list, from_block: int, to_block: int) -> list:
-    resp = requests.post(
-        http_url,
-        json={
-            "jsonrpc": "2.0",
-            "id": 1,
-            "method": "eth_getLogs",
-            "params": [{
-                "address": address,
-                "topics": topics,
-                "fromBlock": hex(from_block),
-                "toBlock": hex(to_block),
-            }],
-        },
-        timeout=30,
-    )
-    resp.raise_for_status()
-    body = resp.json()
-    if "error" in body:
-        raise RuntimeError(f"eth_getLogs error: {body['error']}")
-    return body["result"]
+    return _rpc_call(http_url, "eth_getLogs", [{
+        "address": address,
+        "topics": topics,
+        "fromBlock": hex(from_block),
+        "toBlock": hex(to_block),
+    }], timeout=30)
 
 
 def eth_get_logs(http_url: str, address: str, topics: list, from_block: int, to_block: int) -> list:
