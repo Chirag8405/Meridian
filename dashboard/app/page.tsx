@@ -4,6 +4,7 @@ import {
   getUsdcTimeline,
   getUstTimeline,
   getLivePriceTimeline,
+  getRecentSwapEvents,
   getClassifierMetrics,
   getWalletRankings,
   getMetadata,
@@ -12,6 +13,7 @@ import Link from "next/link";
 import SnapshotBanner from "@/components/SnapshotBanner";
 import IntroExplainer from "@/components/IntroExplainer";
 import LiveNow from "@/components/LiveNow";
+import RecentActivity from "@/components/RecentActivity";
 import RiskStrip from "@/components/RiskStrip";
 import CrisisChart from "@/components/CrisisChart";
 import ClassifierComparison from "@/components/ClassifierComparison";
@@ -24,6 +26,7 @@ export default async function Home() {
   const usdcTimeline = await getUsdcTimeline();
   const ustTimeline = await getUstTimeline();
   const livePriceTimeline = await getLivePriceTimeline();
+  const recentSwapEvents = await getRecentSwapEvents();
   const metrics = await getClassifierMetrics();
   const wallets = await getWalletRankings();
 
@@ -49,6 +52,7 @@ export default async function Home() {
       <IntroExplainer />
 
       <LiveNow rows={liveRisk} priceTimeline={livePriceTimeline} />
+      <RecentActivity events={recentSwapEvents} />
       <RiskStrip rows={currentRisk} />
 
       <section aria-labelledby="crisis-heading" className="max-w-5xl mx-auto px-5 py-10 border-t border-border">
