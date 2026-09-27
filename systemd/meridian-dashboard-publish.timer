@@ -1,0 +1,13 @@
+[Unit]
+Description=Meridian: publish dashboard data every two hours
+
+[Timer]
+OnUnitActiveSec=2h
+# The monotonic trigger keeps the normal cadence; the calendar trigger gives
+# Persistent=true a real missed-run point after boot or wake.
+OnCalendar=*-*-* 00/2:00:00
+Persistent=true
+Unit=meridian-dashboard-publish.service
+
+[Install]
+WantedBy=timers.target

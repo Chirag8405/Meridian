@@ -132,9 +132,16 @@ scratch/metastore/log dirs).
   (not local disk — resolves against Spark's default filesystem). See
   FINDINGS.md's "Guarantee" section for why this exists.
 - **systemd `--user` services** (`systemd/*.service` in this repo, copied
-  to `~/.config/systemd/user/`):
+  to `~/.config/systemd/user/`). The Hadoop/Hive stack is now also managed by
+  `meridian-hadoop-stack.service`; it starts HDFS, waits for HDFS readiness,
+  starts YARN, waits for the ResourceManager and NodeManager, then starts the
+  Hive metastore and HiveServer2 and verifies a real Hive query before the
+  dependent services are released:
   ```
-  cp systemd/meridian-live-feed.service systemd/meridian-stream-consumer.service \
+  cp systemd/meridian-live-feed.service systemd/meridian-hadoop-stack.service \
+     systemd/meridian-stream-consumer.service \
+     systemd/meridian-dashboard-publish.service \
+     systemd/meridian-dashboard-publish.timer \
      ~/.config/systemd/user/
   systemctl --user daemon-reload
   loginctl enable-linger "$(whoami)"   # one-time — services stop on
@@ -142,11 +149,15 @@ scratch/metastore/log dirs).
                                         # Linger=no by default on this
                                         # machine)
   systemctl --user enable --now meridian-live-feed.service
-  # start the streaming consumer only after start-all.sh has HDFS/Hive up —
-  # it is not itself managed by systemd, per this project's existing
-  # manual-startup convention:
+  systemctl --user enable --now meridian-hadoop-stack.service
   systemctl --user enable --now meridian-stream-consumer.service
+  systemctl --user enable meridian-dashboard-publish.service
+  systemctl --user enable --now meridian-dashboard-publish.timer
   ```
+- The dashboard publisher timer runs every two hours and also has a calendar
+  trigger so `Persistent=true` can catch up a missed run after boot or wake.
+  The publisher waits for a queryable Hive service, takes an `flock`, runs the
+  Spark export, and only then pushes the complete export to Supabase.
 - Landing directory for decoded events: `data/raw/alchemy_live_stream/`
   (gitignored, local filesystem — read by Spark via an explicit `file://`
   path, since Spark's default filesystem is HDFS, not local disk).

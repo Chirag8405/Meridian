@@ -1,0 +1,20 @@
+[Unit]
+Description=Meridian: local HDFS, YARN, and Hive stack
+After=network-online.target
+Wants=network-online.target
+Conflicts=shutdown.target
+Before=meridian-stream-consumer.service meridian-dashboard-publish.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory=/home/chirag/Desktop/Meridian
+ExecStart=/home/chirag/Desktop/Meridian/systemd/start-hadoop-stack.sh
+ExecStop=/home/chirag/bigdata/stop-all.sh
+Restart=on-failure
+RestartSec=30
+TimeoutStartSec=15min
+TimeoutStopSec=2min
+
+[Install]
+WantedBy=default.target
