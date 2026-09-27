@@ -41,6 +41,7 @@ TABLES = [
     "classifier_metrics",
     "wallet_rankings",
 ]
+RECENT_EVENTS_DISPLAY_LIMIT = 25
 
 
 def _require_config():
@@ -114,6 +115,19 @@ async def dashboard_data():
         "wallet_rankings": wallet_rankings,
         "metadata": metadata,
     })
+
+
+@app.get("/api/recent-swap-events")
+async def recent_swap_events():
+    """Read the small raw-activity window independently from batch exports."""
+    _require_config()
+    async with httpx.AsyncClient(timeout=5.0) as client:
+        rows = await _fetch_table(
+            client,
+            "recent_swap_events",
+            order="observed_at.desc,event_id.desc",
+        )
+    return JSONResponse(rows[:RECENT_EVENTS_DISPLAY_LIMIT])
 
 
 @app.get("/health")
