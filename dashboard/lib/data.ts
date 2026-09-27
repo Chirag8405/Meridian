@@ -94,6 +94,20 @@ export type LiveRiskRow = {
   source: "alchemy_live" | "alchemy_getlogs_replay";
 };
 
+export type RecentSwapEvent = {
+  event_id: number;
+  tx_hash: string;
+  log_index: number;
+  event_ts: string;
+  observed_at: string;
+  pair: string | null;
+  project: string;
+  pool_name: string;
+  pool_address: string;
+  implied_price: number | null;
+  source: "alchemy_live" | "alchemy_getlogs_replay";
+};
+
 export type Metadata = {
   exported_at: string;
   dataset_end_usdc: string;
@@ -136,6 +150,23 @@ export async function getCurrentRisk(): Promise<CurrentRiskRow[]> {
 
 export async function getLiveRisk(): Promise<LiveRiskRow[]> {
   return (await getDashboardData()).current_risk_live;
+}
+
+export async function getRecentSwapEvents(): Promise<RecentSwapEvent[]> {
+  if (!RENDER_API_URL) {
+    throw new Error("RENDER_API_URL is not set — recent activity cannot be loaded.");
+  }
+  const res = await fetch(`${RENDER_API_URL}/api/recent-swap-events`, {
+    next: { revalidate: 20 },
+  });
+  // Branches can deploy the frontend before Render has picked up the new
+  // endpoint. Treat that rollout gap as an honest empty state; real backend
+  // failures should still fail the build/request visibly.
+  if (res.status === 404) return [];
+  if (!res.ok) {
+    throw new Error(`Render backend returned ${res.status}: ${await res.text()}`);
+  }
+  return res.json();
 }
 
 export async function getUsdcTimeline(): Promise<TimelinePoint[]> {

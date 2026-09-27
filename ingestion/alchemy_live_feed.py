@@ -88,6 +88,9 @@ FILE_ROLLOVER_SECS = 300  # new landing file at most every 5 minutes
 COINGECKO_URL = "https://api.coingecko.com/api/v3/simple/price"
 COINGECKO_IDS = {"USDC": "usd-coin", "USDT": "tether", "DAI": "dai"}
 PRICE_CACHE_TTL_SECS = 60
+RECENT_EVENTS_RETENTION_LIMIT = 100
+RECENT_EVENTS_RETENTION_HOURS = 48
+RECENT_EVENTS_PRUNE_EVERY = 20
 
 
 def load_api_key() -> str:
@@ -100,6 +103,109 @@ def load_api_key() -> str:
             if key:
                 return key
     sys.exit("ALCHEMY_API_KEY not set in .env")
+
+
+def load_supabase_config() -> tuple[str, str] | None:
+    if not ENV_FILE.exists():
+        return None
+    values = {}
+    for line in ENV_FILE.read_text().splitlines():
+        line = line.strip()
+        if line and not line.startswith("#") and "=" in line:
+            key, value = line.split("=", 1)
+            values[key.strip()] = value.strip()
+    url = values.get("SUPABASE_URL", "").rstrip("/")
+    secret_key = values.get("SUPABASE_SECRET_KEY", "")
+    return (url, secret_key) if url and secret_key else None
+
+
+class RecentSwapPublisher:
+    """Best-effort incremental mirror for the raw activity ticker.
+
+    Local landing files remain the ingestion source of truth. A Supabase
+    outage is logged and ignored so it cannot interrupt decoding or Spark's
+    file-based stream path.
+    """
+
+    def __init__(self):
+        config = load_supabase_config()
+        self.base_url, self.secret_key = config or ("", "")
+        self.inserted_since_prune = 0
+
+    @property
+    def enabled(self) -> bool:
+        return bool(self.base_url and self.secret_key)
+
+    def publish(self, record: dict):
+        if not self.enabled or record.get("event_type") != "SWAP":
+            return
+        payload = {
+            "tx_hash": record["tx_hash"],
+            "log_index": record["log_index"],
+            "event_ts": record["event_ts"],
+            "observed_at": record["received_at"],
+            "pair": record.get("pair"),
+            "project": record["project"],
+            "pool_name": record["pool_name"],
+            "pool_address": record["pool_address"],
+            "implied_price": record.get("implied_price"),
+            "source": record["source"],
+        }
+        headers = {
+            "apikey": self.secret_key,
+            "Authorization": f"Bearer {self.secret_key}",
+            "Content-Type": "application/json",
+            "Prefer": "resolution=ignore-duplicates,return=minimal",
+        }
+        try:
+            response = requests.post(
+                f"{self.base_url}/rest/v1/recent_swap_events",
+                headers=headers,
+                params={"on_conflict": "tx_hash,log_index"},
+                json=payload,
+                timeout=3,
+            )
+            response.raise_for_status()
+            self.inserted_since_prune += 1
+            if self.inserted_since_prune >= RECENT_EVENTS_PRUNE_EVERY:
+                self.prune(headers)
+        except Exception as exc:
+            print(f"[recent-events] publish failed; continuing ingestion: {exc!r}")
+
+    def prune(self, headers: dict):
+        try:
+            cutoff = datetime.now(timezone.utc).timestamp() - RECENT_EVENTS_RETENTION_HOURS * 3600
+            cutoff_iso = datetime.fromtimestamp(cutoff, tz=timezone.utc).isoformat()
+            response = requests.delete(
+                f"{self.base_url}/rest/v1/recent_swap_events",
+                headers=headers,
+                params={"observed_at": f"lt.{cutoff_iso}"},
+                timeout=3,
+            )
+            response.raise_for_status()
+            oldest = requests.get(
+                f"{self.base_url}/rest/v1/recent_swap_events",
+                headers=headers,
+                params={
+                    "select": "event_id",
+                    "order": "observed_at.desc,event_id.desc",
+                    "offset": RECENT_EVENTS_RETENTION_LIMIT,
+                },
+                timeout=3,
+            )
+            oldest.raise_for_status()
+            event_ids = [str(row["event_id"]) for row in oldest.json()]
+            if event_ids:
+                response = requests.delete(
+                    f"{self.base_url}/rest/v1/recent_swap_events",
+                    headers=headers,
+                    params={"event_id": f"in.({','.join(event_ids)})"},
+                    timeout=3,
+                )
+                response.raise_for_status()
+            self.inserted_since_prune = 0
+        except Exception as exc:
+            print(f"[recent-events] retention prune failed; continuing ingestion: {exc!r}")
 
 
 RPC_MAX_ATTEMPTS = 5
@@ -558,7 +664,8 @@ async def fetch_replay_gap(http_url: str, from_block: int, to_block: int,
     return records
 
 
-async def run(api_key: str, writer: RolloverWriter, state: StreamState, prices: PriceCache):
+async def run(api_key: str, writer: RolloverWriter, state: StreamState,
+              prices: PriceCache, recent_events: RecentSwapPublisher):
     ws_url = f"wss://eth-mainnet.g.alchemy.com/v2/{api_key}"
     http_url = f"https://eth-mainnet.g.alchemy.com/v2/{api_key}"
 
@@ -580,6 +687,7 @@ async def run(api_key: str, writer: RolloverWriter, state: StreamState, prices: 
         gap_records = await fetch_replay_gap(http_url, state.last_block + 1, current_head, uni_usdt_meta, uni_dai_meta, prices)
         for rec in gap_records:
             writer.write(rec)
+            recent_events.publish(rec)
         writer.flush()
         state.update(current_head)
 
@@ -646,6 +754,7 @@ async def run(api_key: str, writer: RolloverWriter, state: StreamState, prices: 
                             record = {**base_record, "project": "curve", "event_type": "SWAP",
                                       "pair": pair, "volume_usd": vol_usd, **decoded}
                             writer.write(record)
+                            recent_events.publish(record)
 
                             balances = fetch_curve_balances(http_url, CURVE_3POOL_ADDRESS)
                             dai_bal = balances[0] / (10 ** CURVE_3POOL_TOKENS[0]["decimals"])
@@ -680,6 +789,9 @@ async def run(api_key: str, writer: RolloverWriter, state: StreamState, prices: 
                                 writer.write({**base_record, "project": "uniswap_v2",
                                               "event_type": "SWAP", "pair": pair,
                                               "volume_usd": vol_usd, **decoded})
+                                recent_events.publish({**base_record, "project": "uniswap_v2",
+                                                       "event_type": "SWAP", "pair": pair,
+                                                       "volume_usd": vol_usd, **decoded})
 
                         state.update(block_number)
 
@@ -699,6 +811,7 @@ async def run(api_key: str, writer: RolloverWriter, state: StreamState, prices: 
                 gap_records = await fetch_replay_gap(http_url, state.last_block + 1, current_head, uni_usdt_meta, uni_dai_meta, prices)
                 for rec in gap_records:
                     writer.write(rec)
+                    recent_events.publish(rec)
                 writer.flush()
                 state.update(current_head)
 
@@ -708,8 +821,10 @@ def main():
     writer = RolloverWriter(OUTPUT_DIR)
     state = StreamState(STATE_FILE)
     prices = PriceCache()
+    recent_events = RecentSwapPublisher()
+    print(f"Recent activity publisher: {'enabled' if recent_events.enabled else 'disabled (missing Supabase config)'}")
     try:
-        asyncio.run(run(api_key, writer, state, prices))
+        asyncio.run(run(api_key, writer, state, prices, recent_events))
     finally:
         writer.flush()
         print(f"\nWrote {writer.count} records total to {OUTPUT_DIR}")
