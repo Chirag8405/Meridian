@@ -1,0 +1,13 @@
+[Unit]
+Description=Meridian: export and publish dashboard data
+Requires=meridian-hadoop-stack.service
+After=meridian-hadoop-stack.service
+
+[Service]
+Type=oneshot
+WorkingDirectory=/home/chirag/Desktop/Meridian
+ExecStart=/home/chirag/Desktop/Meridian/systemd/publish-dashboard.sh
+TimeoutStartSec=3h
+
+[Install]
+WantedBy=default.target
