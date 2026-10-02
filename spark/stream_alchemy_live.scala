@@ -230,12 +230,17 @@ def processBatch(batchDfRaw: org.apache.spark.sql.DataFrame, batchId: Long): Uni
           s"${scored.count()} rows to risk_scores_baseline")
 }
 
+val batchMode = sys.env.get("MERIDIAN_BATCH_MODE").contains("1")
 val query = hourly.writeStream
   .outputMode("append")
-  .trigger(Trigger.ProcessingTime("10 minutes"))
+  .trigger(if (batchMode) Trigger.AvailableNow() else Trigger.ProcessingTime("10 minutes"))
   .option("checkpointLocation", CHECKPOINT_DIR)
   .foreachBatch(processBatch _)
   .start()
 
-println("Streaming query started. Awaiting termination...")
+println(if (batchMode) {
+  "Batch catch-up started. Processing all currently available landing files..."
+} else {
+  "Streaming query started. Awaiting termination..."
+})
 query.awaitTermination()
