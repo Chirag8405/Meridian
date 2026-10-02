@@ -165,6 +165,67 @@ scratch/metastore/log dirs).
   block number, for gap-fill on reconnect/restart).
 - Checkpoint: `spark/checkpoints/stream_alchemy_live/` (HDFS).
 
+### Lightweight live activity mode
+
+The live Alchemy feed does not require Hadoop, Hive, or Spark. To collect raw
+live events and publish the Recent activity data while keeping the Java stack
+off, first stop the systemd copy of the feed and run the foreground launcher:
+
+```bash
+systemctl --user stop meridian-live-feed.service
+./ingestion/start_live_activity.sh
+```
+
+The launcher runs `ingestion/alchemy_live_feed.py` directly. It writes decoded
+events to `data/raw/alchemy_live_stream/` and publishes SWAP events to
+Supabase. Press `Ctrl+C` to stop live collection; no Hadoop/Hive/Spark
+processes are started. Do not run this alongside
+`meridian-live-feed.service`, because both processes share the Alchemy stream
+state file and landing directory.
+
+### Manual local batch pipeline
+
+For a lab-friendly workflow, the heavy Java stack does not need to run all the
+time. Keep the lightweight live launcher running only when you want to collect
+new events, then run the finite batch pipeline manually when you want to
+process and publish them:
+
+To switch away from the always-on systemd mode first:
+
+```bash
+systemctl --user disable --now meridian-live-feed.service
+systemctl --user disable --now meridian-stream-consumer.service
+systemctl --user disable --now meridian-dashboard-publish.timer
+systemctl --user stop meridian-hadoop-stack.service
+```
+
+```bash
+./ingestion/run_local_pipeline.sh
+```
+
+The script starts the user-managed HDFS/YARN/Hive stack if it is not already
+running, runs the Spark live job in `AvailableNow` batch mode so it processes
+currently landed files and exits, exports the dashboard data, pushes it to
+Supabase, and stops the heavy stack if this script started it. It uses the
+existing Spark checkpoint, so already-consumed landing files are not processed
+again. It refuses to run while the infinite
+`meridian-stream-consumer.service` is active, preventing two Spark consumers
+from sharing the same checkpoint.
+
+The two manual processes are therefore independent:
+
+```bash
+# Terminal 1: collect live raw events; Ctrl+C stops collection
+./ingestion/start_live_activity.sh
+
+# Terminal 2, whenever you want to process/publish accumulated data
+./ingestion/run_local_pipeline.sh
+```
+
+The batch script is intentionally local-only. It does not deploy a producer
+to Render/Vercel; the deployed dashboard reads whatever the local feed has
+published to Supabase.
+
 ## Live backend (Supabase + Render) — replaces static-JSON-at-build-time
 
 Design confirmed before implementing — see ARCHITECTURE.md's Application
