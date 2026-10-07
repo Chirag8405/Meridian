@@ -108,6 +108,11 @@ export default function LiveNow({
               <div className="mt-1 font-sans text-[10px] text-text-muted">
                 {SOURCE_LABEL[r.source] ?? r.source}
               </div>
+              {r.advisory && (
+                <p className="mt-3 border-t border-border pt-3 font-sans text-[12px] leading-relaxed text-text-primary">
+                  {r.advisory}
+                </p>
+              )}
             </div>
           ))}
         </div>

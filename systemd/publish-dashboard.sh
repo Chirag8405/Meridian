@@ -33,6 +33,9 @@ wait_for_hive
 echo "Exporting dashboard data..."
 timeout 2h "$SPARK_HOME/bin/spark-shell" -i /home/chirag/Desktop/Meridian/spark/export_dashboard_data.scala
 
+echo "Generating best-effort risk advisories..."
+/home/chirag/Desktop/Meridian/.venv/bin/python /home/chirag/Desktop/Meridian/ingestion/generate_risk_advisories.py
+
 echo "Publishing dashboard data to Supabase..."
 /home/chirag/Desktop/Meridian/.venv/bin/python /home/chirag/Desktop/Meridian/ingestion/push_to_supabase.py
 echo "Dashboard publish complete."

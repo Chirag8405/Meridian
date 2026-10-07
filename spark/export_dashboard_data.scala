@@ -52,11 +52,16 @@ val rsbLive = spark.table("meridian.risk_scores_baseline")
   .join(sch, Seq("pair", "project", "window_start_ts"))
   .filter($"source".isin("alchemy_live", "alchemy_getlogs_replay"))
   .as("live")
-val latestLive = rsbLive.groupBy("pair", "project").agg(max("window_start_ts").as("max_ts")).as("latest")
-val currentRiskLive = rsbLive.join(latestLive,
+val liveFeatures = spark.table("meridian.stress_clusters")
+  .select("pair", "project", "window_start_ts", "price_dev", "cluster_id")
+val rsbLiveWithFeatures = rsbLive.join(liveFeatures, Seq("pair", "project", "window_start_ts"))
+val latestLive = rsbLiveWithFeatures.groupBy("pair", "project").agg(max("window_start_ts").as("max_ts")).as("latest")
+val currentRiskLive = rsbLiveWithFeatures.join(latestLive,
     $"live.pair" === $"latest.pair" && $"live.project" === $"latest.project" &&
     $"live.window_start_ts" === $"latest.max_ts")
-  .select($"live.pair", $"live.project", $"live.risk_score", $"live.window_start_ts", $"live.source")
+  .select($"live.pair", $"live.project", $"live.risk_score", $"live.window_start_ts", $"live.source",
+      $"price_dev", $"cluster_id", $"live.cluster_severity",
+      $"live.wallet_concentration_severity")
   .orderBy("pair", "project")
 writeJson("current_risk_live.json", arrayJson(currentRiskLive.toJSON.collect()))
 println(s"  (${currentRiskLive.count()} live-sourced row(s) — 0 is expected until the streaming consumer has emitted at least one hourly window)")
