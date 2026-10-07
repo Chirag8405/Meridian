@@ -49,6 +49,9 @@ echo "Exporting dashboard data..."
 timeout 2h "$SPARK_HOME/bin/spark-shell" \
   -i "$PROJECT_ROOT/spark/export_dashboard_data.scala"
 
+echo "Generating best-effort risk advisories..."
+"$PROJECT_ROOT/.venv/bin/python" "$PROJECT_ROOT/ingestion/generate_risk_advisories.py"
+
 echo "Publishing dashboard data to Supabase..."
 "$PROJECT_ROOT/.venv/bin/python" "$PROJECT_ROOT/ingestion/push_to_supabase.py"
 
