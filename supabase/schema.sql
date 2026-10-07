@@ -38,8 +38,19 @@ CREATE TABLE IF NOT EXISTS current_risk_live (
     risk_score       DOUBLE PRECISION NOT NULL,
     window_start_ts  TIMESTAMPTZ NOT NULL,
     source           TEXT NOT NULL,
+    price_dev        DOUBLE PRECISION,
+    cluster_id       INT,
+    cluster_severity DOUBLE PRECISION,
+    wallet_concentration_severity DOUBLE PRECISION,
+    advisory         TEXT,
     PRIMARY KEY (pair, project)
 );
+
+ALTER TABLE current_risk_live ADD COLUMN IF NOT EXISTS price_dev DOUBLE PRECISION;
+ALTER TABLE current_risk_live ADD COLUMN IF NOT EXISTS cluster_id INT;
+ALTER TABLE current_risk_live ADD COLUMN IF NOT EXISTS cluster_severity DOUBLE PRECISION;
+ALTER TABLE current_risk_live ADD COLUMN IF NOT EXISTS wallet_concentration_severity DOUBLE PRECISION;
+ALTER TABLE current_risk_live ADD COLUMN IF NOT EXISTS advisory TEXT;
 
 CREATE TABLE IF NOT EXISTS usdc_crisis_timeline (
     window_start_ts  TIMESTAMPTZ NOT NULL PRIMARY KEY,

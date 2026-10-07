@@ -259,6 +259,10 @@ Vercel build fails (see the last bullet for why that's expected, not a bug).
    Rerun this after every `spark/export_dashboard_data.scala` run — same
    "batch job, rerun by hand" model as the rest of this project. Nothing
    downstream shows anything meaningful until this has run at least once.
+  Set `GROQ_API_KEY` in the same local `.env` to enable the best-effort
+  advisory step in `systemd/publish-dashboard.sh`; it is never configured
+  on Render or exposed to the dashboard. If it is absent or a Groq request
+  fails, the risk scores still publish and the advisory field remains null.
 4. **Deploy the Render backend**: new Web Service pointed at this repo,
    root directory `backend/`, build command `pip install -r
    requirements.txt`, start command `uvicorn main:app --host 0.0.0.0

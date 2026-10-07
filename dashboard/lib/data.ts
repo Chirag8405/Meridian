@@ -92,6 +92,11 @@ export type LiveRiskRow = {
   risk_score: number;
   window_start_ts: string;
   source: "alchemy_live" | "alchemy_getlogs_replay";
+  price_dev: number | null;
+  cluster_id: number | null;
+  cluster_severity: number | null;
+  wallet_concentration_severity: number | null;
+  advisory: string | null;
 };
 
 export type RecentSwapEvent = {
