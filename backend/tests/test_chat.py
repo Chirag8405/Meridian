@@ -91,3 +91,16 @@ def test_injection_in_tool_data_does_not_change_flow():
 def test_truncated_final_answer_falls_back():
     out, _ = ask("risk?", [{"role": "assistant", "content": "The sco", "_finish": "length"}])
     assert out["answer"].startswith("I couldn't") and out["grounding"]["checked"] is False
+
+
+def test_all_tools_failing_raises_instead_of_claiming_no_data():
+    import pytest
+    from assistant.chat import DataUnavailable
+
+    class Broken:
+        async def table(self, name, order=None):
+            raise RuntimeError("boom")
+
+    llm = FakeLLM([tool_call("get_live_risk", {}), {"role": "assistant", "content": "The data does not contain it."}])
+    with pytest.raises(DataUnavailable):
+        asyncio.run(answer_question("risk?", [], Broken(), INDEX, llm, S))

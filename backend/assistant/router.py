@@ -6,7 +6,7 @@ import time
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel, Field
 
-from assistant.chat import answer_question
+from assistant.chat import DataUnavailable, answer_question
 from assistant.config import Settings
 from assistant.data import DataSource
 from assistant.llm import LLMError
@@ -64,6 +64,9 @@ def create_router(src: DataSource, index: Bm25Index, llm, settings: Settings) ->
             result = await answer_question(
                 question, [t.model_dump() for t in req.history], src, index, llm, settings
             )
+        except DataUnavailable:
+            print("assistant: data source unavailable")
+            raise HTTPException(status_code=503, detail=UNAVAILABLE) from None
         except LLMError as exc:
             print(f"assistant: llm failure: {exc}")  # reason code only; never the key or body
             raise HTTPException(status_code=503, detail=UNAVAILABLE) from None

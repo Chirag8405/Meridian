@@ -15,6 +15,10 @@ from assistant.tools import TOOL_SCHEMAS, run_tool
 FALLBACK = "I couldn't produce an answer from the available data."
 
 
+class DataUnavailable(Exception):
+    """Every tool call failed upstream; answering "the data does not contain it" would be a lie."""
+
+
 class LLM(Protocol):
     async def complete(self, messages: list[dict], tools: list[dict] | None = None) -> dict: ...
 
@@ -57,6 +61,7 @@ async def answer_question(
     results: list[dict] = []
     now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     calls = 0
+    data_failures = 0
     final = ""
     for _ in range(settings.max_tool_calls + 2):
         allow_tools = calls < settings.max_tool_calls
@@ -83,11 +88,15 @@ async def answer_question(
                     result = {"error": "arguments were not valid JSON"}
                 else:
                     result = await run_tool(name, args, src, index)
+                    data_failures += result.get("error") == "data unavailable"
                     if "error" not in result:
                         _sources_from_result(name, result, sources, now)
                         results.append(result)
             messages.append({"role": "tool", "tool_call_id": tc["id"], "name": name,
                              "content": json.dumps(result, default=str)})
+
+    if data_failures and not results:
+        raise DataUnavailable
 
     retried = False
     bad_nums, bad_cites = _check(final, question, results, sources) if final else ([], [])
