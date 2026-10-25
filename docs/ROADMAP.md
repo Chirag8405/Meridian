@@ -35,5 +35,7 @@ Phased checklist for Meridian.
         use case. A trend/velocity feature is a concrete, demonstrable way
         the trained model should outperform the baseline, not a generic
         "ML is fancier" comparison.
-- [ ] Dashboard
-- [ ] (Deferred) GenAI component decision and integration
+- [x] Dashboard (Vercel + Render + Supabase; see ARCHITECTURE.md Application Layer)
+- [x] GenAI: risk advisories, grounded assistant, offline evaluation (see GENAI_ASSISTANT_PLAN.md)
+- [ ] GenAI: LLM-as-judge experiment (Part C): preparation merged, model runs pending
+- [ ] GenAI: re-run the frozen test split after the post-evaluation fixes

@@ -296,6 +296,13 @@ the user-facing dashboard.
   (`dashboard/app/api/recent-swap-*`) since the Render API has no CORS, and
   refreshes every 20 seconds.
 
+  **GenAI layer.** The Render API also serves `POST /api/assistant/chat`: a tool-calling loop
+  over nine read-only functions (the same Supabase tables plus BM25 search over the project docs),
+  a Groq model that writes the answer, and a deterministic numeric grounding check. The model
+  explains and retrieves; it never computes the risk score. Full diagram in
+  [ARCHITECTURE_DIAGRAM.md](ARCHITECTURE_DIAGRAM.md), design and evaluation in
+  [GENAI_ASSISTANT_PLAN.md](GENAI_ASSISTANT_PLAN.md).
+
 ## Workflow Diagram (Description)
 
 ```

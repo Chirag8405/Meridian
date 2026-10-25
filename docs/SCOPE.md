@@ -4,8 +4,10 @@
 
 - **Project name:** Meridian
 - **Domain:** Stablecoin depeg / liquidity stress early warning
-- **Explicitly OUT of scope for now:** HBase, Zookeeper, GenAI/generative
-  components
+- **Explicitly OUT of scope for now:** HBase, Zookeeper
+- **GenAI: IN scope** (decided later): a Groq-backed grounded assistant, risk advisories and an
+  offline evaluation. See [GENAI_ASSISTANT_PLAN.md](GENAI_ASSISTANT_PLAN.md). The rule-based pipeline,
+  not the model, produces the risk assessment.
 - **Historical depeg case studies for validation:**
   - TerraUSD (May 2022)
   - USDC (March 2023, SVB-related)
