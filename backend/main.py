@@ -67,13 +67,24 @@ def _headers() -> dict:
     return {"apikey": SUPABASE_PUBLISHABLE_KEY, "Authorization": f"Bearer {SUPABASE_PUBLISHABLE_KEY}"}
 
 
+PAGE_SIZE = 1000  # Supabase's PostgREST caps a single response at 1000 rows
+
+
 async def _fetch_table(client: httpx.AsyncClient, table: str, order: str | None = None) -> list:
+    # Page with Range headers: without this, any table over 1000 rows (e.g.
+    # live_price_timeline) was silently truncated to its first 1000.
     params = {"select": "*"}
     if order:
         params["order"] = order
-    resp = await client.get(f"{SUPABASE_URL}/rest/v1/{table}", headers=_headers(), params=params)
-    resp.raise_for_status()
-    return resp.json()
+    rows: list = []
+    while True:
+        headers = {**_headers(), "Range-Unit": "items", "Range": f"{len(rows)}-{len(rows) + PAGE_SIZE - 1}"}
+        resp = await client.get(f"{SUPABASE_URL}/rest/v1/{table}", headers=headers, params=params)
+        resp.raise_for_status()
+        page = resp.json()
+        rows.extend(page)
+        if len(page) < PAGE_SIZE:
+            return rows
 
 
 async def _fetch_metadata(client: httpx.AsyncClient) -> dict:
