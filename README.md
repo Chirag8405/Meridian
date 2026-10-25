@@ -55,11 +55,19 @@ in [`docs/FINDINGS.md`](docs/FINDINGS.md). Highlights:
 
 ## Architecture
 
+```mermaid
+flowchart LR
+  DUNE["Dune Analytics<br/>historical, one-time"] --> HDFS["HDFS + Hive"]
+  ALCH["Alchemy WebSocket<br/>live swaps"] --> STREAM["Spark Structured<br/>Streaming"] --> HDFS
+  HDFS <--> BATCH["Spark / MapReduce<br/>stats, K-Means, PageRank,<br/>classifier, risk score"]
+  HDFS --> EXPORT["JSON export<br/>+ Groq advisories"] --> SB[("Supabase")]
+  ALCH -. "recent swaps" .-> SB
+  SB --> API["Render: FastAPI"] --> WEB["Vercel: Next.js<br/>dashboard"]
+  API <--> AI["GenAI assistant<br/>tools + docs search<br/>+ Groq + grounding check"]
 ```
-Dune (historical, one-time)  ─┐
-                               ├─→  HDFS  →  Hive / MongoDB  →  Spark / MapReduce  →  JSON export  →  Supabase  →  Render API  →  Dashboard
-Alchemy WS (live, ongoing)   ─┘
-```
+
+The detailed version (every component, the GenAI layer, the offline evaluation) is in
+[`docs/ARCHITECTURE_DIAGRAM.md`](docs/ARCHITECTURE_DIAGRAM.md).
 
 Historical data (Dune Analytics) and a live Alchemy WebSocket feed land in
 the same Hive schema, distinguished by a `source` column. Spark/MapReduce
@@ -70,12 +78,31 @@ served through a Render-hosted API — the deployed dashboard polls that API
 reaches it without a rebuild. Full detail, including every confirmed design
 decision and why, in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
+## GenAI layer
+
+Two uses of an LLM (Groq), both kept on a short leash because the **rule-based pipeline, not the
+model, produces the risk assessment**:
+
+- **Risk advisories** on the "Live now" cards: a 2-3 sentence plain-English reading of each
+  live score, generated in the 2-hourly publish job from the row's own numbers.
+- **A grounded assistant** (`/assistant`, unlisted): ask about the live scores, the two crises or the
+  methods. It answers only from tools over the same tables and from the project docs, cites its sources,
+  refuses advice and predictions, and every number in an answer is checked against the evidence it was
+  shown.
+
+It is measured, not just demoed (`genai/eval`, full tables and failures in
+[`genai/eval/results/REPORT.md`](genai/eval/results/REPORT.md)): on a frozen 47-question test set the assistant
+answered 36 correctly (77%); the grounding check caught 100 of 105 deliberately altered numbers; and an advisory
+comparison across three models found no invented numbers but one model adding unrequested risk verdicts in 97 of
+100 advisories. Small samples, single runs. Design, decisions and deviations:
+[`docs/GENAI_ASSISTANT_PLAN.md`](docs/GENAI_ASSISTANT_PLAN.md).
+
 ## Tech stack
 
 Hadoop 3.4.3 (HDFS/YARN/MapReduce) · Hive 3.1.3 · Spark 3.5.5 (batch +
 Structured Streaming) · Sqoop 1.4.7 · MongoDB · Python (ingestion/streaming)
 · Next.js 16 (dashboard, App Router) · FastAPI (live backend) · Supabase
-(Postgres) · Render + Vercel (hosting)
+(Postgres) · Render + Vercel (hosting) · Groq (LLM inference for advisories and the assistant)
 
 ## Repo structure
 
@@ -86,7 +113,8 @@ Structured Streaming) · Sqoop 1.4.7 · MongoDB · Python (ingestion/streaming)
 | `spark/` | Spark batch jobs (stats, clustering, classifier, PageRank, dashboard export) and the Structured Streaming consumer |
 | `sqoop/` | Sqoop import configuration and generated artifacts |
 | `dashboard/` | Next.js findings dashboard (deployed to Vercel) |
-| `backend/` | FastAPI service (deployed to Render) serving dashboard data from Supabase |
+| `backend/` | FastAPI service (deployed to Render) serving dashboard data from Supabase, plus `backend/assistant/` (the grounded assistant) and its tests |
+| `genai/` | Offline GenAI evaluation (`genai/eval`: frozen snapshot, questions, runners, results) and the docs-corpus builder |
 | `supabase/` | Supabase schema (tables + RLS policies) for the live backend |
 | `systemd/` | `systemd --user` unit files for the always-on live-feed and streaming consumer |
 | `docs/` | Full documentation — see index below |
@@ -111,4 +139,8 @@ follow that doc's sections in order for the component you're setting up.
 | [`docs/SCOPE.md`](docs/SCOPE.md) | What's in scope / explicitly descoped |
 | [`docs/LAB_MAPPING.md`](docs/LAB_MAPPING.md) | Course lab-requirement coverage mapping |
 | [`docs/ROADMAP.md`](docs/ROADMAP.md) | Outstanding/planned work |
+| [`docs/ARCHITECTURE_DIAGRAM.md`](docs/ARCHITECTURE_DIAGRAM.md) | Full architecture diagram (Mermaid) |
+| [`docs/GENAI_ASSISTANT_PLAN.md`](docs/GENAI_ASSISTANT_PLAN.md) | GenAI assistant, evaluation and LLM-judge plan, with an implementation log of every deviation |
+| [`genai/eval/results/REPORT.md`](genai/eval/results/REPORT.md) | Measured GenAI results, failures and limitations |
+| [`docs/PRESENTATION_ONEPAGER.md`](docs/PRESENTATION_ONEPAGER.md) | One-page summary of the problem, solution and results |
 | [`CLAUDE.md`](CLAUDE.md) | Project conventions and operating constraints (for AI-assisted development) |

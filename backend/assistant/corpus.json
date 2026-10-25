@@ -1,5 +1,5 @@
 {
- "source_hash": "677d48df219217e6da1a1f9348b426e3bd6ba181b4b27beea93e64347ea600c4",
+ "source_hash": "51c8cb3871438085871e628fb529414aa5d82033d10c4b29e17d0e16b241de6f",
  "chunks": [
   {
    "id": "FINDINGS.md#1",
@@ -346,6 +346,12 @@
   {
    "id": "ARCHITECTURE.md#18",
    "file": "ARCHITECTURE.md",
+   "heading_path": "Architecture > 5. Application Layer",
+   "text": "**GenAI layer.** The Render API also serves `POST /api/assistant/chat`: a tool-calling loop\n  over nine read-only functions (the same Supabase tables plus BM25 search over the project docs),\n  a Groq model that writes the answer, and a deterministic numeric grounding check. The model\n  explains and retrieves; it never computes the risk score. Full diagram in\n  [ARCHITECTURE_DIAGRAM.md](ARCHITECTURE_DIAGRAM.md), design and evaluation in\n  [GENAI_ASSISTANT_PLAN.md](GENAI_ASSISTANT_PLAN.md)."
+  },
+  {
+   "id": "ARCHITECTURE.md#19",
+   "file": "ARCHITECTURE.md",
    "heading_path": "Architecture > Workflow Diagram (Description)",
    "text": "```\nDune (historical, one-time)  ─┐\n                               ├─→  HDFS  →  Hive / MongoDB  →  Spark / MapReduce  →  JSON export  →  Supabase  →  Render API  →  Dashboard\nAlchemy WS (live, ongoing)   ─┘\n```\n\nRaw on-chain and market data lands in HDFS (and MongoDB for semi-structured\ndocuments), gets structured and partitioned in Hive, is processed by Spark\nand MapReduce jobs for statistics, clustering, ranking, and risk scoring.\nHistorical (Dune) and live (Alchemy) records share the same eventual Hive\nschema (`meridian.stablecoin_pool_hourly` — see\n[hive/schema.sql](../hive/schema.sql)), distinguished by the `source` column\n(`dune` vs `alchemy_live`), so downstream analytics don't need to know\nwhich pipeline a row came from. The dashboard does not query any of this\nlive — a batch export step materializes the small, pre-known slice of\nresults it needs into JSON, which `ingestion/push_to_supabase.py` pushes\nto Supabase; the deployed dashboard reads from there via the Render API,\npolling every 60 seconds, rather than reading the JSON file directly (see\nthe Application Layer section above for the full chain and its free-tier\nconstraints)."
   },
@@ -353,7 +359,7 @@
    "id": "SCOPE.md#1",
    "file": "SCOPE.md",
    "heading_path": "Scope > Locked Decisions",
-   "text": "- **Project name:** Meridian\n- **Domain:** Stablecoin depeg / liquidity stress early warning\n- **Explicitly OUT of scope for now:** HBase, Zookeeper, GenAI/generative\n  components\n- **Historical depeg case studies for validation:**\n  - TerraUSD (May 2022)\n  - USDC (March 2023, SVB-related)\n- **On-chain data source: RESOLVED — dual-source split by time horizon**\n  - **Dune Analytics** for historical backfill (one-time, complete for the\n    initial validation window; March 2023 USDC depeg confirmed visible in\n    the data)\n  - **Alchemy WebSocket** (direct RPC) for the live streaming feed (ongoing)\n  - See [ARCHITECTURE.md](ARCHITECTURE.md) and [DATA_SOURCES.md](DATA_SOURCES.md)\n    for the full detail — BigQuery was considered and dropped as redundant\n    with Dune for the historical need"
+   "text": "- **Project name:** Meridian\n- **Domain:** Stablecoin depeg / liquidity stress early warning\n- **Explicitly OUT of scope for now:** HBase, Zookeeper\n- **GenAI: IN scope** (decided later): a Groq-backed grounded assistant, risk advisories and an\n  offline evaluation. See [GENAI_ASSISTANT_PLAN.md](GENAI_ASSISTANT_PLAN.md). The rule-based pipeline,\n  not the model, produces the risk assessment.\n- **Historical depeg case studies for validation:**\n  - TerraUSD (May 2022)\n  - USDC (March 2023, SVB-related)\n- **On-chain data source: RESOLVED — dual-source split by time horizon**\n  - **Dune Analytics** for historical backfill (one-time, complete for the\n    initial validation window; March 2023 USDC depeg confirmed visible in\n    the data)\n  - **Alchemy WebSocket** (direct RPC) for the live streaming feed (ongoing)\n  - See [ARCHITECTURE.md](ARCHITECTURE.md) and [DATA_SOURCES.md](DATA_SOURCES.md)\n    for the full detail — BigQuery was considered and dropped as redundant\n    with Dune for the historical need"
   },
   {
    "id": "SCOPE.md#2",
