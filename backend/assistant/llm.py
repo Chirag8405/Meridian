@@ -38,6 +38,7 @@ class GroqClient:
             raise LLMError(f"http_{resp.status_code}")
         try:
             choice = resp.json()["choices"][0]
-            return {"message": choice["message"], "finish_reason": choice.get("finish_reason")}
+            return {"message": choice["message"], "finish_reason": choice.get("finish_reason"),
+                    "usage": resp.json().get("usage") or {}}
         except (KeyError, IndexError, ValueError):
             raise LLMError("bad_response") from None

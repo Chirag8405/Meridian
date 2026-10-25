@@ -326,3 +326,24 @@ python genai/build_corpus.py --check  # fails if it is stale
 ```
 
 Tests: `cd backend && pip install -r requirements.txt -r requirements-dev.txt && pytest tests -q`.
+
+
+### Running the GenAI evaluation (genai/eval)
+
+Offline, never part of the request path. Needs `GROQ_API_KEY` in the local `.env`
+and a Python with `httpx`, `requests`, `fastapi`, `pytest` (for example
+`pip install -r backend/requirements.txt -r backend/requirements-dev.txt requests`).
+It spends real Groq quota (1,000 requests/day and 8,000 tokens/minute on this key):
+about 33 + 47 questions at ~3K tokens each, plus 100 advisories per model.
+
+```
+python genai/eval/run.py snapshot            # freeze live data (read-only calls to the Render API)
+python genai/eval/run.py questions           # rebuild questions.json; gold is computed from the snapshot
+python genai/eval/run.py chat --split dev    # tuning set
+python genai/eval/run.py chat --split test   # frozen set: final numbers only
+python genai/eval/run.py advisory            # B1, 3 models x 100 synthetic rows
+python genai/eval/run.py mutation            # B3, offline
+python genai/eval/run.py report              # writes genai/eval/results/REPORT.md
+pytest genai/eval/test_eval_units.py         # scoring-code unit tests, no network
+```
+Runs resume from `genai/eval/results/*.json`; delete a record (or pass `--force`) to redo it.
