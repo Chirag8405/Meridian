@@ -14,6 +14,20 @@ STOPWORDS = frozenset(
 )
 
 
+# Lexical retrieval cannot bridge "calculated" -> the Formula section, which never uses that word.
+# Small, explicit, query-side only.
+EXPANSIONS = {
+    "calculated": ["formula", "weights"], "calculate": ["formula", "weights"], "computed": ["formula", "weights"],
+    "composed": ["formula", "weights"], "weighted": ["formula", "weights"], "made": ["formula", "weights"],
+}
+
+
+def expand_query(query: str) -> list[str]:
+    tokens = tokenize(query)
+    extra = [e for t in tokens for e in EXPANSIONS.get(t, [])]
+    return tokens + [e for e in dict.fromkeys(extra) if e not in tokens]
+
+
 def tokenize(text: str) -> list[str]:
     return [t for t in _TOKEN.findall(text.lower()) if t not in STOPWORDS]
 
@@ -35,7 +49,7 @@ class Bm25Index:
         self.idf = {t: math.log(1 + (n - f + 0.5) / (f + 0.5)) for t, f in df.items()}
 
     def search(self, query: str, k: int = 4) -> list[dict]:
-        q = tokenize(query)
+        q = expand_query(query)
         scored = []
         for i, tf in enumerate(self.tf):
             dl = len(self.docs[i])

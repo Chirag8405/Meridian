@@ -1,5 +1,5 @@
 {
- "source_hash": "4383cb41d7158bb9e409ec04927830036a3ce0db82d92a32083f1656b3699025",
+ "source_hash": "677d48df219217e6da1a1f9348b426e3bd6ba181b4b27beea93e64347ea600c4",
  "chunks": [
   {
    "id": "FINDINGS.md#1",
@@ -234,6 +234,12 @@
    "file": "FINDINGS.md",
    "heading_path": "Findings > Guarantee: the published K-Means cluster assignments are frozen, permanently",
    "text": "**Why this matters**: `KMeans.fit()` is not idempotent-by-construction —\nre-fitting on a differently-composed dataset (historical + accumulating\nlive rows) could shift centroid positions and therefore reassign cluster\nmembership for rows already published and analyzed in this document. A\npipeline that silently re-fit periodically would mean every number in the\n\"Stress-pattern clustering\" section above could quietly become inaccurate\nover time without anyone noticing — exactly the failure mode this\nguarantee exists to prevent."
+  },
+  {
+   "id": "FINDINGS.md#40",
+   "file": "FINDINGS.md",
+   "heading_path": "Findings > GenAI assistant: measured faithfulness (and where it fails)",
+   "text": "The grounded assistant (`backend/assistant`, plan in `docs/GENAI_ASSISTANT_PLAN.md`) is\nevaluated offline in `genai/eval`; the full tables, failures and limitations are in\n`genai/eval/results/REPORT.md`. Headline numbers from that report (all with denominators\nthere): on 47 frozen test questions gpt-oss-20b answered 36 correctly (77%); the numeric\ngrounding check caught 100 of 105 deliberately changed numbers; across 100 synthetic advisory rows no model invented a number, but\n`gpt-oss-120b` added an unrequested risk verdict (\"moderate level of risk\") in 97 of them.\nThese are small-sample, single-run results, not a general accuracy claim. The test run\npredates later fixes (prediction-refusal wording, injection sanitiser, retrieval query\nexpansion, one retry on Groq HTTP 400); re-running the test split after those fixes is\npending the daily token quota."
   },
   {
    "id": "ARCHITECTURE.md#1",
