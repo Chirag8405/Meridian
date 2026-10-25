@@ -6,7 +6,7 @@ import pytest
 from assistant.config import Settings
 from assistant.llm import GroqClient, LLMError
 
-S = Settings(model="m", api_key="k", per_ip_per_min=3, global_per_min=3, daily_cap=3)
+S = Settings(model="m", api_key="k", proxy_secret="", per_ip_per_min=3, global_per_min=3, daily_cap=3)
 OK = {"choices": [{"message": {"role": "assistant", "content": "hi"}, "finish_reason": "stop"}], "usage": {"total_tokens": 5}}
 
 

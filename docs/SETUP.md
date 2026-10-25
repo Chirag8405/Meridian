@@ -309,12 +309,13 @@ Render environment variables (Render dashboard -> Meridian -> Environment):
 | `ASSISTANT_MODEL` | no | `openai/gpt-oss-20b` | Groq model id (must support tool calling). |
 | `ASSISTANT_PER_IP_PER_MIN` | no | `3` | Questions per client per minute. |
 | `ASSISTANT_GLOBAL_PER_MIN` | no | `3` | Questions per minute across everyone (Groq's 8,000 tokens/minute limit). |
+| `ASSISTANT_PROXY_SECRET` | recommended | empty | Shared secret. When set, the backend only trusts the forwarded visitor address (`x-client-ip`) if the request also carries a matching `x-proxy-secret`; set the SAME value as a Vercel environment variable so the Next.js proxy sends it. Without it, anyone calling Render directly can forge addresses and sidestep the per-visitor limit (the global and daily caps still hold). |
 | `ASSISTANT_DAILY_CAP` | no | `200` | Questions per UTC day (Groq's limit is 1,000 requests/day; a question uses up to ~4). |
 
 Limits are in memory (single Render instance; reset on restart). The Next.js
-proxy should forward the visitor address as the `x-client-ip` header; callers
-who hit Render directly can spoof it, which only evades the per-client limit,
-not the global and daily caps.
+proxy forwards the visitor address as `x-client-ip` (plus `x-proxy-secret`, see
+above). Requests larger than 8 KB or without a Content-Length are rejected before
+parsing.
 
 The retrieval corpus is committed at `backend/assistant/corpus.json` because
 Render deploys only `backend/`. Rebuild it after editing FINDINGS.md,

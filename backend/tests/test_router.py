@@ -13,7 +13,7 @@ TABLES = {"current_risk_live": LIVE_ROWS, "metadata": [{"exported_at": "t1"}],
 
 
 def client(script, **kw):
-    s = Settings(model="m", api_key="k", per_ip_per_min=kw.get("ip", 3), global_per_min=kw.get("glob", 10), daily_cap=kw.get("day", 100))
+    s = Settings(model="m", api_key="k", proxy_secret="", per_ip_per_min=kw.get("ip", 3), global_per_min=kw.get("glob", 10), daily_cap=kw.get("day", 100))
     app = FastAPI()
     llm = FakeLLM(script)
     app.include_router(create_router(FakeSource(TABLES), Bm25Index([]), llm, s))
@@ -52,8 +52,30 @@ def test_llm_failure_is_503_without_details():
         async def complete(self, *a, **k):
             raise LLMError("http_500")
 
-    s = Settings(model="m", api_key="SECRETKEY", per_ip_per_min=3, global_per_min=3, daily_cap=3)
+    s = Settings(model="m", api_key="SECRETKEY", proxy_secret="", per_ip_per_min=3, global_per_min=3, daily_cap=3)
     app = FastAPI()
     app.include_router(create_router(FakeSource(TABLES), Bm25Index([]), Boom(), s))
     r = TestClient(app).post("/api/assistant/chat", json={"question": "risk?"})
     assert r.status_code == 503 and "SECRETKEY" not in r.text and "500" not in r.text
+
+
+def test_oversized_and_unsized_bodies_are_rejected_before_parsing():
+    c, _ = client([])
+    assert c.post("/api/assistant/chat", content=b'{"question":"' + b"x" * 9000 + b'"}',
+                  headers={"content-type": "application/json"}).status_code == 413
+
+
+def test_x_client_ip_is_trusted_only_with_the_shared_secret():
+    s = Settings(model="m", api_key="k", proxy_secret="s3cret", per_ip_per_min=1, global_per_min=50, daily_cap=100)
+    app = FastAPI()
+    app.include_router(create_router(FakeSource(TABLES), Bm25Index([]), FakeLLM([]), s))
+    c = TestClient(app)
+    q = {"question": "Should I buy?"}
+    # forged addresses without the secret all collapse onto the peer address -> second call limited
+    assert c.post("/api/assistant/chat", json=q, headers={"x-client-ip": "1.1.1.1"}).status_code == 200
+    assert c.post("/api/assistant/chat", json=q, headers={"x-client-ip": "2.2.2.2"}).status_code == 429
+    # with the secret each forwarded visitor gets its own bucket
+    h = {"x-proxy-secret": "s3cret"}
+    assert c.post("/api/assistant/chat", json=q, headers={**h, "x-client-ip": "3.3.3.3"}).status_code == 200
+    assert c.post("/api/assistant/chat", json=q, headers={**h, "x-client-ip": "4.4.4.4"}).status_code == 200
+    assert c.post("/api/assistant/chat", json=q, headers={**h, "x-client-ip": "3.3.3.3"}).status_code == 429

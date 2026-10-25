@@ -1,9 +1,10 @@
 """POST /api/assistant/chat. Mounted by backend/main.py."""
 
+import hmac
 import re
 import time
 
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel, Field
 
 from assistant.chat import DataUnavailable, answer_question
@@ -37,12 +38,32 @@ def create_router(src: DataSource, index: Bm25Index, llm, settings: Settings) ->
         events = await src.table("recent_swap_events", order="observed_at.desc,event_id.desc")
         return f"{meta[0].get('exported_at') if meta else ''}|{events[0]['observed_at'] if events else ''}"
 
-    @router.post("/api/assistant/chat")
+    async def limit_body(request: Request) -> None:
+        """Reject oversized bodies before pydantic parses them (a forged huge body would otherwise
+        be buffered in memory). Clients that send JSON always set Content-Length."""
+        length = request.headers.get("content-length")
+        if length is None or not length.isdigit():
+            raise HTTPException(status_code=411, detail="Content-Length required")
+        if int(length) > settings.max_body_bytes:
+            raise HTTPException(status_code=413, detail="Request too large")
+
+    def client_id(request: Request) -> str:
+        """The visitor address forwarded by the Next.js proxy, trusted only when the shared secret
+        matches (if one is configured); otherwise the direct peer address."""
+        forwarded = request.headers.get("x-client-ip")
+        if forwarded and (
+            not settings.proxy_secret
+            or hmac.compare_digest(request.headers.get("x-proxy-secret", ""), settings.proxy_secret)
+        ):
+            return forwarded[:64]
+        return request.client.host if request.client else "unknown"
+
+    @router.post("/api/assistant/chat", dependencies=[Depends(limit_body)])
     async def chat(req: ChatRequest, request: Request):
         question = _CONTROL.sub(" ", req.question).strip()
         if not question:
             raise HTTPException(status_code=422, detail="question must not be empty")
-        client = request.headers.get("x-client-ip") or (request.client.host if request.client else "unknown")
+        client = client_id(request)
 
         ok, reason, retry_after = limiter.check(client)
         if not ok:

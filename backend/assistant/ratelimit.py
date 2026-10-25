@@ -25,6 +25,8 @@ class RateLimiter:
         while q and now - q[0] >= 60:
             q.popleft()
 
+    MAX_TRACKED_CLIENTS = 5000  # x-client-ip can be forged, so the table must not grow without bound
+
     def check(self, client: str) -> tuple[bool, str | None, int]:
         """Return (allowed, reason, retry_after_seconds) and record the hit if allowed."""
         now = self._clock()
@@ -33,6 +35,9 @@ class RateLimiter:
             self._day, self._day_count = today, 0
         if self._day_count >= self.daily_cap:
             return False, "daily", 3600
+        if len(self._ip) >= self.MAX_TRACKED_CLIENTS and client not in self._ip:
+            for key in [k for k, q in self._ip.items() if not q or now - q[-1] >= 60]:
+                del self._ip[key]
         ip_q = self._ip[client]
         self._trim(ip_q, now)
         self._trim(self._global, now)

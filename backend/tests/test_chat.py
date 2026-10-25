@@ -7,7 +7,7 @@ from assistant.retrieval import Bm25Index
 
 from helpers import EVAL_ROWS, LIVE_ROWS, FakeLLM, FakeSource, tool_call
 
-S = Settings(model="m", api_key="k", per_ip_per_min=3, global_per_min=3, daily_cap=100)
+S = Settings(model="m", api_key="k", proxy_secret="", per_ip_per_min=3, global_per_min=3, daily_cap=100)
 INDEX = Bm25Index([])
 TABLES = {"current_risk_live": LIVE_ROWS, "evaluation_summary": EVAL_ROWS}
 
