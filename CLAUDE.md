@@ -35,8 +35,11 @@ just the favorable one.
     change the system default.
 - **No HBase, no Zookeeper** for this phase (explicitly descoped — may
   revisit later)
-- **No GenAI/generative components yet** — BDA-only for now, GenAI
-  integration decision is pending confirmation from a separate course
+- **GenAI components**: Groq-generated risk advisories exist today
+  (`ingestion/generate_risk_advisories.py`); a grounded assistant,
+  faithfulness evaluation and LLM-judge experiment are planned in
+  `docs/GENAI_ASSISTANT_PLAN.md` (read it before touching any GenAI code).
+  Whether the separate course restricts the GenAI scope is still unconfirmed
 
 ## Known Integration Fixes Applied
 
@@ -62,7 +65,8 @@ just the favorable one.
 
 - All new Spark/Hive/MapReduce code goes under clearly separated module
   directories: `ingestion/` (batch + live data ingestion), `hive/` (DDL),
-  `spark/` (all batch jobs, ML, and the Structured Streaming consumer —
+  `genai/` (offline GenAI evaluation and corpus-build scripts, planned) and
+  `backend/assistant/` (the assistant's runtime code, planned), `spark/` (all batch jobs, ML, and the Structured Streaming consumer —
   `streaming/`/`mllib/` were never split out as separate directories;
   everything landed in `spark/`), `dashboard/` (Next.js findings
   dashboard), `backend/` (FastAPI live-data API), `supabase/` (schema for
