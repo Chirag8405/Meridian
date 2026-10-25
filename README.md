@@ -1,5 +1,7 @@
 # Meridian
 
+[![CI](https://github.com/Chirag8405/Meridian/actions/workflows/ci.yml/badge.svg)](https://github.com/Chirag8405/Meridian/actions/workflows/ci.yml)
+
 A DeFi stablecoin depeg & liquidity-stress early-warning **framework**,
 built as a Big Data Analytics project on a local Hadoop/Hive/Spark stack,
 extended with a live on-chain streaming pipeline and a public findings

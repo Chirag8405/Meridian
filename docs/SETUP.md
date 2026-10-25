@@ -392,3 +392,24 @@ job commits those files to `origin/main` so they stop piling up as uncommitted c
   trigger a Render deploy, because the Render service's root directory is `backend/` and these commits only touch
   `dashboard/data`. To stop the Vercel rebuilds, set an Ignored Build Step in the Vercel project settings
   (for example `git diff --quiet HEAD^ HEAD -- . ':!data'` run from the dashboard root).
+
+
+## Continuous integration (GitHub Actions)
+
+`.github/workflows/ci.yml` runs on pull requests and on pushes to `main` (pushes that only change
+`dashboard/data/**`, i.e. the auto-commit job's, are skipped). Four jobs run in parallel, all offline and
+secret-free; `CI passed` is the aggregate status:
+
+| Job | Checks |
+|---|---|
+| backend | `py_compile` of backend, ingestion and genai Python; `pytest backend/tests`; `pytest genai/eval` (Python 3.14, as on Render) |
+| corpus-fresh | `python genai/build_corpus.py --check` (the assistant's committed search corpus matches the docs) |
+| dashboard | `npm ci`, `eslint`, `tsc --noEmit` (Node 24) |
+| hygiene | `git diff --check` for the PR's changes; `bash -n` on every `*.sh` |
+
+Not in CI on purpose: `next build` (fetches live data from Render at build time and would fail whenever Render
+sleeps), anything using `GROQ_API_KEY` (the LLM evaluation is run by hand), and the Spark/Hive jobs (they need the
+local Hadoop stack). Actions are pinned to commit SHAs. Run the same checks locally:
+`pip install -r backend/requirements.txt -r backend/requirements-dev.txt requests`, then the commands in the table.
+Branch protection (requiring `CI passed`) is not enabled; if you enable it, allow the auto-commit job's pushes to
+`main` to bypass it, or it will be rejected.
