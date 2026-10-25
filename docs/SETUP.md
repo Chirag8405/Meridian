@@ -411,5 +411,10 @@ Not in CI on purpose: `next build` (fetches live data from Render at build time 
 sleeps), anything using `GROQ_API_KEY` (the LLM evaluation is run by hand), and the Spark/Hive jobs (they need the
 local Hadoop stack). Actions are pinned to commit SHAs. Run the same checks locally:
 `pip install -r backend/requirements.txt -r backend/requirements-dev.txt requests`, then the commands in the table.
-Branch protection (requiring `CI passed`) is not enabled; if you enable it, allow the auto-commit job's pushes to
-`main` to bypass it, or it will be rejected.
+Branch protection is enabled on `main` (set 2026-10-25 via the GitHub API): the `CI passed` status is required,
+force-pushes and deletion are blocked, no review is required (solo project), and **admins are not enforced**, which is
+what lets the repository owner's credentials, and therefore the auto-commit job (it pushes to `main` as the owner),
+push directly without waiting for CI. Pull requests, including your own, merge only after `CI passed` is green
+(`gh pr merge` waits for it; `--admin` overrides). To inspect or change it:
+`gh api repos/Chirag8405/Meridian/branches/main/protection`; to remove it:
+`gh api -X DELETE repos/Chirag8405/Meridian/branches/main/protection`.
