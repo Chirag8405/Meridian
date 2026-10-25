@@ -99,7 +99,7 @@ export default function LiveNow({
                 {r.pair} · {r.project}
               </div>
               <div className="font-mono text-[26px] font-medium leading-none text-text-primary">
-                {r.risk_score.toFixed(1)}
+                {r.risk_score.toFixed(4)}
               </div>
               <RiskGauge score={r.risk_score} />
               <div className="mt-2 font-mono text-[10px] text-text-muted" suppressHydrationWarning>
