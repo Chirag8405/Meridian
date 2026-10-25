@@ -525,17 +525,19 @@ exceeded.
    as Production on Groq's models page. Note gpt-oss models do NOT support
    parallel tool calls, so tool calls are sequential (the 3-call cap in 5.2
    still holds).
-2. **Rate limits.** Per-IP: about 5 questions/minute. Plus a global daily cap,
-   set under the real free-tier daily limit and read from env
-   (`ASSISTANT_DAILY_CAP`); friendly "assistant is resting" message when hit.
-   The free-plan numbers are NOT public on the docs page (only Developer-plan
-   numbers are), so the user must read them from the Groq console limits page
-   and record them in Appendix A before the caps are finalised.
+2. **Rate limits (defaults, all env-configurable).** Measured from the
+   `x-ratelimit-*` response headers of a real call with the project's key
+   (Appendix A item 2): 1000 requests/day and 8000 tokens/minute for
+   `openai/gpt-oss-20b`. Defaults: `ASSISTANT_PER_IP_PER_MIN=3`,
+   `ASSISTANT_GLOBAL_PER_MIN=3` (8K TPM / roughly 2.5K tokens per question),
+   `ASSISTANT_DAILY_CAP=200` questions (each may use up to ~4 model calls, so
+   worst case 800 of 1000 requests/day, leaving headroom for the 2-hourly
+   advisory job and evaluation runs). Friendly "assistant is resting" message
+   when any cap is hit. The user may revise after reading the console page.
 3. **Visibility.** The page is public but unlisted: no header link until just
    before the demo; enable by adding the link in `dashboard/app/page.tsx`.
-4. **OPEN - course restrictions.** Needs the user to ask the other course's
-   instructor whether retrieval + tool use + evaluation counts as GenAI and
-   whether a specific technique/model is required. Blocks Phase 1.
+4. **Course scope - RESOLVED.** The user confirmed (2026-10-25) that this
+   scope (retrieval + tool use + evaluation) counts as GenAI for the course.
 5. **Advisory faithfulness on the dashboard.** Report only for now; revisit
    after Part B numbers exist.
 
@@ -565,14 +567,19 @@ Phase 0, 2026-10-25. Item numbers refer to section 3.
    "description","parameters"(JSON Schema)}}]`; the model replies with
    `tool_calls` (`id`, `function.name`, `function.arguments` as a JSON string);
    append `{"role":"tool","tool_call_id":<id>,"name":..,"content":<string>}`
-   and call again. Source: https://console.groq.com/docs/tool-use. Not yet
-   smoke-tested against the live API with our key; do that first in Phase 1.
+   and call again. Source: https://console.groq.com/docs/tool-use. Smoke-tested
+   2026-10-25 with the project's key: `openai/gpt-oss-20b` returned a valid
+   `tool_calls` entry and, after a `role:tool` message, a final answer. Observed
+   quirk: the model answers in markdown tables/bold unless told not to, so the
+   system prompt must forbid markdown.
    Decision: model-driven tool calling is allowed; the deterministic router
    remains an acceptable fallback.
-2. **Rate limits.** https://console.groq.com/docs/rate-limits only exposes
-   Developer-plan values: gpt-oss-20b and gpt-oss-120b both 30 RPM, 1K RPD,
-   8K TPM, 200K TPD. Free-plan values were not on the page. Action for the user:
-   read the real numbers at the Groq console limits page and paste them here.
+2. **Rate limits.** The docs page only exposes Developer-plan values
+   (gpt-oss-20b/120b: 30 RPM, 1K RPD, 8K TPM, 200K TPD). The real values for
+   THIS account were read from response headers of a live call to
+   `openai/gpt-oss-20b` (2026-10-25): `x-ratelimit-limit-requests: 1000`,
+   `x-ratelimit-limit-tokens: 8000`. (A user can still cross-check the console
+   limits page.)
    Design consequence if free is similar: 8K TPM is small, so keep tool
    outputs compact (summaries, not 190 raw rows) and budget roughly 1.5-3K
    tokens per question.
