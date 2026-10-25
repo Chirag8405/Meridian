@@ -1,5 +1,5 @@
 {
- "source_hash": "51c8cb3871438085871e628fb529414aa5d82033d10c4b29e17d0e16b241de6f",
+ "source_hash": "4f0a09bb03b87e92d0247d441dc8d583beb0b4a1e8003ef8dd557ebdae336cda",
  "chunks": [
   {
    "id": "FINDINGS.md#1",
@@ -364,8 +364,8 @@
   {
    "id": "SCOPE.md#2",
    "file": "SCOPE.md",
-   "heading_path": "Scope > Pending Decisions",
-   "text": "> These are open and should **not** be assumed. Resolve explicitly before\n> depending on them elsewhere.\n\n- **Which stablecoins to cover:** candidates are USDT, USDC, DAI, FRAX\n- **Which chain(s):** Ethereum mainnet only, or multi-chain\n- **Time range for historical data**\n- **Lab 2 (word count) mapping** — see [LAB_MAPPING.md](LAB_MAPPING.md)"
+   "heading_path": "Scope > Decisions resolved in practice",
+   "text": "> These were open early in the project and are now settled by what was built.\n\n- **Stablecoins covered:** USDC, USDT, DAI and TerraUSD (UST), as pairs on Curve and Uniswap V2\n  (USDC_DAI, USDC_USDT, UST_DAI, UST_USDC, UST_USDT). FRAX was a candidate and is not covered.\n  Live tracking covers the USDC pairs only (UST has no live pool activity).\n- **Chain:** Ethereum mainnet only.\n- **Historical time range:** USDC_USDT/curve from Dec 2022 to May 2023; UST_USDC/curve from\n  Apr to Jun 2022 (the available data starts after UST was already destabilised; see FINDINGS.md).\n- **Lab 2 (word count) mapping:** not required; closed. See [LAB_MAPPING.md](LAB_MAPPING.md)."
   },
   {
    "id": "DATA_SOURCES.md#1",

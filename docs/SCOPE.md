@@ -20,12 +20,14 @@
     for the full detail — BigQuery was considered and dropped as redundant
     with Dune for the historical need
 
-## Pending Decisions
+## Decisions resolved in practice
 
-> These are open and should **not** be assumed. Resolve explicitly before
-> depending on them elsewhere.
+> These were open early in the project and are now settled by what was built.
 
-- **Which stablecoins to cover:** candidates are USDT, USDC, DAI, FRAX
-- **Which chain(s):** Ethereum mainnet only, or multi-chain
-- **Time range for historical data**
-- **Lab 2 (word count) mapping** — see [LAB_MAPPING.md](LAB_MAPPING.md)
+- **Stablecoins covered:** USDC, USDT, DAI and TerraUSD (UST), as pairs on Curve and Uniswap V2
+  (USDC_DAI, USDC_USDT, UST_DAI, UST_USDC, UST_USDT). FRAX was a candidate and is not covered.
+  Live tracking covers the USDC pairs only (UST has no live pool activity).
+- **Chain:** Ethereum mainnet only.
+- **Historical time range:** USDC_USDT/curve from Dec 2022 to May 2023; UST_USDC/curve from
+  Apr to Jun 2022 (the available data starts after UST was already destabilised; see FINDINGS.md).
+- **Lab 2 (word count) mapping:** not required; closed. See [LAB_MAPPING.md](LAB_MAPPING.md).
