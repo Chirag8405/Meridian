@@ -1,0 +1,8 @@
+[Unit]
+Description=Meridian: auto-commit exported dashboard data to origin/main
+
+[Service]
+Type=oneshot
+WorkingDirectory=/home/chirag/Desktop/Meridian
+ExecStart=/home/chirag/Desktop/Meridian/systemd/autocommit-dashboard-data.sh
+TimeoutStartSec=10min

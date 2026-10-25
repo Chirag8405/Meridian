@@ -1,0 +1,9 @@
+[Unit]
+Description=Meridian: retry the dashboard-data auto-commit every 20 minutes (covers offline periods)
+
+[Timer]
+OnBootSec=3min
+OnUnitActiveSec=20min
+
+[Install]
+WantedBy=timers.target
