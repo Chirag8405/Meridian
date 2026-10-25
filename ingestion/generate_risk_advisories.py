@@ -32,20 +32,24 @@ def load_env() -> dict[str, str]:
     return values
 
 
+def fmt(value) -> str:
+    """4 decimal places max, so the model never echoes a raw float repr."""
+    return "not available" if value is None else f"{value:.4f}"
+
+
 def prompt_for(row: dict) -> str:
-    wallet = row.get("wallet_concentration_severity")
-    wallet_text = "not available" if wallet is None else f"{wallet:.4f}"
     return (
         "Write exactly 2 or 3 short sentences in plain English explaining the current "
         "risk state for this stablecoin pair. Use only the supplied numbers. Do not "
         "claim a cause, trend, prediction, or event that the numbers do not establish. "
+        "Quote numbers exactly as supplied (already rounded to 4 decimal places); never add digits. "
         "Mention uncertainty when a value is unavailable. Do not use headings or bullets.\n\n"
         f"Pair: {row.get('pair')} on {row.get('project')}\n"
-        f"Risk score (0-100): {row.get('risk_score')}\n"
-        f"Price deviation feature: {row.get('price_dev')}\n"
+        f"Risk score (0-100): {fmt(row.get('risk_score'))}\n"
+        f"Price deviation feature: {fmt(row.get('price_dev'))}\n"
         f"Cluster assignment: {row.get('cluster_id')}\n"
-        f"Cluster severity (0-1): {row.get('cluster_severity')}\n"
-        f"Wallet concentration severity (0-1): {wallet_text}"
+        f"Cluster severity (0-1): {fmt(row.get('cluster_severity'))}\n"
+        f"Wallet concentration severity (0-1): {fmt(row.get('wallet_concentration_severity'))}"
     )
 
 
@@ -56,7 +60,7 @@ def generate(row: dict, api_key: str) -> str | None:
         json={
             "model": MODEL,
             "temperature": 0.2,
-            "max_completion_tokens": 512,
+            "max_completion_tokens": 1024,
             "messages": [
                 {"role": "system", "content": "You are a careful risk analyst. Follow the numeric grounding rules exactly."},
                 {"role": "user", "content": prompt_for(row)},
@@ -65,7 +69,10 @@ def generate(row: dict, api_key: str) -> str | None:
         timeout=30,
     )
     response.raise_for_status()
-    content = response.json().get("choices", [{}])[0].get("message", {}).get("content", "")
+    choice = response.json().get("choices", [{}])[0]
+    if choice.get("finish_reason") == "length":
+        return None  # cut off mid-sentence; publish no advisory rather than a truncated one
+    content = choice.get("message", {}).get("content", "")
     content = " ".join(content.split())
     return content or None
 
