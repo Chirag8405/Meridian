@@ -198,7 +198,7 @@ async def run_tool(name: str, args: dict, src: DataSource, index: Bm25Index) -> 
             if fn is None:
                 return {"error": f"unknown tool {name!r}"}
             result = await fn(src, **args)
-    except TypeError as exc:
+    except (TypeError, ValueError) as exc:
         return {"error": f"bad arguments: {exc}"}
     except Exception:  # upstream/data failure; no details leak to the model or user
         return {"error": "data unavailable"}

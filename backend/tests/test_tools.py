@@ -49,3 +49,8 @@ def test_oversized_result_is_replaced():
     big = [{"pair": "P", "project": "x", "risk_score": 1.0, "window_start_ts": "2026-01-01T00:00:00Z",
             "source": "s" * 200} for _ in range(100)]
     assert "error" in run("get_live_risk", {}, {"current_risk_live": big})
+
+
+def test_garbage_model_arguments_are_argument_errors_not_data_failures():
+    r = run("get_live_prices", {"pair": "USDC_DAI", "hours": "abc"}, {"live_price_timeline": []})
+    assert r["error"].startswith("bad arguments")

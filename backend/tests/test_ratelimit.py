@@ -32,3 +32,15 @@ def test_daily_cap_resets_next_day():
     assert rl.check("c")[:2] == (False, "daily")
     c.t += 86400
     assert rl.check("c")[0]
+
+
+def test_client_table_is_bounded_under_forged_addresses():
+    c = Clock()
+    rl = RateLimiter(5, 10**9, 10**9, clock=c)
+    rl.MAX_TRACKED_CLIENTS = 50
+    for i in range(50):
+        rl.check(f"ip{i}")
+    c.t += 120  # all old entries expire
+    for i in range(50, 120):
+        rl.check(f"ip{i}")
+    assert len(rl._ip) <= 51 + 70

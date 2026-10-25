@@ -11,6 +11,10 @@ export async function POST(request: NextRequest) {
   if (!base) {
     return NextResponse.json({ detail: UNAVAILABLE }, { status: 503 });
   }
+  const declared = Number(request.headers.get("content-length") ?? "0");
+  if (!Number.isFinite(declared) || declared > MAX_BODY_CHARS * 4) {
+    return NextResponse.json({ detail: "Request too large." }, { status: 413 });
+  }
   const body = await request.text();
   if (body.length > MAX_BODY_CHARS) {
     return NextResponse.json({ detail: "Request too large." }, { status: 413 });
@@ -22,6 +26,7 @@ export async function POST(request: NextRequest) {
       headers: {
         "content-type": "application/json",
         ...(clientIp ? { "x-client-ip": clientIp } : {}),
+        ...(process.env.ASSISTANT_PROXY_SECRET ? { "x-proxy-secret": process.env.ASSISTANT_PROXY_SECRET } : {}),
       },
       body,
       cache: "no-store",
