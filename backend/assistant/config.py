@@ -20,7 +20,8 @@ class Settings:
     per_ip_per_min: int
     global_per_min: int
     daily_cap: int
-    max_tool_calls: int = 3
+    max_tool_rounds: int = 3  # rounds of tool use per question
+    max_calls_per_round: int = 4  # the model sometimes issues parallel calls
     max_question_chars: int = 500
     cache_ttl_seconds: int = 300
     llm_timeout_seconds: float = 20.0

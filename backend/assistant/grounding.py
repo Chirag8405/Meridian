@@ -15,6 +15,12 @@ ALLOWED_CONSTANTS = {Decimal(0), Decimal(1), Decimal(100)}
 _CITATION = re.compile(r"\[S\d+\]")
 _DATE = re.compile(r"(?<!\d)(\d{4})-(\d{2})-(\d{2})(?!\d)")
 _TIME = re.compile(r"(?<!\d)(\d{1,2}):(\d{2})(?::(\d{2}))?(?!\d)")
+_WORDS = {w: Decimal(i) for i, w in enumerate(
+    "zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen "
+    "fifteen sixteen seventeen eighteen nineteen twenty".split())}
+_WORDS.update({w: Decimal(10 * i) for i, w in enumerate(
+    "x x twenty thirty forty fifty sixty seventy eighty ninety".split()) if w != "x"})
+_WORD = re.compile(r"\b(" + "|".join(sorted(_WORDS, key=len, reverse=True)) + r")\b", re.I)
 _NUMBER = re.compile(r"(?<![\w.])-?\d[\d,]*(?:\.\d+)?")
 
 
@@ -46,6 +52,8 @@ def extract_numbers(text: str) -> list[tuple[str, Decimal]]:
         val = _dec(raw)
         if val is not None:
             out.append((raw, abs(val)))
+    # Spelled-out numbers ("four swaps") must be grounded too; "one" is exempt below.
+    out += [(w.lower(), _WORDS[w.lower()]) for w in _WORD.findall(text)]
     return out
 
 

@@ -75,7 +75,7 @@ def test_tool_call_cap_is_enforced():
 
 
 def test_model_that_keeps_calling_tools_after_cap_gets_fallback():
-    script = [tool_call("get_live_risk", {}, cid=f"c{i}") for i in range(4)]
+    script = [tool_call("get_live_risk", {}, cid=f"c{i}") for i in range(5)]  # last two ignored (no tools offered)
     out, _ = ask("what is live risk?", script)
     assert out["tool_calls"] == 3 and out["answer"].startswith("I couldn't")
 
@@ -89,7 +89,7 @@ def test_injection_in_tool_data_does_not_change_flow():
 
 
 def test_truncated_final_answer_falls_back():
-    out, _ = ask("risk?", [{"role": "assistant", "content": "The sco", "_finish": "length"}])
+    out, _ = ask("risk?", [{"role": "assistant", "content": "The sco", "_finish": "length"} for _ in range(2)])
     assert out["answer"].startswith("I couldn't") and out["grounding"]["checked"] is False
 
 
@@ -104,3 +104,27 @@ def test_all_tools_failing_raises_instead_of_claiming_no_data():
     llm = FakeLLM([tool_call("get_live_risk", {}), {"role": "assistant", "content": "The data does not contain it."}])
     with pytest.raises(DataUnavailable):
         asyncio.run(answer_question("risk?", [], Broken(), INDEX, llm, S))
+
+
+def test_parallel_calls_in_one_round_are_all_executed_up_to_the_per_round_cap():
+    multi = {"role": "assistant", "content": None, "tool_calls": [
+        {"id": f"c{i}", "type": "function", "function": {"name": "get_live_risk", "arguments": "{}"}} for i in range(5)]}
+    out, _ = ask("risk?", [multi, {"role": "assistant", "content": "Done [S1]."}])
+    assert out["tool_calls"] == 5 and out["answer"] == "Done [S1]."
+    assert len(out["sources"]) >= 1
+
+
+def test_empty_answer_is_retried_once():
+    out, llm = ask("risk?", [{"role": "assistant", "content": ""}, {"role": "assistant", "content": "Fine."}])
+    assert out["answer"] == "Fine." and len(llm.sent) == 2
+
+
+def test_why_questions_prefetch_doc_excerpts_before_the_first_model_call():
+    idx = Bm25Index([{"id": "F#1", "file": "FINDINGS.md", "heading_path": "UST has no reliable baseline",
+                      "text": "UST data starts when it was already destabilized."}])
+    llm = FakeLLM([{"role": "assistant", "content": "Because UST data starts already destabilized [S1]."}])
+    out = asyncio.run(answer_question("Why does UST have zero lead time?", [], FakeSource(TABLES), idx, llm, S))
+    first_call_messages = llm.sent[0][0]
+    assert any(m["role"] == "tool" and "destabilized" in m["content"] for m in first_call_messages)
+    assert out["sources"][0]["label"] == "FINDINGS.md > UST has no reliable baseline"
+    assert out["grounding"]["ungrounded_numbers"] == []

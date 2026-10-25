@@ -159,8 +159,8 @@ _PAIR = {"type": "string", "description": "e.g. USDC_DAI or USDC_USDT"}
 _PROJECT = {"type": "string", "description": "DEX: curve or uniswap_v2"}
 
 TOOL_SCHEMAS = [
-    _fn("get_live_risk", "Latest live risk score (0-100) per pair and DEX, with its inputs.", {"pair": _PAIR, "project": _PROJECT}),
-    _fn("get_historical_risk", "Latest scored window per pair/DEX across all 7 tracked pairs, including UST.", {"pair": _PAIR, "project": _PROJECT}),
+    _fn("get_live_risk", "Latest live risk score (0-100) per pair and DEX, with its inputs. Omit all arguments to get every pair and DEX (4 rows).", {"pair": _PAIR, "project": _PROJECT}),
+    _fn("get_historical_risk", "Latest scored window per pair/DEX across all 7 tracked pairs, including UST. Omit arguments for all rows.", {"pair": _PAIR, "project": _PROJECT}),
     _fn("get_event_evaluation", "Measured early-warning results (lead time, false alarms, peak score) for the two real events.",
         {"event_label": {"type": "string", "enum": list(EVENTS)}}),
     _fn("get_event_timeline", "Summary of the hourly price inside one real crisis window (lowest price, when it left the peg).",
