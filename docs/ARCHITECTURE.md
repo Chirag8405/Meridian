@@ -278,6 +278,24 @@ the user-facing dashboard.
   request time — a deliberate, confirmed scope decision to ship the pure
   replacement first rather than add fallback complexity speculatively.
 
+  **Recent activity graph.** The dashboard's "Recent activity" section is a
+  descriptive view of the live feed, not a risk score. `GET
+  /api/recent-swap-activity?window=15m|1h|6h|24h[&pair=&pool=&source=]`
+  returns zero-filled, UTC-aligned bar buckets (1 min / 5 min / 30 min /
+  2 h respectively) plus a summary and the retention boundary;
+  `GET /api/recent-swap-events` still returns the raw rows (25 by default,
+  and now accepts the same filters plus `start`/`end`/`limit` to inspect one
+  bucket). Both bucket and filter by `observed_at` (when the feed saw the
+  swap), not `event_ts` (the on-chain block time) — the graph describes feed
+  activity, and gap-filled events have an old `event_ts` but a fresh
+  `observed_at`. Storage retention (latest 100 rows / 48 hours in
+  `recent_swap_events`) is independent of the graph window and the display
+  limit, so a 24h window can show empty bars purely because of retention;
+  the response reports `window_exceeds_retention` and the UI says so. The
+  browser reaches these endpoints through Next.js route handlers
+  (`dashboard/app/api/recent-swap-*`) since the Render API has no CORS, and
+  refreshes every 20 seconds.
+
 ## Workflow Diagram (Description)
 
 ```

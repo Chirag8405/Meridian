@@ -113,6 +113,45 @@ export type RecentSwapEvent = {
   source: "alchemy_live" | "alchemy_getlogs_replay";
 };
 
+export type ActivityWindow = "15m" | "1h" | "6h" | "24h";
+
+export type ActivityFilters = {
+  pair: string | null;
+  pool: string | null;
+  source: RecentSwapEvent["source"] | null;
+};
+
+export type ActivityBucket = {
+  start: string;
+  end: string;
+  total: number;
+  live: number;
+  gap_filled: number;
+};
+
+export type RecentSwapActivity = {
+  window: ActivityWindow;
+  bucket_seconds: number;
+  window_start: string;
+  window_end: string;
+  buckets: ActivityBucket[];
+  summary: {
+    total: number;
+    live: number;
+    gap_filled: number;
+    active_pools: number;
+    last_observed_at: string | null;
+  };
+  filter_options: { pairs: string[]; pools: string[]; sources: string[] };
+  retention: {
+    retained_rows: number;
+    retention_hours: number;
+    max_rows: number;
+    oldest_observed_at: string | null;
+    window_exceeds_retention: boolean;
+  };
+};
+
 export type Metadata = {
   exported_at: string;
   dataset_end_usdc: string;
@@ -168,6 +207,25 @@ export async function getRecentSwapEvents(): Promise<RecentSwapEvent[]> {
   // endpoint. Treat that rollout gap as an honest empty state; real backend
   // failures should still fail the build/request visibly.
   if (res.status === 404) return [];
+  if (!res.ok) {
+    throw new Error(`Render backend returned ${res.status}: ${await res.text()}`);
+  }
+  return res.json();
+}
+
+// Separate from getRecentSwapEvents(): the graph aggregates the whole
+// retained window, the raw list stays a small display feed.
+export async function getRecentSwapActivity(
+  window: ActivityWindow = "1h"
+): Promise<RecentSwapActivity | null> {
+  if (!RENDER_API_URL) {
+    throw new Error("RENDER_API_URL is not set — recent activity cannot be loaded.");
+  }
+  const res = await fetch(`${RENDER_API_URL}/api/recent-swap-activity?window=${window}`, {
+    next: { revalidate: 20 },
+  });
+  // Same rollout-gap handling as getRecentSwapEvents().
+  if (res.status === 404) return null;
   if (!res.ok) {
     throw new Error(`Render backend returned ${res.status}: ${await res.text()}`);
   }

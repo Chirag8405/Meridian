@@ -5,6 +5,7 @@ import {
   getUstTimeline,
   getLivePriceTimeline,
   getRecentSwapEvents,
+  getRecentSwapActivity,
   getClassifierMetrics,
   getWalletRankings,
   getMetadata,
@@ -27,6 +28,7 @@ export default async function Home() {
   const ustTimeline = await getUstTimeline();
   const livePriceTimeline = await getLivePriceTimeline();
   const recentSwapEvents = await getRecentSwapEvents();
+  const recentSwapActivity = await getRecentSwapActivity();
   const metrics = await getClassifierMetrics();
   const wallets = await getWalletRankings();
 
@@ -52,7 +54,7 @@ export default async function Home() {
       <IntroExplainer />
 
       <LiveNow rows={liveRisk} priceTimeline={livePriceTimeline} />
-      <RecentActivity events={recentSwapEvents} />
+      <RecentActivity events={recentSwapEvents} activity={recentSwapActivity} />
       <RiskStrip rows={currentRisk} />
 
       <section aria-labelledby="crisis-heading" className="max-w-5xl mx-auto px-5 py-10 border-t border-border">
