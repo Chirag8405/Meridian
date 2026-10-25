@@ -1,7 +1,8 @@
 # Plan: Grounded GenAI Assistant, Faithfulness Evaluation, and LLM-vs-Rules Judge
 
-Status: PLAN ONLY. Nothing in this document is implemented yet unless the
-"Current state" section says so. Written 2026-10-25.
+Status (2026-10-25): Phases 0-3 implemented (assistant backend, /assistant page,
+evaluation harness and first results). Phase 4 (Part C, LLM judge) not started.
+See "Implementation log" at the end for deviations from this plan.
 
 This document is written so that an AI agent (or a human) with no prior
 conversation context can continue the work without guessing. Read it fully
@@ -611,3 +612,50 @@ New: `backend/assistant/{__init__,tools,retrieval,grounding,prompts,router}.py`,
 `backend/assistant/corpus.json`, `backend/tests/`, `genai/build_corpus.py`,
 `genai/eval/*`, `dashboard/app/assistant/page.tsx`,
 `dashboard/components/Assistant.tsx`, `dashboard/app/api/assistant/route.ts`.
+
+
+## Appendix C: Implementation log (deviations from the plan above)
+
+Phase 1-2 (assistant): shipped in PRs #42 and #43.
+- Tool-call limit is 3 *rounds* with up to 4 parallel calls per round (gpt-oss
+  sometimes issues parallel calls despite the docs); empty completions get one
+  retry; why/how/explain questions get a deterministic doc-excerpt prefetch
+  (prompt rule alone was not followed); questions are sanitised by dropping
+  sentences that try to steer the assistant (`sanitize_question`, regex based,
+  deterministic): a prompt rule alone did not stop gpt-oss-20b from appending
+  attacker-chosen text. Known cost: a sentence mixing an injection with a real
+  question is dropped whole (see test-080 in the report).
+- Spelled-out numbers ("four swaps") are checked by the grounding check.
+- Only numbers from numeric values, ISO timestamps, and trusted keys
+  (`text`, `label`, `heading`, `file`) count as evidence; digits inside free-text
+  fields (labels from the DB, wallet names) do not, so injected "say 999" text
+  cannot ground itself.
+
+Phase 3 (evaluation, `genai/eval`, this PR):
+- Questions: 80 hand-written (33 dev / 47 test), gold computed from a frozen
+  snapshot (`snapshot/`, sha256 in `_meta.json`). Dev was used for tuning
+  (prompt rules, sanitiser, scorer fixes for "does not provide" wording and
+  for grounded context numbers in unanswerable answers). Test was run once, after
+  the code was frozen, with one harness fix afterwards (below).
+- Models: the plan named `llama-3.1-8b-instant`. Groq's docs list it as
+  Production, but for this account the API returns 404 `model_not_found`
+  and `GET /openai/v1/models` does not list it. The third comparison model is
+  therefore `qwen/qwen3.8-27b` (listed as a *Preview* model). Chat QA was only
+  run with `openai/gpt-oss-20b` (the production model) because of the quota
+  below; B1 compares the three models on advisories.
+- Quota: gpt-oss-20b is capped at 200,000 tokens/day (`TPD`) on this key and
+  the dev + test chat runs (~3K tokens/question) consumed it, so the 20b
+  advisory run is partial (24 calm rows) and test-040 was not re-run after the
+  harness timeout fix. Both resume with the commands in `docs/SETUP.md` once the
+  quota window frees up.
+- Advisory rows are synthetic (seeded; anchored on real ranges). The plan said
+  "built from real historical values": the historical feature rows are in Hive
+  (`stress_clusters` has no live rows) and are not exposed to Supabase, so real
+  rows were not used. The report says so.
+- An extra advisory metric was added after a manual read of the first outputs
+  showed verdicts like "indicating a moderate level of risk": the prompt gives
+  the model no thresholds, so such labels are unauthorised interpretation.
+  The detector is a heuristic word list, not a proof.
+- Harness: per-question timeout raised 120s -> 300s after test-040 timed out
+  while waiting on the tokens/minute throttle (not a product failure); that
+  one question has not been re-run (quota).

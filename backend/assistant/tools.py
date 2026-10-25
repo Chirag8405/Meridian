@@ -12,6 +12,10 @@ from assistant.retrieval import Bm25Index
 
 EVENTS = ("USDC_MAR2023", "UST_MAY2022")
 WALLET_WINDOWS = ("USDC_MAR2023_CRISIS", "UST_MAY2022_CRISIS")
+# Overridden by the offline evaluation so activity questions are reproducible
+# against a frozen snapshot (genai/eval).
+now = lambda: datetime.now(timezone.utc)  # noqa: E731
+
 MAX_RESULT_CHARS = 7500  # keeps each tool result well inside the 8K tokens/min budget
 
 
@@ -117,7 +121,7 @@ async def get_recent_activity(src: DataSource, window: str = "1h", pair: str | N
     if source is not None and source not in VALID_SOURCES:
         return {"error": f"source must be one of {sorted(VALID_SOURCES)}"}
     rows = await src.table("recent_swap_events", order="observed_at.desc,event_id.desc")
-    res = compute_activity(rows, window, pair, pool, source, datetime.now(timezone.utc))
+    res = compute_activity(rows, window, pair, pool, source, now())
     busiest = max(res["buckets"], key=lambda b: b["total"])
     return clean({
         "label": f"recent_swap_events (swaps the live feed observed in the last {window}; counts are descriptive, not risk)",

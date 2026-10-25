@@ -8,7 +8,7 @@ from typing import Protocol
 from assistant import grounding
 from assistant.config import Settings
 from assistant.data import DataSource
-from assistant.prompts import NO_MORE_TOOLS, SYSTEM_PROMPT, refusal_for
+from assistant.prompts import NO_MORE_TOOLS, REFUSAL_INJECTION, SYSTEM_PROMPT, refusal_for, sanitize_question
 from assistant.retrieval import Bm25Index
 from assistant.tools import TOOL_SCHEMAS, run_tool, search_docs_sync
 
@@ -68,7 +68,9 @@ def _check(answer: str, question: str, results: list[dict], sources: list[dict])
 async def answer_question(
     question: str, history: list[dict], src: DataSource, index: Bm25Index, llm: LLM, settings: Settings
 ) -> dict:
-    refusal = refusal_for(question)
+    cleaned = sanitize_question(question)
+    refusal = REFUSAL_INJECTION if not cleaned else refusal_for(cleaned)
+    question = cleaned or question
     if refusal:
         return {"answer": refusal, "sources": [], "refused": True,
                 "grounding": {"checked": False, "ungrounded_numbers": [], "invalid_citations": [], "retried": False},

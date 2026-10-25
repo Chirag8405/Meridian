@@ -1,0 +1,2406 @@
+{
+ "model": "openai/gpt-oss-120b",
+ "synthetic_rows": true,
+ "records": [
+  {
+   "i": 0,
+   "band": "calm",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "calm",
+    "risk_score": 4.011767596173359,
+    "price_dev": 0.30685890750990835,
+    "cluster_id": 0,
+    "cluster_severity": 0.05,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score for USDC_USDT on Curve is 4.0118, indicating a low overall risk level. Supporting metrics show a price deviation feature of 0.3069, a cluster severity of 0.0500, and a wallet concentration severity of 0.1283, all of which suggest limited deviation and modest concentration risk.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 2,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 1,
+   "band": "calm",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "calm",
+    "risk_score": 4.0534653693036535,
+    "price_dev": -0.18904105339871125,
+    "cluster_id": 0,
+    "cluster_severity": 0.05,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score is 4.0535, indicating a low risk level. The price deviation feature is -0.1890, showing a slight negative deviation. Cluster severity is 0.0500 and wallet concentration severity is 0.1283, both low, suggesting limited concentration risk.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 2,
+   "band": "calm",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "calm",
+    "risk_score": 3.0679745335481257,
+    "price_dev": -0.1279811684527222,
+    "cluster_id": 0,
+    "cluster_severity": 0.05,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The current risk score for USDC_USDT on Curve is 3.0680, with a price deviation feature of -0.1280. Cluster severity is 0.0500, wallet concentration severity is 0.1283, and the pair is in cluster 0, indicating a low\u2011risk environment.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 2,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 3,
+   "band": "calm",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "calm",
+    "risk_score": 5.926684333380849,
+    "price_dev": 0.2544880104755617,
+    "cluster_id": 0,
+    "cluster_severity": 0.05,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score is 5.9267, indicating a low risk level. The price deviation feature is 0.2545, the cluster assignment is 0, the cluster severity is 0.0500, and the wallet concentration severity is 0.1283.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 2,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 4,
+   "band": "calm",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "calm",
+    "risk_score": 5.821630710445533,
+    "price_dev": 0.1493416365990548,
+    "cluster_id": 0,
+    "cluster_severity": 0.05,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The current risk score for USDC_USDT on Curve is 5.8216, which is low on the 0\u2011100 scale. The price deviation feature reads 0.1493, and the pair is assigned to cluster 0 with a cluster severity of 0.0500. Wallet concentration severity is 0.1283, suggesting modest concentration risk.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 5,
+   "band": "calm",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "calm",
+    "risk_score": 4.922677488459261,
+    "price_dev": 0.11119599625703926,
+    "cluster_id": 0,
+    "cluster_severity": 0.05,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score is 4.9227, indicating low overall risk. The price deviation feature is 0.1112 and the cluster severity is 0.0500, both suggesting minimal deviation and low cluster impact. Wallet concentration severity is 0.1283, reflecting modest concentration risk.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 6,
+   "band": "calm",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "calm",
+    "risk_score": 2.03751246456328,
+    "price_dev": 0.5131505812588423,
+    "cluster_id": 0,
+    "cluster_severity": 0.05,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score for USDC_USDT on curve is \"2.0375\", indicating a low overall risk level. Supporting metrics show a price deviation feature of \"0.5132\", a cluster severity of \"0.0500\", a wallet concentration severity of \"0.1283\", and the pair is assigned to cluster \"0\", all of which are modest.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 2,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 7,
+   "band": "calm",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "calm",
+    "risk_score": 5.078938784252609,
+    "price_dev": 0.29929082289716635,
+    "cluster_id": 0,
+    "cluster_severity": 0.05,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score for USDC_USDT on Curve is 5.0789, indicating a low risk level. The pair has a price deviation feature of 0.2993, a cluster assignment of 0 with a cluster severity of 0.0500, and a wallet concentration severity of 0.1283.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 2,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 8,
+   "band": "calm",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "calm",
+    "risk_score": 2.0020896274122086,
+    "price_dev": -1.046332870365362,
+    "cluster_id": 0,
+    "cluster_severity": 0.05,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score for USDC_USDT on Curve is 2.0021, which is very low on a 0\u2011100 scale. The price deviation feature is -1.0463, indicating a slight negative deviation. Cluster severity is 0.0500 and wallet concentration severity is 0.1283, both suggesting low additional risk.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 9,
+   "band": "calm",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "calm",
+    "risk_score": 3.124538517270299,
+    "price_dev": -0.2809135654399407,
+    "cluster_id": 0,
+    "cluster_severity": 0.05,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The overall risk score for USDC_USDT on Curve is \"3.1245\", indicating a low risk level. The price deviation feature is \"-0.2809\", showing a slight negative deviation. Cluster severity is \"0.0500\" and wallet concentration severity is \"0.1283\", both of which are relatively low.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 10,
+   "band": "calm",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "calm",
+    "risk_score": 4.797624388565417,
+    "price_dev": -0.027547038307551213,
+    "cluster_id": 0,
+    "cluster_severity": 0.05,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score for USDC_USDT on Curve is 4.7976, which is low on a 0\u2011100 scale. The price deviation feature is -0.0275, indicating a slight negative deviation. Cluster severity is 0.0500 and wallet concentration severity is 0.1283, both of which are modest.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 11,
+   "band": "calm",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "calm",
+    "risk_score": 5.099364857789263,
+    "price_dev": -0.38534084992469625,
+    "cluster_id": 0,
+    "cluster_severity": 0.05,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score for USDC_USDT on Curve is \"5.0994\", indicating a low risk level. The price deviation feature is \"-0.3853\", showing a slight negative deviation. The cluster severity is \"0.0500\" and the wallet concentration severity is \"0.1283\", both of which are relatively low.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 12,
+   "band": "calm",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "calm",
+    "risk_score": 4.802184408895234,
+    "price_dev": 0.23649268611552604,
+    "cluster_id": 0,
+    "cluster_severity": 0.05,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score is 4.8022, indicating a low risk level. The price deviation feature is 0.2365, showing a modest deviation. Cluster severity is 0.0500 and wallet concentration severity is 0.1283, both suggesting limited concentration risk.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 13,
+   "band": "calm",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "calm",
+    "risk_score": 3.444407713455001,
+    "price_dev": 1.0305181904002456,
+    "cluster_id": 0,
+    "cluster_severity": 0.05,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score for USDC_USDT on Curve is \"3.4444\", indicating a low risk level. The price deviation feature reads \"1.0305\", showing a modest deviation from the peg. Cluster severity is \"0.0500\" and wallet concentration severity is \"0.1283\", both of which are relatively low.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 14,
+   "band": "calm",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "calm",
+    "risk_score": 5.149253098214437,
+    "price_dev": 0.7182031427874047,
+    "cluster_id": 0,
+    "cluster_severity": 0.05,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score is 5.1493, indicating a low risk level. The price deviation feature is 0.7182, showing modest price variation. Cluster severity is 0.0500 and wallet concentration severity is 0.1283, both of which are relatively low.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 15,
+   "band": "calm",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "calm",
+    "risk_score": 3.501533919724019,
+    "price_dev": -0.44370953773486393,
+    "cluster_id": 0,
+    "cluster_severity": 0.05,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score for USDC_USDT on Curve is 3.5015, indicating a low overall risk level. Supporting metrics show a price deviation feature of -0.4437, cluster severity of 0.0500, and wallet concentration severity of 0.1283, all of which are modest.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 2,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 16,
+   "band": "calm",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "calm",
+    "risk_score": 3.888334649171565,
+    "price_dev": -0.06385279892312638,
+    "cluster_id": 0,
+    "cluster_severity": 0.05,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score is 3.8883, indicating a low risk level. The price deviation feature is -0.0639, showing a slight deviation from parity. Cluster severity is 0.0500 and wallet concentration severity is 0.1283, both suggesting limited concentration risk.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 17,
+   "band": "calm",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "calm",
+    "risk_score": 5.254910243045009,
+    "price_dev": 0.14905635214181528,
+    "cluster_id": 0,
+    "cluster_severity": 0.05,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The current risk score for USDC_USDT on Curve is 5.2549, which is low on a 0\u2011100 scale. Supporting metrics show a price deviation feature of 0.1491, a cluster severity of 0.0500, a wallet concentration severity of 0.1283, and a cluster assignment of 0.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 2,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 18,
+   "band": "calm",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "calm",
+    "risk_score": 3.7437031466749686,
+    "price_dev": -0.5741473881974231,
+    "cluster_id": 0,
+    "cluster_severity": 0.05,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score for USDC_USDT on Curve is 3.7437, indicating a low risk level. Supporting metrics include a price deviation feature of -0.5741, a cluster severity of 0.0500, and a wallet concentration severity of 0.1283.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 2,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 19,
+   "band": "calm",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "calm",
+    "risk_score": 3.641173565906846,
+    "price_dev": 0.7325527889399422,
+    "cluster_id": 0,
+    "cluster_severity": 0.05,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score for USDC_USDT on Curve is 3.6412, indicating a low risk level. The price deviation feature is 0.7326, and the pair is assigned to cluster 0 with a cluster severity of 0.0500. Wallet concentration severity is 0.1283, also suggesting limited concentration risk.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 20,
+   "band": "calm",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "calm",
+    "risk_score": 3.2388750003690303,
+    "price_dev": 0.14685524838964512,
+    "cluster_id": 0,
+    "cluster_severity": 0.05,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score for USDC_USDT on Curve is 3.2389, indicating a low risk level. The price deviation feature reads 0.1469, suggesting minimal price divergence. Cluster severity is 0.0500 and wallet concentration severity is 0.1283, both of which are relatively low.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 21,
+   "band": "calm",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "calm",
+    "risk_score": 4.967126564543829,
+    "price_dev": -0.8938458809166688,
+    "cluster_id": 0,
+    "cluster_severity": 0.05,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score for USDC_USDT on Curve is \"4.9671\", indicating a low overall risk level. The price deviation feature is \"-0.8938\", showing a slight negative deviation from the expected price. The cluster severity is \"0.0500\" and the wallet concentration severity is \"0.1283\", both of which are relatively low.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 22,
+   "band": "calm",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "calm",
+    "risk_score": 4.437864100928347,
+    "price_dev": 0.7837461598842429,
+    "cluster_id": 0,
+    "cluster_severity": 0.05,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score for USDC_USDT on Curve is 4.4379, indicating a low risk level. The price deviation feature is 0.7837, showing modest price deviation. The pair is assigned to cluster 0 with a cluster severity of 0.0500 and a wallet concentration severity of 0.1283, both of which are relatively low.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 23,
+   "band": "calm",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "calm",
+    "risk_score": 2.0,
+    "price_dev": -0.19295631063940227,
+    "cluster_id": 0,
+    "cluster_severity": 0.05,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The current risk score for USDC_USDT on Curve is 2.0000, indicating very low risk. Supporting metrics show a price deviation feature of -0.1930, a cluster severity of 0.0500, and a wallet concentration severity of 0.1283, all suggesting low risk levels.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 2,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 24,
+   "band": "calm",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "calm",
+    "risk_score": 4.221405163924043,
+    "price_dev": -0.49035618146220855,
+    "cluster_id": 0,
+    "cluster_severity": 0.05,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score for USDC_USDT on Curve is 4.2214, indicating a low overall risk level. The price deviation feature is -0.4904, showing a slight negative deviation from the expected price. The cluster severity is 0.0500 and the wallet concentration severity is 0.1283, both of which are relatively low.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 25,
+   "band": "calm",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "calm",
+    "risk_score": 5.066346015678956,
+    "price_dev": -0.03736793695977324,
+    "cluster_id": 0,
+    "cluster_severity": 0.05,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score for USDC_USDT on Curve is 5.0663, indicating a low overall risk level. The price deviation feature is -0.0374, showing a slight negative deviation from the expected price. Cluster severity is 0.0500 and wallet concentration severity is 0.1283, both of which are relatively low.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 26,
+   "band": "calm",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "calm",
+    "risk_score": 2.3194806799843226,
+    "price_dev": 0.49670752709478855,
+    "cluster_id": 0,
+    "cluster_severity": 0.05,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score for USDC_USDT on Curve is 2.3195, indicating a low overall risk level. Supporting metrics show a price deviation feature of 0.4967, a cluster severity of 0.0500, and a wallet concentration severity of 0.1283, all of which are relatively low.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 2,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 27,
+   "band": "calm",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "calm",
+    "risk_score": 5.307069965749402,
+    "price_dev": 0.5675050754444483,
+    "cluster_id": 0,
+    "cluster_severity": 0.05,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score for USDC_USDT on Curve is 5.3071, which reflects a low overall risk level. Supporting metrics show a price deviation feature of 0.5675, a cluster severity of 0.0500, a wallet concentration severity of 0.1283, and a cluster assignment of 0, all of which are modest.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 2,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 28,
+   "band": "calm",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "calm",
+    "risk_score": 6.386836378469644,
+    "price_dev": 0.21734620220900502,
+    "cluster_id": 0,
+    "cluster_severity": 0.05,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score for USDC_USDT on Curve is 6.3868, which is low on a 0\u2011100 scale. The price deviation feature is 0.2173 and the pair is assigned to cluster 0 with a cluster severity of 0.0500. Wallet concentration severity is 0.1283, indicating modest concentration risk.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 29,
+   "band": "calm",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "calm",
+    "risk_score": 4.536983810490167,
+    "price_dev": -0.7795008508387499,
+    "cluster_id": 0,
+    "cluster_severity": 0.05,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score for USDC_USDT on Curve is 4.5370, indicating a low overall risk level. The price deviation feature is -0.7795, showing a slight negative deviation from the expected price. Cluster severity is 0.0500 and wallet concentration severity is 0.1283, both of which are low.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 30,
+   "band": "calm",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "calm",
+    "risk_score": 5.231620497800965,
+    "price_dev": -0.3670553517662289,
+    "cluster_id": 0,
+    "cluster_severity": 0.05,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score for USDC_USDT on Curve is 5.2316, indicating low risk. The price deviation feature is -0.3671, and the wallet concentration severity is 0.1283, both modest values. Cluster assignment is 0 with a cluster severity of 0.0500, suggesting limited systemic concern.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 31,
+   "band": "calm",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "calm",
+    "risk_score": 3.736217340533628,
+    "price_dev": -0.7588726645807938,
+    "cluster_id": 0,
+    "cluster_severity": 0.05,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score for USDC_USDT on Curve is 3.7362, indicating a low overall risk level. Supporting metrics show a price deviation feature of -0.7589, a cluster severity of 0.0500, and a wallet concentration severity of 0.1283, all of which are modest.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 2,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 32,
+   "band": "calm",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "calm",
+    "risk_score": 3.0153399419048252,
+    "price_dev": -0.31867265556952146,
+    "cluster_id": 0,
+    "cluster_severity": 0.05,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The overall risk score for USDC_USDT on Curve is 3.0153, indicating a low risk level. The price deviation feature is -0.3187, showing a slight negative deviation. Cluster severity is 0.0500 and wallet concentration severity is 0.1283, both of which are relatively low.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 33,
+   "band": "calm",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "calm",
+    "risk_score": 6.174372560306382,
+    "price_dev": -1.2190752284692052,
+    "cluster_id": 0,
+    "cluster_severity": 0.05,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score is 6.1744, indicating a low risk level. The price deviation feature is -1.2191, reflecting a slight negative deviation. Cluster severity is 0.0500 and wallet concentration severity is 0.1283, both of which are relatively low.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 34,
+   "band": "calm",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "calm",
+    "risk_score": 2.3292122249895866,
+    "price_dev": 0.1436106578247027,
+    "cluster_id": 0,
+    "cluster_severity": 0.05,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The current risk score for USDC_USDT on Curve is 2.3292 and the price deviation feature measures 0.1436. It is assigned to cluster 0 with a cluster severity of 0.0500 and a wallet concentration severity of 0.1283, suggesting a low overall risk profile.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 2,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 35,
+   "band": "calm",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "calm",
+    "risk_score": 6.390689655819094,
+    "price_dev": 0.3470981702248889,
+    "cluster_id": 0,
+    "cluster_severity": 0.05,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The current risk score for USDC_USDT on Curve is 6.3907, with a price deviation feature of 0.3471. Cluster severity is 0.0500 and wallet concentration severity is 0.1283, indicating low to moderate risk levels.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 2,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 36,
+   "band": "calm",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "calm",
+    "risk_score": 2.0,
+    "price_dev": -1.510940898018743,
+    "cluster_id": 0,
+    "cluster_severity": 0.05,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score is 2.0000, indicating a very low overall risk. The price deviation feature is -1.5109, showing a modest negative deviation but its impact is uncertain without additional context. Cluster severity is 0.0500 and wallet concentration severity is 0.1283, both low, suggesting limited clustering and concentration risk.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 37,
+   "band": "calm",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "calm",
+    "risk_score": 4.870356101995437,
+    "price_dev": -0.4417571638418711,
+    "cluster_id": 0,
+    "cluster_severity": 0.05,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score for USDC_USDT on Curve is \"4.8704\", indicating a low risk level. The price deviation feature is \"-0.4418\", showing a slight negative deviation. The cluster severity is \"0.0500\" and the wallet concentration severity is \"0.1283\", both of which are low.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 38,
+   "band": "calm",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "calm",
+    "risk_score": 2.802298797062094,
+    "price_dev": 0.5864227448517377,
+    "cluster_id": 0,
+    "cluster_severity": 0.05,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score for USDC_USDT on Curve is \"2.8023\", indicating a low risk level. The price deviation feature is \"0.5864\", showing modest price deviation. The cluster severity is \"0.0500\" and the wallet concentration severity is \"0.1283\", both of which are relatively low.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 39,
+   "band": "calm",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "calm",
+    "risk_score": 5.9125006858525655,
+    "price_dev": 0.09435112826309179,
+    "cluster_id": 0,
+    "cluster_severity": 0.05,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score is 5.9125, indicating a low overall risk. The price deviation feature is 0.0944, showing minimal price divergence. Cluster severity is 0.0500 and wallet concentration severity is 0.1283, reflecting modest clustering and concentration risks.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 40,
+   "band": "mid",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "mid",
+    "risk_score": 10.191261144536494,
+    "price_dev": -2.734232486392454,
+    "cluster_id": 0,
+    "cluster_severity": 0.05,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score for USDC_USDT on Curve is 10.1913, which is low on a 0\u2011100 scale. The price deviation feature is -2.7342, indicating a slight negative deviation. Cluster severity is 0.0500 and wallet concentration severity is 0.1283, both suggesting limited concentration risk.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 41,
+   "band": "mid",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "mid",
+    "risk_score": 20.87454719481087,
+    "price_dev": -3.3459084489869855,
+    "cluster_id": 1,
+    "cluster_severity": 0.5,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score for USDC_USDT on Curve is 20.8745, indicating a relatively low risk level. The price deviation feature is -3.3459, the cluster severity is 0.5000, the wallet concentration severity is 0.1283, and the cluster assignment is 1.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 2,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 42,
+   "band": "mid",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "mid",
+    "risk_score": 14.158904715771442,
+    "price_dev": 1.7014532530003466,
+    "cluster_id": 1,
+    "cluster_severity": 0.5,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score is 14.1589, indicating low risk. The price deviation feature is 1.7015, suggesting modest deviation. Cluster severity is 0.5000 and wallet concentration severity is 0.1283, showing moderate cluster risk and low wallet concentration risk.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 43,
+   "band": "mid",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "mid",
+    "risk_score": 14.349267762750614,
+    "price_dev": 3.708459566103781,
+    "cluster_id": 1,
+    "cluster_severity": 0.5,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score is 14.3493, indicating a low overall risk level. The price deviation feature is 3.7085, showing modest price deviation. Cluster severity is 0.5000 and wallet concentration severity is 0.1283, suggesting moderate cluster risk and low concentration risk.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 44,
+   "band": "mid",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "mid",
+    "risk_score": 22.57892356063357,
+    "price_dev": 3.2659917737412547,
+    "cluster_id": 1,
+    "cluster_severity": 0.5,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The current risk score for USDC_USDT on Curve is 22.5789. The price deviation feature measures 3.2660 and the pair falls in cluster 1 with a cluster severity of 0.5000. Wallet concentration severity is 0.1283, suggesting relatively low concentration risk.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 45,
+   "band": "mid",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "mid",
+    "risk_score": 19.35247045709664,
+    "price_dev": 3.894328009909978,
+    "cluster_id": 0,
+    "cluster_severity": 0.05,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score for USDC_USDT on Curve is \"19.3525\", indicating a low overall risk level. The price deviation feature measures \"3.8943\", suggesting modest price variation. The cluster severity of \"0.0500\" and wallet concentration severity of \"0.1283\" are both relatively low.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 46,
+   "band": "mid",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "mid",
+    "risk_score": 8.67712756497171,
+    "price_dev": -2.0798921670488393,
+    "cluster_id": 0,
+    "cluster_severity": 0.05,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score is 8.6771, indicating low risk. The price deviation feature is -2.0799, showing a slight negative deviation. Cluster severity is 0.0500 and wallet concentration severity is 0.1283, both relatively low.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 47,
+   "band": "mid",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "mid",
+    "risk_score": 7.4147224652196195,
+    "price_dev": -2.1568665482463447,
+    "cluster_id": 0,
+    "cluster_severity": 0.05,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The current risk score is \"7.4147\", which is low on a 0\u2011100 scale. The price deviation feature is \"-2.1569\", indicating a slight negative deviation. Cluster severity is \"0.0500\" and wallet concentration severity is \"0.1283\", both suggesting limited concentration risk.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 48,
+   "band": "mid",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "mid",
+    "risk_score": 9.793039785752054,
+    "price_dev": 3.024531088142492,
+    "cluster_id": 1,
+    "cluster_severity": 0.5,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score is 9.7930, indicating low overall risk. The price deviation feature is 3.0245, showing modest deviation from the peg. Cluster severity is 0.5000 and wallet concentration severity is 0.1283, suggesting moderate cluster risk and low wallet concentration risk.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 49,
+   "band": "mid",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "mid",
+    "risk_score": 24.165143074346698,
+    "price_dev": -2.641609305507187,
+    "cluster_id": 1,
+    "cluster_severity": 0.5,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score is \"24.1651\", indicating a relatively low overall risk level. The price deviation feature is \"-2.6416\", showing a modest deviation from the expected price. The cluster severity of \"0.5000\" and wallet concentration severity of \"0.1283\" suggest moderate cluster risk and low wallet concentration risk.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 50,
+   "band": "mid",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "mid",
+    "risk_score": 14.285639423890585,
+    "price_dev": 1.7588427342758106,
+    "cluster_id": 1,
+    "cluster_severity": 0.5,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score is 14.2856, indicating a low overall risk level. The price deviation feature stands at 1.7588, showing a modest deviation from the peg. Cluster severity is 0.5000 and wallet concentration severity is 0.1283, reflecting moderate cluster risk and low wallet concentration risk.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 51,
+   "band": "mid",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "mid",
+    "risk_score": 8.308011224812638,
+    "price_dev": -3.961669001891523,
+    "cluster_id": 1,
+    "cluster_severity": 0.5,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The overall risk score is \"8.3080\", indicating a low risk level. The price deviation feature is \"-3.9617\", reflecting a modest negative deviation. The cluster severity of \"0.5000\" and wallet concentration severity of \"0.1283\" suggest moderate cluster risk and low wallet concentration risk.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 52,
+   "band": "mid",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "mid",
+    "risk_score": 10.088996742343333,
+    "price_dev": 3.0018181512612028,
+    "cluster_id": 0,
+    "cluster_severity": 0.05,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score is 10.0890, indicating a low risk level. The price deviation feature is 3.0018, showing modest price deviation. Cluster severity is 0.0500 and wallet concentration severity is 0.1283, both relatively low.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 53,
+   "band": "mid",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "mid",
+    "risk_score": 7.204152417844148,
+    "price_dev": -2.841546719921089,
+    "cluster_id": 1,
+    "cluster_severity": 0.5,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score for USDC_USDT on Curve is 7.2042, indicating a low overall risk level. The price deviation feature is -2.8415, with a cluster severity of 0.5000 and a wallet concentration severity of 0.1283, suggesting moderate cluster impact and low wallet concentration risk.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 2,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 54,
+   "band": "mid",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "mid",
+    "risk_score": 18.124523280962674,
+    "price_dev": -3.6858309434345493,
+    "cluster_id": 1,
+    "cluster_severity": 0.5,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score is 18.1245, indicating a low risk level. The price deviation feature is -3.6858, showing a slight negative deviation. Cluster severity is 0.5000 and wallet concentration severity is 0.1283, suggesting moderate cluster risk and low wallet concentration risk.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 55,
+   "band": "mid",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "mid",
+    "risk_score": 9.844198638889868,
+    "price_dev": 3.8886700598036783,
+    "cluster_id": 1,
+    "cluster_severity": 0.5,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The current risk score for USDC_USDT on Curve is 9.8442, with a price deviation feature of 3.8887. It is assigned to cluster 1 with a cluster severity of 0.5000 and a wallet concentration severity of 0.1283, indicating modest risk levels.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 2,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 56,
+   "band": "mid",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "mid",
+    "risk_score": 15.639896045525308,
+    "price_dev": -3.6223423162115376,
+    "cluster_id": 1,
+    "cluster_severity": 0.5,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score for USDC_USDT on Curve is 15.6399, with a price deviation feature of -3.6223. The pair is in cluster 1 with a cluster severity of 0.5000 and a wallet concentration severity of 0.1283, indicating moderate cluster risk and low wallet concentration risk.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 2,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 57,
+   "band": "mid",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "mid",
+    "risk_score": 15.751032862158542,
+    "price_dev": 1.714711653890414,
+    "cluster_id": 0,
+    "cluster_severity": 0.05,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score is 15.7510, indicating a low risk level. The price deviation feature is 1.7147, showing modest deviation from the peg. Cluster severity is 0.0500 and wallet concentration severity is 0.1283, both relatively low.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 58,
+   "band": "mid",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "mid",
+    "risk_score": 20.54419578387527,
+    "price_dev": 2.696554858774978,
+    "cluster_id": 0,
+    "cluster_severity": 0.05,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score for USDC_USDT on Curve is 20.5442, indicating a relatively low risk level. The price deviation feature is 2.6966, the cluster assignment is 0, the cluster severity is 0.0500, and the wallet concentration severity is 0.1283.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 2,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 59,
+   "band": "mid",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "mid",
+    "risk_score": 16.390754437529324,
+    "price_dev": -3.877463932186755,
+    "cluster_id": 1,
+    "cluster_severity": 0.5,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score is 16.3908, indicating a low risk level. The price deviation feature is -3.8775, reflecting a deviation from the expected price. Cluster severity is 0.5000 and wallet concentration severity is 0.1283, suggesting moderate cluster risk and low wallet concentration risk.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 60,
+   "band": "mid",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "mid",
+    "risk_score": 9.809525192403814,
+    "price_dev": -3.395357398839843,
+    "cluster_id": 1,
+    "cluster_severity": 0.5,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score is 9.8095, indicating low overall risk. The price deviation feature is -3.3954, reflecting a deviation from the expected price. Cluster severity is 0.5000 and wallet concentration severity is 0.1283, suggesting moderate cluster risk and low concentration risk.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 61,
+   "band": "mid",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "mid",
+    "risk_score": 24.617322120397716,
+    "price_dev": -3.2404919647695047,
+    "cluster_id": 1,
+    "cluster_severity": 0.5,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score is 24.6173, indicating a low to moderate risk level. The price deviation feature is -3.2405, showing a deviation below the reference. Cluster severity is 0.5000 and wallet concentration severity is 0.1283, suggesting moderate cluster risk and low wallet concentration risk.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 62,
+   "band": "mid",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "mid",
+    "risk_score": 16.427464056963146,
+    "price_dev": -2.3892404245573635,
+    "cluster_id": 0,
+    "cluster_severity": 0.05,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score is 16.4275. The price deviation feature is -2.3892. The cluster severity is 0.0500 and the wallet concentration severity is 0.1283, both indicating low severity.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 63,
+   "band": "mid",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "mid",
+    "risk_score": 16.680144675373246,
+    "price_dev": 3.0911048133492782,
+    "cluster_id": 0,
+    "cluster_severity": 0.05,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score for USDC_USDT on curve is 16.6801, which is low on a 0\u2011100 scale. The price deviation feature measures 3.0911, indicating modest deviation. Cluster severity is 0.0500 and wallet concentration severity is 0.1283, both relatively low.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 64,
+   "band": "mid",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "mid",
+    "risk_score": 21.548198809184882,
+    "price_dev": 3.3496825509392854,
+    "cluster_id": 0,
+    "cluster_severity": 0.05,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score for USDC_USDT on Curve is 21.5482, indicating a relatively low risk level. The price deviation feature is 3.3497, showing modest price variation, while the cluster severity is 0.0500 and the wallet concentration severity is 0.1283, both of which are low. No additional data is available to assess further uncertainty.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 65,
+   "band": "mid",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "mid",
+    "risk_score": 10.758540104433663,
+    "price_dev": 2.3889063583873957,
+    "cluster_id": 0,
+    "cluster_severity": 0.05,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The current risk score for USDC_USDT on Curve is 10.7585, which is low on the 0\u2011100 scale. The price deviation feature is 2.3889, the cluster severity is 0.0500, and the wallet concentration severity is 0.1283, suggesting modest risk factors.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 2,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 66,
+   "band": "mid",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "mid",
+    "risk_score": 24.814943843314648,
+    "price_dev": 2.680600156247138,
+    "cluster_id": 0,
+    "cluster_severity": 0.05,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score for USDC_USDT on Curve is 24.8149, indicating a relatively low risk level. Supporting metrics include a price deviation feature of 2.6806, a cluster severity of 0.0500, a wallet concentration severity of 0.1283, and the pair is assigned to cluster 0.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 2,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 67,
+   "band": "mid",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "mid",
+    "risk_score": 19.526890562262196,
+    "price_dev": 2.6180691944168086,
+    "cluster_id": 1,
+    "cluster_severity": 0.5,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score is 19.5269, indicating a low overall risk level. The price deviation feature is 2.6181, reflecting modest price deviation. Cluster severity is 0.5000 and wallet concentration severity is 0.1283, suggesting moderate cluster risk and low concentration risk.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 68,
+   "band": "mid",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "mid",
+    "risk_score": 24.19901123751973,
+    "price_dev": 1.701345313721566,
+    "cluster_id": 0,
+    "cluster_severity": 0.05,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score for USDC_USDT on Curve is 24.1990, indicating a relatively low risk level. The price deviation feature measures 1.7013, and the cluster severity is 0.0500 while the wallet concentration severity is 0.1283, both of which are modest. The pair is assigned to cluster 0.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 69,
+   "band": "mid",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "mid",
+    "risk_score": 11.237855715806958,
+    "price_dev": -2.344343699596326,
+    "cluster_id": 1,
+    "cluster_severity": 0.5,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score for USDC_USDT on Curve is 11.2379, which is low on a 0\u2011100 scale. The price deviation feature is -2.3443, indicating a slight negative deviation. Cluster severity is 0.5000 and wallet concentration severity is 0.1283, showing moderate clustering impact and low wallet concentration risk.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 70,
+   "band": "crisis",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "crisis",
+    "risk_score": 60.57178465395564,
+    "price_dev": -9.27420768887692,
+    "cluster_id": 3,
+    "cluster_severity": 1.0,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score is 60.5718, indicating a moderate level of risk. The price deviation feature is -9.2742, reflecting a deviation from the expected price. Cluster severity is 1.0000 while wallet concentration severity is 0.1283, suggesting low concentration risk.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 71,
+   "band": "crisis",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "crisis",
+    "risk_score": 44.608393412677145,
+    "price_dev": -13.18113688578041,
+    "cluster_id": 1,
+    "cluster_severity": 0.5,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score for USDC_USDT on Curve is 44.6084, indicating a moderate level of risk. The price deviation feature is -13.1811, showing a deviation below the reference level. Cluster severity is 0.5000 and wallet concentration severity is 0.1283, suggesting moderate cluster risk and low wallet concentration risk.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 72,
+   "band": "crisis",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "crisis",
+    "risk_score": 76.85729684044821,
+    "price_dev": -9.258360190534002,
+    "cluster_id": 1,
+    "cluster_severity": 0.5,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score is 76.8573, indicating relatively high risk. The price deviation feature is -9.2584, showing a negative deviation. Cluster severity is 0.5000 and wallet concentration severity is 0.1283, suggesting moderate cluster risk and low wallet concentration risk.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 73,
+   "band": "crisis",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "crisis",
+    "risk_score": 49.73372931764065,
+    "price_dev": 4.954248434372687,
+    "cluster_id": 3,
+    "cluster_severity": 1.0,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score for USDC_USDT on Curve is 49.7337, indicating a moderate level of risk. The price deviation feature measures 4.9542, and the pair is assigned to cluster 3 with a cluster severity of 1.0000. Wallet concentration severity is relatively low at 0.1283.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 74,
+   "band": "crisis",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "crisis",
+    "risk_score": 47.562794218958544,
+    "price_dev": 12.17687981884753,
+    "cluster_id": 1,
+    "cluster_severity": 0.5,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score for USDC_USDT on Curve is \"47.5628\" and the price deviation feature is \"12.1769\". It is assigned to cluster 1 with a cluster severity of \"0.5000\" and a wallet concentration severity of \"0.1283\", reflecting a moderate risk state.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 2,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 75,
+   "band": "crisis",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "crisis",
+    "risk_score": 66.31352394115027,
+    "price_dev": -14.924235920588835,
+    "cluster_id": 1,
+    "cluster_severity": 0.5,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score for USDC_USDT on Curve is \"66.3135\", indicating a moderate risk level. The price deviation feature is \"-14.9242\", and the pair is assigned to cluster \"1\" with a cluster severity of \"0.5000\". Wallet concentration severity is \"0.1283\", suggesting relatively low concentration risk.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 76,
+   "band": "crisis",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "crisis",
+    "risk_score": 33.61558992174492,
+    "price_dev": 12.871521802354158,
+    "cluster_id": 1,
+    "cluster_severity": 0.5,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score is 33.6156, indicating a moderate level of risk. The price deviation feature is 12.8715, reflecting some price divergence. Cluster severity is 0.5000 and wallet concentration severity is 0.1283, suggesting moderate cluster risk and low wallet concentration risk.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 77,
+   "band": "crisis",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "crisis",
+    "risk_score": 59.85968022131247,
+    "price_dev": 11.229951220096218,
+    "cluster_id": 2,
+    "cluster_severity": 0.85,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score for USDC_USDT on Curve is \"59.8597\", indicating a moderate level of risk. The price deviation feature is \"11.2300\", showing some price divergence. The pair sits in cluster \"2\" with a high cluster severity of \"0.8500\" and a low wallet concentration severity of \"0.1283\", suggesting the systemic risk factor is stronger than concentration risk.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 78,
+   "band": "crisis",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "crisis",
+    "risk_score": 33.88700826669948,
+    "price_dev": -4.235363417541029,
+    "cluster_id": 3,
+    "cluster_severity": 1.0,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score for USDC_USDT on Curve is 33.8870. The price deviation feature is -4.2354 and the pair is assigned to cluster 3 with a cluster severity of 1.0000. Wallet concentration severity is 0.1283, indicating relatively low concentration risk.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 79,
+   "band": "crisis",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "crisis",
+    "risk_score": 62.031456171408344,
+    "price_dev": -8.771903804332343,
+    "cluster_id": 1,
+    "cluster_severity": 0.5,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The current risk score for USDC_USDT on Curve is 62.0315, indicating a moderate level of risk. The price deviation feature is -8.7719, reflecting a deviation from the expected price. The pair is in cluster 1 with a cluster severity of 0.5000 and a wallet concentration severity of 0.1283, suggesting moderate cluster risk and low wallet concentration risk.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 80,
+   "band": "crisis",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "crisis",
+    "risk_score": 72.0908493534676,
+    "price_dev": -4.307930981890729,
+    "cluster_id": 1,
+    "cluster_severity": 0.5,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score is 72.0908, indicating a moderate to high risk level. The price deviation feature is -4.3079, reflecting a deviation from the expected price. Cluster severity is 0.5000 and wallet concentration severity is 0.1283, suggesting moderate cluster risk and low wallet concentration risk.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 81,
+   "band": "crisis",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "crisis",
+    "risk_score": 41.699099202202476,
+    "price_dev": -12.400477628788417,
+    "cluster_id": 2,
+    "cluster_severity": 0.85,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The current risk score for USDC_USDT on Curve is 41.6991, suggesting a moderate risk level. The price deviation feature is -12.4005, indicating a deviation from the expected price. The pair is in cluster 2 with a high cluster severity of 0.8500 and a low wallet concentration severity of 0.1283.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 82,
+   "band": "crisis",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "crisis",
+    "risk_score": 39.78379333040198,
+    "price_dev": 13.176144960834163,
+    "cluster_id": 1,
+    "cluster_severity": 0.5,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score is 39.7838, indicating a moderate level of risk. The price deviation feature is 13.1761, showing some deviation from the peg. Cluster severity is 0.5000 and wallet concentration severity is 0.1283, reflecting moderate cluster risk and low concentration risk.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 83,
+   "band": "crisis",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "crisis",
+    "risk_score": 76.87097220998672,
+    "price_dev": 13.874744013248167,
+    "cluster_id": 3,
+    "cluster_severity": 1.0,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The current risk score for USDC_USDT on Curve is 76.8710. The price deviation feature measures 13.8747 and the pair is assigned to cluster 3 with a cluster severity of 1.0000. Wallet concentration severity is 0.1283, indicating relatively low concentration risk.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 84,
+   "band": "crisis",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "crisis",
+    "risk_score": 58.25088000638545,
+    "price_dev": 13.098536507002501,
+    "cluster_id": 3,
+    "cluster_severity": 1.0,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score is 58.2509, indicating a moderate risk level. The price deviation feature is 13.0985, showing some price divergence. Cluster severity is 1.0000 and wallet concentration severity is 0.1283, with the pair assigned to cluster 3.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 85,
+   "band": "crisis",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "crisis",
+    "risk_score": 32.45350576426106,
+    "price_dev": -9.75857244145883,
+    "cluster_id": 1,
+    "cluster_severity": 0.5,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score is 32.4535, indicating moderate risk. The price deviation feature is -9.7586, showing a negative deviation. Cluster severity is 0.5000 and wallet concentration severity is 0.1283, suggesting moderate cluster risk and low wallet concentration risk.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 86,
+   "band": "crisis",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "crisis",
+    "risk_score": 74.74991912459672,
+    "price_dev": -10.694101028466651,
+    "cluster_id": 1,
+    "cluster_severity": 0.5,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The USDC_USDT pair on Curve has a risk score of 74.7499, indicating elevated risk. Its price deviation feature is -10.6941, and it is assigned to cluster 1 with a cluster severity of 0.5000. Wallet concentration severity is relatively low at 0.1283.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 87,
+   "band": "crisis",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "crisis",
+    "risk_score": 34.82376259616659,
+    "price_dev": 10.810113631018444,
+    "cluster_id": 1,
+    "cluster_severity": 0.5,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score for USDC_USDT on Curve is 34.8238, suggesting a moderate risk level. Its price deviation feature is 10.8101 and it falls in cluster 1 with a cluster severity of 0.5000. Wallet concentration severity is 0.1283, indicating relatively low concentration risk.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 88,
+   "band": "crisis",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "crisis",
+    "risk_score": 56.719110619426154,
+    "price_dev": 11.505645012124148,
+    "cluster_id": 3,
+    "cluster_severity": 1.0,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The current risk score for USDC_USDT on Curve is 56.7191, with a price deviation feature of 11.5056. It is assigned to cluster 3 with a cluster severity of 1.0000 and a wallet concentration severity of 0.1283.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 2,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 89,
+   "band": "crisis",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "crisis",
+    "risk_score": 56.66018686817407,
+    "price_dev": -13.715505958819817,
+    "cluster_id": 1,
+    "cluster_severity": 0.5,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score is \"56.6602\", indicating a moderate risk level. The price deviation feature is \"-13.7155\". The cluster severity is \"0.5000\" and the wallet concentration severity is \"0.1283\".",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 90,
+   "band": "crisis",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "crisis",
+    "risk_score": 39.16417629945613,
+    "price_dev": 4.464187841824234,
+    "cluster_id": 1,
+    "cluster_severity": 0.5,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score is 39.1642, indicating moderate risk. The price deviation feature is 4.4642, suggesting some price variance. Cluster severity is 0.5000 and wallet concentration severity is 0.1283, reflecting moderate cluster risk and low wallet concentration risk.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 91,
+   "band": "crisis",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "crisis",
+    "risk_score": 53.93969753216227,
+    "price_dev": -12.359924568490182,
+    "cluster_id": 1,
+    "cluster_severity": 0.5,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score for USDC_USDT on Curve is 53.9397, indicating a moderate level of risk. The price deviation feature is -12.3599, reflecting a deviation from the expected price. Cluster severity is 0.5000 and wallet concentration severity is 0.1283, showing moderate cluster risk and low wallet concentration risk.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 92,
+   "band": "crisis",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "crisis",
+    "risk_score": 50.26515843391401,
+    "price_dev": -11.62004102803052,
+    "cluster_id": 2,
+    "cluster_severity": 0.85,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score for USDC_USDT on Curve is \"50.2652\", indicating a moderate risk level. The price deviation feature is \"-11.6200\", reflecting a negative deviation. The pair is in cluster \"2\" with a cluster severity of \"0.8500\" (high) and a wallet concentration severity of \"0.1283\" (low).",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 93,
+   "band": "crisis",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "crisis",
+    "risk_score": 53.9649008095061,
+    "price_dev": 9.585270452175383,
+    "cluster_id": 1,
+    "cluster_severity": 0.5,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score for USDC_USDT on Curve is 53.9649, indicating a moderate risk level. The price deviation feature reads 9.5853, showing some price divergence. Cluster severity is 0.5000 and wallet concentration severity is 0.1283, reflecting moderate cluster risk and low wallet concentration risk.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 94,
+   "band": "crisis",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "crisis",
+    "risk_score": 64.85541928427628,
+    "price_dev": 14.15062634762117,
+    "cluster_id": 1,
+    "cluster_severity": 0.5,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The current risk score for USDC_USDT on Curve is 64.8554, with a price deviation feature of 14.1506. It is assigned to cluster 1 with a cluster severity of 0.5000 and a wallet concentration severity of 0.1283.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 2,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 95,
+   "band": "crisis",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "crisis",
+    "risk_score": 72.87998765341274,
+    "price_dev": -8.58300762130202,
+    "cluster_id": 2,
+    "cluster_severity": 0.85,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score for USDC_USDT on Curve is 72.8800, indicating elevated risk. The price deviation feature is -8.5830, and the pair is assigned to cluster 2 with a cluster severity of 0.8500. Wallet concentration severity is 0.1283, suggesting relatively low concentration risk.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 96,
+   "band": "crisis",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "crisis",
+    "risk_score": 50.200731031677485,
+    "price_dev": -11.38270991777648,
+    "cluster_id": 2,
+    "cluster_severity": 0.85,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score for USDC_USDT on Curve is 50.2007, indicating a moderate level of risk. The price deviation feature is -11.3827, reflecting a negative deviation from the expected price. The pair is in cluster 2 with a cluster severity of 0.8500 and a wallet concentration severity of 0.1283, suggesting high cluster risk but low wallet concentration risk.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 97,
+   "band": "crisis",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "crisis",
+    "risk_score": 29.167883717442436,
+    "price_dev": 12.623296188904707,
+    "cluster_id": 1,
+    "cluster_severity": 0.5,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score for USDC_USDT on Curve is \"29.1679\", indicating a moderate risk level. The price deviation feature is \"12.6233\", showing some price variation. Cluster severity is \"0.5000\" and wallet concentration severity is \"0.1283\", suggesting moderate cluster risk and low wallet concentration risk.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 98,
+   "band": "crisis",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "crisis",
+    "risk_score": 78.55176553740228,
+    "price_dev": 5.572768977166609,
+    "cluster_id": 1,
+    "cluster_severity": 0.5,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score is \"78.5518\", indicating a high risk level. The price deviation feature is \"5.5728\", showing a modest deviation from parity. Cluster severity is \"0.5000\" and wallet concentration severity is \"0.1283\", suggesting moderate cluster risk and low wallet concentration risk.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  },
+  {
+   "i": 99,
+   "band": "crisis",
+   "row": {
+    "pair": "USDC_USDT",
+    "project": "curve",
+    "band": "crisis",
+    "risk_score": 80.15005261198388,
+    "price_dev": -12.213503014128994,
+    "cluster_id": 1,
+    "cluster_severity": 0.5,
+    "wallet_concentration_severity": 0.12830815594836484
+   },
+   "advisory": "The risk score for USDC_USDT on Curve is 80.1501, indicating elevated risk. The price deviation feature is -12.2135, reflecting a price offset. Cluster severity is 0.5000 and wallet concentration severity is 0.1283, suggesting moderate cluster risk and low wallet concentration risk.",
+   "error": null,
+   "score": {
+    "present": true,
+    "complete": true,
+    "ungrounded_numbers": [],
+    "causal_or_predictive": [],
+    "sentences": 3,
+    "follows_2_or_3_sentences": true
+   }
+  }
+ ]
+}
