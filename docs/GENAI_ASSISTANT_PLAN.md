@@ -139,7 +139,7 @@ genuine early warning"):
 
 ## 3. Verified vs. unverified (do not guess the second list)
 
-### Unverified: you MUST check these before relying on them
+### Unverified at time of writing (items 1-6 were resolved in Phase 0, see Appendix A; anything not listed there is still unverified)
 1. Whether the chosen Groq model supports tool/function calling with the
    OpenAI-compatible chat API. Check Groq's current docs, then run a 1-call
    smoke test. If it does not, fall back to the "deterministic retrieval, then
@@ -261,8 +261,9 @@ All times in tool outputs are converted to UTC ISO-8601 with a trailing `Z`.
   Exclude `docs/SETUP.md` (operational secrets/paths).
 - Build step: a script `genai/build_corpus.py` splits each file by markdown
   heading (`##`/`###`), keeps `{id, file, heading_path, text}`, and writes
-  `backend/assistant/corpus.json`. This file IS committed so Render has it
-  regardless of its root directory (see 3.4). Re-run the script when docs
+  `backend/assistant/corpus.json`. This file MUST be committed under `backend/`:
+  Render's root directory is `backend/`, so `docs/` does not exist at runtime
+  (verified, Appendix A item 4). Re-run the script when docs
   change; add a check that fails CI/verification if `corpus.json` is stale
   (hash of source files stored in the JSON).
 - Retrieval: lexical BM25 implemented in plain Python (about 40 lines, no new
@@ -493,7 +494,7 @@ Phase 5 - Docs and release
 ```
 # from repo root
 python -m py_compile backend/main.py backend/assistant/*.py ingestion/generate_risk_advisories.py
-pytest backend/tests -q            # after Phase 1 creates it
+(cd backend && pytest tests -q)    # after Phase 1 creates it
 cd dashboard
 npm run lint
 ./node_modules/.bin/tsc --noEmit
@@ -503,8 +504,10 @@ git diff --check
 ```
 Backend local run: `.venv/bin/python -m pip install -r backend/requirements.txt`
 (or use a throwaway venv), set `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`,
-`GROQ_API_KEY`, then `uvicorn backend.main:app`. Check the exact module path
-against how Render starts the service before documenting it.
+`GROQ_API_KEY`, then, from inside `backend/`, `uvicorn main:app` (this is exactly how Render starts
+the service; see Appendix A, item 4). Inside `backend/`, import the assistant
+package as `from assistant import ...`, NOT `backend.assistant`, because
+Render's root directory is `backend/`.
 
 Live checks after deploy: `/health` returns ok; `POST /api/assistant/chat` with
 a lookup question returns sources and `grounding.checked=true`; a prompt asking
@@ -513,18 +516,28 @@ exceeded.
 
 ---
 
-## 10. Open decisions (ask the user, do not decide silently)
+## 10. Decisions (resolved 2026-10-25 unless marked OPEN)
 
-1. Which Groq model(s) for the assistant and for the evaluation comparison
-   (after the Phase 0 model-list check).
-2. Rate-limit numbers and whether a global daily cap is wanted (depends on the
-   real free-tier limits).
-3. Whether to ship the chat page publicly on the Vercel site or behind a
-   non-linked route for the demo only.
-4. Whether the course's GenAI requirement (noted in `CLAUDE.md` as pending
-   confirmation) restricts scope, e.g. a specific technique or model family.
-5. Whether to also show advisories' faithfulness score on the dashboard, or keep
-   it purely in the report.
+1. **Models.** Assistant: `openai/gpt-oss-20b` (already in use; confirmed
+   Production and tool-capable, see Appendix A), configurable via
+   `ASSISTANT_MODEL`. Evaluation compares it against `openai/gpt-oss-120b`
+   (larger) and `llama-3.1-8b-instant` (smaller/faster); all three are listed
+   as Production on Groq's models page. Note gpt-oss models do NOT support
+   parallel tool calls, so tool calls are sequential (the 3-call cap in 5.2
+   still holds).
+2. **Rate limits.** Per-IP: about 5 questions/minute. Plus a global daily cap,
+   set under the real free-tier daily limit and read from env
+   (`ASSISTANT_DAILY_CAP`); friendly "assistant is resting" message when hit.
+   The free-plan numbers are NOT public on the docs page (only Developer-plan
+   numbers are), so the user must read them from the Groq console limits page
+   and record them in Appendix A before the caps are finalised.
+3. **Visibility.** The page is public but unlisted: no header link until just
+   before the demo; enable by adding the link in `dashboard/app/page.tsx`.
+4. **OPEN - course restrictions.** Needs the user to ask the other course's
+   instructor whether retrieval + tool use + evaluation counts as GenAI and
+   whether a specific technique/model is required. Blocks Phase 1.
+5. **Advisory faithfulness on the dashboard.** Report only for now; revisit
+   after Part B numbers exist.
 
 ---
 
@@ -543,8 +556,41 @@ exceeded.
 
 ## Appendix A: Verification log
 
-(Empty. Phase 0 fills this in: item, date, evidence/command output summary,
-decision taken.)
+Phase 0, 2026-10-25. Item numbers refer to section 3.
+
+1. **Tool calling.** Groq's tool-use docs list `openai/gpt-oss-20b`,
+   `openai/gpt-oss-120b`, `llama-3.3-70b-versatile` and `llama-3.1-8b-instant`
+   as supporting local tool use. gpt-oss models: parallel tool calls NOT
+   supported. Request shape: `tools=[{"type":"function","function":{"name",
+   "description","parameters"(JSON Schema)}}]`; the model replies with
+   `tool_calls` (`id`, `function.name`, `function.arguments` as a JSON string);
+   append `{"role":"tool","tool_call_id":<id>,"name":..,"content":<string>}`
+   and call again. Source: https://console.groq.com/docs/tool-use. Not yet
+   smoke-tested against the live API with our key; do that first in Phase 1.
+   Decision: model-driven tool calling is allowed; the deterministic router
+   remains an acceptable fallback.
+2. **Rate limits.** https://console.groq.com/docs/rate-limits only exposes
+   Developer-plan values: gpt-oss-20b and gpt-oss-120b both 30 RPM, 1K RPD,
+   8K TPM, 200K TPD. Free-plan values were not on the page. Action for the user:
+   read the real numbers at the Groq console limits page and paste them here.
+   Design consequence if free is similar: 8K TPM is small, so keep tool
+   outputs compact (summaries, not 190 raw rows) and budget roughly 1.5-3K
+   tokens per question.
+3. **Embeddings.** Not needed (lexical BM25). Not checked; do not add.
+4. **Render root directory.** `render services` shows service `Meridian`:
+   `rootDir: backend/`, build `pip install -r requirements.txt`, start
+   `uvicorn main:app --host 0.0.0.0 --port $PORT`, runtime python, no
+   `render.yaml` in the repo. Consequence: only `backend/` is deployed;
+   `docs/` is absent at runtime; imports are relative to `backend/`.
+5. **Python version.** Exact version not read from Render. `backend/main.py`
+   already uses `str | None` annotations and runs live, so >= 3.10 is
+   confirmed in practice.
+6. **Model ids.** https://console.groq.com/docs/models (Production):
+   `llama-3.1-8b-instant`, `llama-3.3-70b-versatile`, `openai/gpt-oss-120b`,
+   `openai/gpt-oss-20b`. `llama-3.1-8b-instant` does exist and is Production
+   (the earlier worry was unfounded). Preview models exist but are not used.
+
+Decisions: see section 10.
 
 ## Appendix B: Files this plan will touch or create
 
