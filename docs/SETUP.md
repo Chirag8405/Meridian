@@ -294,3 +294,35 @@ Vercel build fails (see the last bullet for why that's expected, not a bug).
    configured will fail cleanly with a clear error naming the missing
    config or unreachable backend, not deploy something broken silently —
    confirmed by testing locally without `RENDER_API_URL` set.
+
+
+## Grounded assistant (backend/assistant)
+
+Plan and rationale: `docs/GENAI_ASSISTANT_PLAN.md`. Endpoint:
+`POST /api/assistant/chat` on the Render service (body `{"question": str, "history": []}`).
+
+Render environment variables (Render dashboard -> Meridian -> Environment):
+
+| Variable | Required | Default | Meaning |
+|---|---|---|---|
+| `GROQ_API_KEY` | yes | none | Secret. Without it the endpoint answers HTTP 503 "assistant unavailable"; the rest of the API is unaffected. |
+| `ASSISTANT_MODEL` | no | `openai/gpt-oss-20b` | Groq model id (must support tool calling). |
+| `ASSISTANT_PER_IP_PER_MIN` | no | `3` | Questions per client per minute. |
+| `ASSISTANT_GLOBAL_PER_MIN` | no | `3` | Questions per minute across everyone (Groq's 8,000 tokens/minute limit). |
+| `ASSISTANT_DAILY_CAP` | no | `200` | Questions per UTC day (Groq's limit is 1,000 requests/day; a question uses up to ~4). |
+
+Limits are in memory (single Render instance; reset on restart). The Next.js
+proxy should forward the visitor address as the `x-client-ip` header; callers
+who hit Render directly can spoof it, which only evades the per-client limit,
+not the global and daily caps.
+
+The retrieval corpus is committed at `backend/assistant/corpus.json` because
+Render deploys only `backend/`. Rebuild it after editing FINDINGS.md,
+ARCHITECTURE.md, SCOPE.md or DATA_SOURCES.md:
+
+```
+python genai/build_corpus.py          # rewrite the corpus
+python genai/build_corpus.py --check  # fails if it is stale
+```
+
+Tests: `cd backend && pip install -r requirements.txt -r requirements-dev.txt && pytest tests -q`.

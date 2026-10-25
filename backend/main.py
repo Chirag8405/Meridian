@@ -21,11 +21,20 @@ Application Layer section for the full report):
 
 import asyncio
 import os
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 
 import httpx
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import JSONResponse
+
+from activity import (
+    ACTIVITY_WINDOWS,
+    RECENT_EVENTS_MAX_LIMIT,
+    VALID_SOURCES,
+    compute_activity,
+    matches as _matches,
+    parse_ts as _parse_ts,
+)
 
 SUPABASE_URL = os.environ.get("SUPABASE_URL", "").rstrip("/")
 SUPABASE_PUBLISHABLE_KEY = os.environ.get("SUPABASE_PUBLISHABLE_KEY", "")
@@ -43,16 +52,6 @@ TABLES = [
     "wallet_rankings",
 ]
 RECENT_EVENTS_DISPLAY_LIMIT = 25
-RECENT_EVENTS_MAX_LIMIT = 100  # matches the recent_swap_events retention policy
-RETENTION_HOURS = 48
-# window -> (window length, bucket length). Every window yields 12-15 bars.
-ACTIVITY_WINDOWS = {
-    "15m": (timedelta(minutes=15), timedelta(minutes=1)),
-    "1h": (timedelta(hours=1), timedelta(minutes=5)),
-    "6h": (timedelta(hours=6), timedelta(minutes=30)),
-    "24h": (timedelta(hours=24), timedelta(hours=2)),
-}
-VALID_SOURCES = {"alchemy_live", "alchemy_getlogs_replay"}
 
 
 def _require_config():
@@ -139,14 +138,6 @@ async def dashboard_data():
     })
 
 
-def _parse_ts(value: str) -> datetime:
-    return datetime.fromisoformat(value.replace("Z", "+00:00")).astimezone(timezone.utc)
-
-
-def _iso(dt: datetime) -> str:
-    return dt.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
-
-
 def _validate_source(source: str | None):
     if source is not None and source not in VALID_SOURCES:
         raise HTTPException(status_code=422, detail=f"source must be one of {sorted(VALID_SOURCES)}")
@@ -159,14 +150,6 @@ async def _fetch_recent_rows() -> list:
             "recent_swap_events",
             order="observed_at.desc,event_id.desc",
         )
-
-
-def _matches(row: dict, pair: str | None, pool: str | None, source: str | None) -> bool:
-    if pair is not None and (row.get("pair") or "untracked") != pair:
-        return False
-    if pool is not None and row["pool_name"] != pool:
-        return False
-    return source is None or row["source"] == source
 
 
 @app.get("/api/recent-swap-events")
@@ -214,66 +197,21 @@ async def recent_swap_activity(
     _validate_source(source)
     rows = await _fetch_recent_rows()
 
-    window_len, bucket_len = ACTIVITY_WINDOWS[window]
-    now = datetime.now(timezone.utc)
-    bucket_s = int(bucket_len.total_seconds())
-    end_epoch = (int(now.timestamp()) // bucket_s + 1) * bucket_s  # end of the current bucket
-    window_end = datetime.fromtimestamp(end_epoch, timezone.utc)
-    window_start = window_end - window_len
+    return JSONResponse(compute_activity(rows, window, pair, pool, source, datetime.now(timezone.utc)))
 
-    filter_options = {
-        "pairs": sorted({r.get("pair") or "untracked" for r in rows}),
-        "pools": sorted({r["pool_name"] for r in rows}),
-        "sources": sorted({r["source"] for r in rows}),
-    }
 
-    buckets = []
-    cursor = window_start
-    while cursor < window_end:
-        buckets.append({
-            "start": cursor, "end": cursor + bucket_len, "total": 0, "live": 0, "gap_filled": 0,
-        })
-        cursor += bucket_len
+# Grounded assistant (docs/GENAI_ASSISTANT_PLAN.md). Mounted last; it only reads
+# through _fetch_table and never touches the routes above.
+from assistant.config import load_settings  # noqa: E402
+from assistant.data import SupabaseSource  # noqa: E402
+from assistant.llm import GroqClient  # noqa: E402
+from assistant.retrieval import load_index  # noqa: E402
+from assistant.router import create_router  # noqa: E402
 
-    filtered = [r for r in rows if _matches(r, pair, pool, source)]
-    in_window = []
-    for r in filtered:
-        observed = _parse_ts(r["observed_at"])
-        if not (window_start <= observed < window_end):
-            continue
-        in_window.append(r)
-        b = buckets[int((observed - window_start) / bucket_len)]
-        b["total"] += 1
-        b["live" if r["source"] == "alchemy_live" else "gap_filled"] += 1
-
-    oldest = min((_parse_ts(r["observed_at"]) for r in rows), default=None)
-    newest = max((_parse_ts(r["observed_at"]) for r in filtered), default=None)
-    live = sum(1 for r in in_window if r["source"] == "alchemy_live")
-    return JSONResponse({
-        "window": window,
-        "bucket_seconds": bucket_s,
-        "window_start": _iso(window_start),
-        "window_end": _iso(window_end),
-        "buckets": [
-            {**b, "start": _iso(b["start"]), "end": _iso(b["end"])} for b in buckets
-        ],
-        "summary": {
-            "total": len(in_window),
-            "live": live,
-            "gap_filled": len(in_window) - live,
-            "active_pools": len({r["pool_name"] for r in in_window}),
-            "last_observed_at": _iso(newest) if newest else None,
-        },
-        "filter_options": filter_options,
-        "retention": {
-            "retained_rows": len(rows),
-            "retention_hours": RETENTION_HOURS,
-            "max_rows": RECENT_EVENTS_MAX_LIMIT,
-            "oldest_observed_at": _iso(oldest) if oldest else None,
-            # True when the selected window reaches back past what is retained.
-            "window_exceeds_retention": oldest is not None and oldest > window_start,
-        },
-    })
+_assistant_settings = load_settings()
+app.include_router(
+    create_router(SupabaseSource(_fetch_table), load_index(), GroqClient(_assistant_settings), _assistant_settings)
+)
 
 
 @app.get("/health")

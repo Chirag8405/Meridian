@@ -1,0 +1,389 @@
+{
+ "source_hash": "4383cb41d7158bb9e409ec04927830036a3ce0db82d92a32083f1656b3699025",
+ "chunks": [
+  {
+   "id": "FINDINGS.md#1",
+   "file": "FINDINGS.md",
+   "heading_path": "Findings",
+   "text": "Genuine analytical findings from working with the data — things worth\nstating plainly in the project report, not implementation notes (see\n`SETUP.md` for those) or architecture decisions (see `ARCHITECTURE.md`)."
+  },
+  {
+   "id": "FINDINGS.md#2",
+   "file": "FINDINGS.md",
+   "heading_path": "Findings > UST has no reliable baseline in this dataset — and that's a finding, not a gap",
+   "text": "**Computed in:** `spark/baseline_crisis_stats.scala`, stored in\n`meridian.baseline_stats.baseline_status`."
+  },
+  {
+   "id": "FINDINGS.md#3",
+   "file": "FINDINGS.md",
+   "heading_path": "Findings > UST has no reliable baseline in this dataset — and that's a finding, not a gap > What we found",
+   "text": "When computing baseline (calm-market) statistics for the risk model,\n`UST_USDC`, `UST_USDT`, and `UST_DAI` all pass a naive sample-size check\n(59–223 rows each, well above any small-n threshold) — but none of them\nrepresent genuine calm behavior. Splitting each pair's non-crisis-window\ndata at the crisis boundary (2022-05-07) shows why:\n\n| Pair | Sub-period | n | mean price | stddev |\n|---|---|---|---|---|\n| UST_USDC | pre-crisis (04-15 to 05-06) | 157 | $0.769 | 0.250 |\n| UST_USDC | post-crisis (05-17 to 06-15) | 66 | $0.047 | 0.031 |\n| UST_USDT | pre-crisis | 48 | $0.808 | 0.312 |\n| UST_USDT | post-crisis | 11 | $0.044 | 0.035 |\n| UST_DAI | pre-crisis | 64 | $1.0016 | 0.0018 |\n| UST_DAI | post-crisis | 28 | $0.035 | 0.027 |\n\nFor `UST_USDC` and `UST_USDT`, the pool was **already showing meaningful\ndeviation from peg before our defined crisis window even starts** — the\nMay 7 boundary marks an acceleration, not the actual onset of instability.\nFor all three pairs, the post-crisis period isn't a return to normal, it's\nUST sitting at a few cents with low variance simply because there's little\nroom left to fall further."
+  },
+  {
+   "id": "FINDINGS.md#4",
+   "file": "FINDINGS.md",
+   "heading_path": "Findings > UST has no reliable baseline in this dataset — and that's a finding, not a gap > What we found",
+   "text": "`UST_DAI`'s pre-crisis sub-period is the one exception worth noting: it\nlooks genuinely calm in isolation (mean≈$1.00, stddev=0.0018). But at n=64\nover three weeks, immediately followed by total collapse, treating it as a\nstandalone reliable baseline would be a stretch — and using it would mean\napplying a different reliability standard to `UST_DAI` than to the other\ntwo UST pairs for no principled reason. All three are marked\n`NO_RELIABLE_BASELINE`.\n\n**Bottom line:** the entire window we have for UST (2022-04-15 to\n2022-06-15) sits inside its collapse — lead-up, acute crisis, and dead\naftermath. There is no calm reference period captured anywhere in this\ndataset for any UST pair. We deliberately did not backfill 2021 data (when\nUST was genuinely stable) to manufacture one — see \"Design implication\"\nbelow for why."
+  },
+  {
+   "id": "FINDINGS.md#5",
+   "file": "FINDINGS.md",
+   "heading_path": "Findings > UST has no reliable baseline in this dataset — and that's a finding, not a gap > Why this happened: UST's failure mode is structurally different from USDC's",
+   "text": "USDC is collateral-backed — its March 2023 depeg was a bank-run-style\nliquidity scare (SVB exposure) with a clear external trigger, and it\nrecovered within days once that trigger resolved (see the March 2023\nbaseline/crisis comparison: crisis stddev is ~8-10x baseline, but the mean\nonly dips to ~$0.98, and pre-crisis data is abundant and genuinely calm).\n\nUST is algorithmic — its peg was maintained by a mint/burn arbitrage\nmechanism against LUNA, not by holding real collateral. Once redemptions\noutpaced the mechanism's ability to absorb them, there was no reserve\nasset to fall back on, and the death spiral was self-reinforcing rather\nthan externally triggered and externally resolved. That's why the\ninstability shows up *before* our defined crisis window (arbitrage\npressure was already building) and never reverts (there was nothing to\nrevert to)."
+  },
+  {
+   "id": "FINDINGS.md#6",
+   "file": "FINDINGS.md",
+   "heading_path": "Findings > UST has no reliable baseline in this dataset — and that's a finding, not a gap > Design implication for the risk-scoring model (flagged now, not retrofitted)",
+   "text": "A stablecoin having **no reliable baseline is itself a risk signal**,\ndistinct from \"a baseline exists and the current reading deviates from\nit.\" Conflating the two would be wrong in both directions: scoring UST\nagainst its own contaminated \"baseline\" would systematically understate\nits risk (a price of $0.55 would look less anomalous against a\nmean-of-$0.55 baseline than it should), and it would hide the more basic\nfact that an asset with no demonstrable calm period is *already*\nexhibiting the sign of interest.\n\nThe risk model should therefore route pairs down one of two paths based on\n`baseline_status`:\n\n- **`RELIABLE`** (USDC_USDT, USDC_DAI currently): score deviation from the\n  pair's own baseline distribution (mean/stddev/percentiles) — this is the\n  \"how far from *its own* normal\" question.\n- **`NO_RELIABLE_BASELINE`** (UST_USDC, UST_USDT, UST_DAI currently): score\n  on **absolute deviation from $1.00** and **trend/velocity of decline**\n  instead — there's no \"its own normal\" to compare against, so the\n  question becomes \"how far from the peg every stablecoin is supposed to\n  hold, and how fast is it getting worse.\"\n\nThis is a deliberate two-path design, not a workaround. Not built yet —\nflagging it here so it's designed in when the risk-scoring model is built,\nrather than discovered as a bug later."
+  },
+  {
+   "id": "FINDINGS.md#7",
+   "file": "FINDINGS.md",
+   "heading_path": "Findings > Most top-ranked \"influential wallets\" are actually infrastructure, not traders",
+   "text": "**Computed in:** `spark/wallet_pagerank.scala`, addresses verified in\n`ingestion/wallet_contract_check.py`, stored in `meridian.wallet_pagerank`\n/ `meridian.wallet_labels`."
+  },
+  {
+   "id": "FINDINGS.md#8",
+   "file": "FINDINGS.md",
+   "heading_path": "Findings > Most top-ranked \"influential wallets\" are actually infrastructure, not traders > What we found",
+   "text": "Ran weighted PageRank on a bipartite wallet↔pool graph (135,164 individual\ntrades across the 4 tracked pools, ~11,800 distinct wallets). Took the 35\ndistinct addresses appearing in the top-15-overall or any window's top-10\nwallet ranking and checked each via `eth_getCode` — a verifiable on-chain\nfact, not a name-pattern guess.\n\n**29 of those 35 addresses (83%) are contracts, not EOAs.** Only 6 are\nplain wallets: `0x1090258d...`, `0x359377f7...`, `0x380e92c8...`,\n`0x474890e5...`, `0x561f551f...`, `0x6aa6316c...`. Several of the\nhighest-ranked \"wallets\" have the \"many leading zero bytes\" address\npattern (e.g. `0x00000000008c4fb1c9...`, `0x0000000000753a65f1...`,\n`0x0000000099cb7fc48a...`) — a known signature of CREATE2-mined vanity\naddresses used by gas-optimized routers/MEV bots to reduce calldata cost.\nOne top-3 \"wallet\" in the USDC_CALM window, `0xb4e16d0168e52d35...`, is\nthe Uniswap V2 USDC/WETH pool itself (identified earlier in this project,\n`ingestion/alchemy_live_feed.py`'s scoping work) — a pool acting as a\n\"taker\" against our tracked pools, almost certainly from multi-hop routing\nthrough it, not a real counterparty."
+  },
+  {
+   "id": "FINDINGS.md#9",
+   "file": "FINDINGS.md",
+   "heading_path": "Findings > Most top-ranked \"influential wallets\" are actually infrastructure, not traders > What we found",
+   "text": "**This is load-bearing for how the results should be read.** A high\nPageRank score for most of these addresses means \"a lot of trade volume\nroutes through this,\" not \"this address represents an influential trader\nor whale.\" Presenting the raw ranking without this caveat would be\nmisleading — it would look like a list of powerful market participants\nwhen it's mostly a list of DEX infrastructure. `meridian.wallet_labels`\nexists specifically so this distinction stays queryable rather than\ndisappearing into an unlabeled ranking."
+  },
+  {
+   "id": "FINDINGS.md#10",
+   "file": "FINDINGS.md",
+   "heading_path": "Findings > Most top-ranked \"influential wallets\" are actually infrastructure, not traders > Calm-vs-crisis wallet-influence concentration",
+   "text": "The actual hypothesis under test: does wallet-influence concentrate into\nfewer hands during a crisis? Measured as (top-10-wallet PageRank mass) /\n(total wallet PageRank mass) per window:\n\n| Window | % mass in top 10 wallets |\n|---|---|\n| USDC_CALM | 12.83% |\n| **USDC_MAR2023_CRISIS** | **43.39%** |\n| UST_CALM | 60.56% |\n| UST_MAY2022_CRISIS | 52.57% |\n\n**USDC strongly supports the hypothesis**: concentration more than\ntripled during the crisis (12.83% → 43.39%) — consistent with a small set\nof large arbitrageurs/institutional players stepping in to trade the SVB-\ndriven dislocation while smaller participants pulled back."
+  },
+  {
+   "id": "FINDINGS.md#11",
+   "file": "FINDINGS.md",
+   "heading_path": "Findings > Most top-ranked \"influential wallets\" are actually infrastructure, not traders > Calm-vs-crisis wallet-influence concentration",
+   "text": "**UST does not support the hypothesis — but this comparison isn't clean\nevidence either way.** Concentration was *slightly lower* during the\ncrisis than \"calm\" (60.56% → 52.57%), the opposite direction from USDC.\nThis should not be read as \"UST didn't see the same concentration effect,\"\nbecause `UST_CALM` inherits the exact contamination documented above: it\nisn't a genuine calm period, it's the pre-collapse instability and dead\npost-collapse tail blended together (see `baseline_status =\n'NO_RELIABLE_BASELINE'`). A more likely explanation is that UST trading\nwas concentrated among a small set of large players/bots for its *entire*\nhistory in this dataset — before, during, and after the collapse — so the\ncalm/crisis split doesn't cleanly separate \"normal\" from \"stressed\"\nbehavior the way it does for USDC. This is consistent with, not\ncontradictory to, UST's algorithmic-collapse structural finding above:\nthere was no genuine \"normal\" period to compare against for concentration\neither."
+  },
+  {
+   "id": "FINDINGS.md#12",
+   "file": "FINDINGS.md",
+   "heading_path": "Findings > Stress-pattern clustering (K-Means): separates by severity and coin, not just calm/crisis",
+   "text": "**Computed in:** `spark/stress_clustering.scala`, stored in\n`meridian.stress_clusters` / `meridian.stress_cluster_profiles`."
+  },
+  {
+   "id": "FINDINGS.md#13",
+   "file": "FINDINGS.md",
+   "heading_path": "Findings > Stress-pattern clustering (K-Means): separates by severity and coin, not just calm/crisis > Feature design: the UST fix had to extend beyond price",
+   "text": "The original proposal was to give `NO_RELIABLE_BASELINE` (UST) pairs a\npeg-deviation feature in place of a baseline z-score for **price** only,\nconsistent with the two-path risk-scoring design above. Checking\n`baseline_stats` directly showed the same contamination problem applies to\n**volume and trade_count** too: UST's `mean_volume_usd` /\n`mean_trade_count` are computed over the identical pre/post-collapse\nblended window as its price stats (e.g. `UST_USDC.mean_volume_usd =\n$222,907.58` spans the non-calm window documented above), so scoring UST\nvolume/trade_count against those numbers would silently reintroduce the\nexact problem the price fix was meant to solve.\n\n**Fix applied**: extended the two-path design to all three deviation\nfeatures, not just price. `NO_RELIABLE_BASELINE` pairs' volume/trade_count\nare z-scored against a **fresh, self-referential full-history mean/stddev\nfor that pair** (computed directly from the raw hourly data), not against\n`baseline_stats`."
+  },
+  {
+   "id": "FINDINGS.md#14",
+   "file": "FINDINGS.md",
+   "heading_path": "Findings > Stress-pattern clustering (K-Means): separates by severity and coin, not just calm/crisis > Row counts — zero UST rows silently dropped",
+   "text": "15,607 total `(pair, project, hour)` rows → 4 excluded (`NAN_PRICE`,\ngenuinely undefined 0/0, RELIABLE pairs only) → **15,603 rows feed\nclustering**, all four features populated for every row. RELIABLE =\n14,553; UST = 1,050 (829 valid-price + 221 `ZERO_VALUE_TRADE` rows,\nimputed to `price_dev = -1.0` since a real trade executed at\n~$0 — directionally correct and distinct from the z-score range used\nelsewhere). One side finding: `anomaly_binary` is zero-variance within the\nRELIABLE group (no RELIABLE row carries any flag besides the excluded\n`NAN_PRICE` ones) — in this dataset it only does discriminating work on\nUST's `ZERO_VALUE_TRADE` rows (21% of the UST group)."
+  },
+  {
+   "id": "FINDINGS.md#15",
+   "file": "FINDINGS.md",
+   "heading_path": "Findings > Stress-pattern clustering (K-Means): separates by severity and coin, not just calm/crisis > k selection: elbow + silhouette, k=2..10",
+   "text": "| k | WSSSE | silhouette |\n|---|---|---|\n| 2 | 46769.53 | 0.9501 |\n| 3 | 22226.06 | 0.9838 |\n| 4 | 18299.96 | 0.9848 |\n| 5 | 14081.28 | 0.9862 |\n| 6 | 12421.00 | 0.8844 |\n| 7 | 10198.04 | 0.9868 |\n| 8 | 8493.30 | 0.9149 |\n| 9 | 7692.53 | 0.9153 |\n| 10 | 8143.72 | 0.8763 |\n\nSilhouette is high (0.88–0.99) across nearly every k tested — this is not\nevidence that any k is a good fit. The feature space is one dense \"calm\"\nmass plus far-flung outlier hours in standardized z-score terms, so almost\nany partition trivially separates outliers from the mass with a high\naverage silhouette. k=6 and k=10 show real instability (silhouette dips,\nand WSSSE actually *increases* from k=9→k=10 — a sign of a poor local\noptimum, not a structural break in the data).\n\n**Chose k=4**: sits at the point where WSSSE's percentage decrease starts\nflattening, has strong silhouette (0.9848), and was sanity-checked against\nthe known crisis windows (below) before committing to it."
+  },
+  {
+   "id": "FINDINGS.md#16",
+   "file": "FINDINGS.md",
+   "heading_path": "Findings > Stress-pattern clustering (K-Means): separates by severity and coin, not just calm/crisis > Sanity check: does k=4 separate crisis from calm?",
+   "text": "| period | cluster | count |\n|---|---|---|\n| USDC_CALM | 0 | 13,841 |\n| USDC_CALM | 1 | 3 |\n| USDC_CRISIS | 0 | 637 |\n| USDC_CRISIS | 1 | 60 |\n| USDC_CRISIS | 2 | 12 |\n| UST_CRISIS | 0 | 455 |\n| UST_CRISIS | 3 | 30 |\n| UST_OTHER | 0 | 374 |\n| UST_OTHER | 3 | 191 |\n\nCluster 0 absorbs ~98% of all rows, including most nominal \"crisis-window\"\nhours — expected, since a crisis *date range* includes many hours that\naren't themselves extreme (depegs escalate and recover, they aren't\nuniformly severe throughout their labeled window). The three small\nclusters aren't noise: they separate cleanly by **severity and coin**,\nnot just a binary calm/crisis split — cluster 2 (12 rows) is USDC's most\nextreme hours, cluster 1 (60 rows) is moderately-stressed USDC hours, and\ncluster 3 (221 rows) is a UST-specific stress signature distinct from\nUSDC entirely. This matches the actual goal (distinguishing *types/stages*\nof crisis behavior) better than a coarser k would have."
+  },
+  {
+   "id": "FINDINGS.md#17",
+   "file": "FINDINGS.md",
+   "heading_path": "Findings > Stress-pattern clustering (K-Means): separates by severity and coin, not just calm/crisis > What each cluster actually represents",
+   "text": "`meridian.stress_cluster_profiles` (full 15,603-row dataset, `k=4`):\n\n| cluster | n_rows | avg price_dev | avg volume_dev | avg trade_count_dev | pct_ust | usdc_crisis | ust_crisis |\n|---|---|---|---|---|---|---|---|\n| 0 | 15,307 | -0.10 | 0.03 | 0.11 | 5.4% | 637 | 455 |\n| 1 | 63 | -18.77 | 30.05 | 40.58 | 0% | 60 | 0 |\n| 2 | 12 | -74.21 | 18.50 | 59.43 | 0% | 12 | 0 |\n| 3 | 221 | -1.00 | -0.46 | -0.48 | 100% | 0 | 30 |\n\nReading this against the crisis-window sanity check above:"
+  },
+  {
+   "id": "FINDINGS.md#18",
+   "file": "FINDINGS.md",
+   "heading_path": "Findings > Stress-pattern clustering (K-Means): separates by severity and coin, not just calm/crisis > What each cluster actually represents",
+   "text": "- **Cluster 0 — baseline/quiet**: near-zero deviation on every feature,\n  98.1% of all rows. This includes hours *inside* the officially-labeled\n  crisis windows (637 USDC, 455 UST) that simply weren't extreme by these\n  features — confirms depeg windows aren't uniformly severe hour-to-hour.\n- **Cluster 1 — moderate USDC stress**: 63 rows, exclusively RELIABLE\n  pairs, large but not extreme deviation (price ~19σ below baseline,\n  volume/trade_count ~30-40σ above) — a volume/activity surge with a real\n  but partial price dip. 60 of 63 fall inside the USDC Mar 2023 window.\n- **Cluster 2 — severe USDC stress**: only 12 rows, the most extreme price\n  deviation observed (~74σ), all 12 inside the USDC crisis window — the\n  acute peak of the SVB-driven depeg.\n- **Cluster 3 — UST zero-value-trade signature**: 221 rows, `avg_price_dev\n  = -1.00` *exactly* and `pct_ust_rows = 100%` — this cluster is precisely\n  and completely the 221 imputed `ZERO_VALUE_TRADE` rows, nothing more and\n  nothing less. Every zero-value UST trade landed here, and no other row\n  did. This is a clean validation of the imputation choice: treating a\n  genuinely-zero-value trade as `price_dev = -1.0` gave the algorithm a\n  distinct, coherent signature rather than noise scattered across other\n  clusters — and it's the one cluster that isn't purely about price\n  severity, since 91% of these rows (191/221) fall *outside* the\n  officially-labeled UST crisis window (2022-05-07 to 2022-05-16),"
+  },
+  {
+   "id": "FINDINGS.md#19",
+   "file": "FINDINGS.md",
+   "heading_path": "Findings > Stress-pattern clustering (K-Means): separates by severity and coin, not just calm/crisis > What each cluster actually represents",
+   "text": "confirming zero-value trades occurred both during and after the\n  officially-dated crisis window.\n\nNet result: k=4 delivers on the actual goal — distinguishing calm from\nmultiple distinct *types and stages* of stress (moderate vs. severe USDC\nprice stress, and a wholly separate UST worthless-trade signature), not\njust a binary calm/crisis split."
+  },
+  {
+   "id": "FINDINGS.md#20",
+   "file": "FINDINGS.md",
+   "heading_path": "Findings > Rule-based baseline risk score: validates against known crisis windows, and surfaces a new finding along the way",
+   "text": "**Computed in:** `spark/risk_scores_baseline.scala`, stored in\n`meridian.risk_scores_baseline`. Built deliberately *before* any ML model\ntraining, so a trained model has a concrete, explainable baseline to\nvalidate against rather than nothing."
+  },
+  {
+   "id": "FINDINGS.md#21",
+   "file": "FINDINGS.md",
+   "heading_path": "Findings > Rule-based baseline risk score: validates against known crisis windows, and surfaces a new finding along the way > Formula",
+   "text": "`risk_score` (0-100) = `100 * (0.40*price_severity + 0.25*volume_trade_severity\n+ 0.15*cluster_severity + 0.20*wallet_concentration_severity)`, where each\ncomponent is independently normalized to `[0,1]` first (see\n`hive/risk_scores_baseline_schema.sql` for the full per-component design and\nthe reasoning behind each weight/cap — decided and confirmed before\nimplementing, same as the clustering design). Two points worth restating\nhere:\n\n- **Cluster severity is intentionally low-weighted (0.15)** relative to\n  price/volume (0.65 combined) — cluster membership is *derived from*\n  those same features via K-Means, so a higher weight would double-count\n  the same signal rather than add independent information.\n- **Wallet-concentration is zeroed out for all UST rows.** The signal is\n  validated as risk-increasing for USDC (12.83% calm → 43.39% crisis\n  concentration) but inverted for UST (60.56% \"calm\" → 52.57% crisis) — a\n  direct consequence of `UST_CALM`'s baseline contamination documented\n  above. Using it for UST would encode a backwards signal on every UST\n  row, so it contributes 0 there rather than something misleading."
+  },
+  {
+   "id": "FINDINGS.md#22",
+   "file": "FINDINGS.md",
+   "heading_path": "Findings > Rule-based baseline risk score: validates against known crisis windows, and surfaces a new finding along the way > Cluster → severity mapping",
+   "text": "Grounded in each cluster's actual raw price/volume/trade_count profile\n(not assumed — see the K-Means section above for the full table): cluster\n0 (calm) = 0.05, cluster 1 (moderate USDC stress) = 0.5, cluster 2 (severe\nUSDC stress, most extreme z-score) = 0.85, cluster 3 (UST zero-value-trade\nsignature) = 1.0. Cluster 3 ranks *above* cluster 2 despite a numerically\nsmaller `price_dev` (-1.0 vs. -74σ), because it represents a categorically\ndifferent, worse outcome — a literal $0 trade (total peg failure), not a\nstatistically-extreme partial depeg."
+  },
+  {
+   "id": "FINDINGS.md#23",
+   "file": "FINDINGS.md",
+   "heading_path": "Findings > Rule-based baseline risk score: validates against known crisis windows, and surfaces a new finding along the way > Validation: known-calm vs. known-crisis score distributions",
+   "text": "| period | n | avg | median | min | max | p90 |\n|---|---|---|---|---|---|---|\n| RELIABLE_CALM | 13,844 | 4.73 | 4.36 | 3.34 | 62.78 | 6.11 |\n| USDC_CRISIS | 709 | 21.35 | 12.19 | 9.55 | 86.43 | 55.64 |\n| UST_CRISIS | 485 | 27.46 | 30.70 | 1.24 | 56.62 | 40.13 |\n| UST_OTHER | 565 | 30.79 | 38.77 | 1.45 | 56.62 | 56.62 |\n\n**The score does what it's supposed to**: calm hours sit tightly around a\nmedian of 4.36 (p90 only 6.11 — the calm cluster is genuinely quiet), while\nevery crisis-labeled category sits far higher (medians 12–39, well above\ncalm's p90). USDC's crisis max (86.43) correctly captures the acute SVB-\ndepeg peak hours.\n\n**Two things worth explaining, not glossing over:**\n\n1. **UST_CRISIS's minimum (1.24) is lower than RELIABLE_CALM's minimum\n   (3.34)** — at first glance this looks backwards. It isn't a scoring\n   failure: it's a combination of (a) legitimate sub-hour variation within\n   the labeled crisis window, and (b) a direct, expected side effect of\n   zeroing `wallet_concentration_severity` for UST."
+  },
+  {
+   "id": "FINDINGS.md#24",
+   "file": "FINDINGS.md",
+   "heading_path": "Findings > Rule-based baseline risk score: validates against known crisis windows, and surfaces a new finding along the way > Validation: known-calm vs. known-crisis score distributions",
+   "text": "The actual lowest-scoring row is `UST_DAI / curve / 2022-05-07\n   21:00:00` — the first day of the hand-drawn crisis window. Its raw\n   values: `implied_price = $0.9952` (essentially still at peg),\n   `volume_usd = $996,957`, `trade_count = 8`, `is_valid_price = true`,\n   `cluster_id = 0` (the calm cluster — the clustering algorithm agrees,\n   independently). This pool genuinely hadn't been hit by the collapse yet\n   at that specific hour, even though its date falls inside the window —\n   the same \"crisis windows aren't uniformly severe hour-to-hour\" pattern\n   documented in the clustering section above.\n\n   Separately, `wallet_concentration_severity` contributes ~2.6 points to\n   every RELIABLE row's floor (0.20 × 12.83% × 100), a floor UST rows never\n   get since that component is zeroed for them. So an unremarkable UST\n   hour can score lower than an unremarkable USDC hour purely from that\n   confirmed design choice, on top of the genuine calm-hour effect above —\n   not a defect, but two compounding, explained causes rather than one.\n2. **`UST_OTHER` scores higher on average than the officially-labeled\n   `UST_CRISIS` window** (median 38.77 vs. 30.70). Part of this is the\n   cluster-3 row split noted in the clustering section: of the 221\n   zero-value-trade rows (severity 1.0 — the single biggest driver of a\n   high score), only 30 fall inside the hand-drawn 2022-05-07 to\n   2022-05-16 crisis window; 191 fall outside it, in `UST_OTHER`."
+  },
+  {
+   "id": "FINDINGS.md#25",
+   "file": "FINDINGS.md",
+   "heading_path": "Findings > Rule-based baseline risk score: validates against known crisis windows, and surfaces a new finding along the way > Validation: known-calm vs. known-crisis score distributions",
+   "text": "But splitting `UST_OTHER` by sub-period shows a second, more important\n   mechanism at work — and a genuine limitation of a pure deviation-based\n   score, not just a date-boundary artifact:\n\n   | sub-period | n | avg risk_score | avg price_severity |\n   |---|---|---|---|\n   | PRE_CRISIS_BUILDUP (2022-04-15 to 05-06) | 425 | 26.31 | 0.475 |\n   | POST_CRISIS_DEAD (2022-05-17 to 06-15) | 140 | 44.39 | 0.967 |\n\n   The post-collapse period — UST sitting dead at a few cents, per the\n   baseline-contamination finding above — scores nearly **twice as high**\n   as the actual pre-crisis buildup period, and its `price_severity` is\n   almost fully saturated (0.967 of a max 1.0). This is because\n   `price_severity = min(|implied_price - 1.00|, 1.0)` is a pure magnitude\n   measure: it has no notion of trend, velocity, or \"already fully\n   realized\" vs. \"just now emerging.\" A stablecoin sitting permanently\n   near $0.04 scores about as high, indefinitely, as the literal moment of\n   a $0 trade — while the pre-crisis buildup period, still near-peg but\n   destabilizing (arguably the more actionable signal for an *early*-\n   warning system), scores meaningfully lower simply because price hadn't\n   collapsed yet."
+  },
+  {
+   "id": "FINDINGS.md#26",
+   "file": "FINDINGS.md",
+   "heading_path": "Findings > Rule-based baseline risk score: validates against known crisis windows, and surfaces a new finding along the way > Validation: known-calm vs. known-crisis score distributions",
+   "text": "**Known limitation, stated plainly**: `price_severity` measures the\n   *magnitude* of deviation from peg, not trend or trajectory. It cannot\n   distinguish \"actively destabilizing\" (early-warning-relevant — this is\n   the behavior the whole project exists to catch early) from \"already\n   fully collapsed and static\" (no longer actionable — the warning would\n   be far too late). Worse, it currently scores the latter *higher* than\n   the former (0.967 vs. 0.475 avg `price_severity` above), which is\n   backwards for an early-warning use case. Fixing this needs a\n   trend/velocity term (e.g. rate of change in `price_dev` over recent\n   hours), which is a natural candidate for the eventual ML model to add\n   on top of this baseline — not something to patch into the rule-based\n   score after the fact."
+  },
+  {
+   "id": "FINDINGS.md#27",
+   "file": "FINDINGS.md",
+   "heading_path": "Findings > ML crisis classifier: beats the baseline generalizing mild→severe, loses badly severe→mild",
+   "text": "**Computed in:** `spark/crisis_features.scala` (features/labels, stored in\n`meridian.crisis_features`) and `spark/crisis_classifier.scala` (training/\nevaluation, stored in `meridian.crisis_classifier_predictions` /\n`meridian.crisis_classifier_metrics`). Built specifically to test whether a\ntrained model, given trend/velocity features, can fix the rule-based\nbaseline's documented blind spot above (magnitude-only, no trajectory)."
+  },
+  {
+   "id": "FINDINGS.md#28",
+   "file": "FINDINGS.md",
+   "heading_path": "Findings > ML crisis classifier: beats the baseline generalizing mild→severe, loses badly severe→mild > Design decisions, confirmed before implementing",
+   "text": "- **Trend/velocity features use time-based windows, not row-count ones.**\n  Real gaps exist in the hourly series (as low as 17% coverage for\n  UST_DAI — a row only exists if a qualifying trade happened that hour).\n  `price_severity_velocity` is the actual rate of change per elapsed hour\n  (NULL, not zero, when the previous row is >6h away), and the 3-hour\n  rolling mean/slope use a genuine `RANGE BETWEEN INTERVAL 3 HOURS\n  PRECEDING` frame so a gap doesn't silently stretch the window.\n- **Binary CALM/CRISIS labels, grounded in independently-known historical\n  crisis dates, not derived from any of our own severity metrics**\n  (`cluster_id`, `cluster_severity`, `risk_score`) — using our own scores\n  as ground truth would let a \"beat the baseline\" model partly learn to\n  just reproduce the baseline. USDC: CRISIS = 2023-03-08 to 03-15 only.\n  UST: **every row is CRISIS** — both the pre-window buildup (already\n  meaningfully unstable, per the no-reliable-baseline finding above) and\n  the post-window collapsed/pinned-near-zero period are treated as\n  not-calm, consistent with that same finding. This means UST contributes\n  zero CALM examples anywhere in this dataset.\n- **Leave-one-coin-out validation, asymmetric by necessity**: because UST\n  has no CALM rows to offer, `TEST_ON_UST` is a pure single-coin split\n  (train on USDC calm+crisis, test on USDC calm holdout + all of UST), but\n  `TEST_ON_USDC` is necessarily coin-blended for the CALM class (train on"
+  },
+  {
+   "id": "FINDINGS.md#29",
+   "file": "FINDINGS.md",
+   "heading_path": "Findings > ML crisis classifier: beats the baseline generalizing mild→severe, loses badly severe→mild > Design decisions, confirmed before implementing",
+   "text": "USDC calm + all of UST-as-CRISIS, test on USDC calm holdout + USDC's own\n  crisis, held out entirely). This deviation from strict single-coin LOCO\n  is deliberate and documented here, not accidental.\n- **Feature set excludes `cluster_severity` and `risk_score`** (hand-\n  assigned crisis-severity judgments, too close to the label) but\n  initially included `wallet_concentration_severity` — this had to be\n  removed after the first training run; see below."
+  },
+  {
+   "id": "FINDINGS.md#30",
+   "file": "FINDINGS.md",
+   "heading_path": "Findings > ML crisis classifier: beats the baseline generalizing mild→severe, loses badly severe→mild > A leakage-adjacent feature had to be found and removed",
+   "text": "The first training run showed `wallet_concentration_severity` dominating\nRandom Forest's feature importances (0.53–0.82, far ahead of everything\nelse) — which on inspection was a red flag, not a good result. Unlike\n`price_severity`/`volume_trade_severity` (computed per-row), that feature\nis a **constant broadcast per named window**: every USDC row gets exactly\n0.1283 (calm) or 0.4339 (crisis) depending only on which window it falls\nin, and every UST row gets exactly 0.0. For USDC's training data, that's\neffectively a two-value direct proxy for the label itself, not a graded\nseverity signal the model had to learn to interpret. Retrained without it."
+  },
+  {
+   "id": "FINDINGS.md#31",
+   "file": "FINDINGS.md",
+   "heading_path": "Findings > ML crisis classifier: beats the baseline generalizing mild→severe, loses badly severe→mild > Results (same held-out test rows, model vs. rule-based baseline)",
+   "text": "| direction | scorer | precision | recall | F1 | PR-AUC |\n|---|---|---|---|---|---|\n| TEST_ON_UST | logistic_regression | 0.992 | 0.850 | **0.915** | **0.918** |\n| TEST_ON_UST | random_forest | 0.894 | 0.826 | 0.858 | 0.899 |\n| TEST_ON_UST | rule_based_baseline | 0.988 | 0.759 | 0.858 | 0.836 |\n| TEST_ON_USDC | logistic_regression | 0.791 | 0.391 | 0.523 | 0.587 |\n| TEST_ON_USDC | random_forest | 0.717 | 0.532 | 0.611 | 0.610 |\n| TEST_ON_USDC | rule_based_baseline | 0.990 | 1.000 | **0.995** | **0.994** |\n\n**Direction TEST_ON_UST — the model genuinely beats the baseline.** A\nmodel trained *only* on USDC's milder, bank-run-style depeg pattern\ncorrectly flags 85% of UST's structurally different algorithmic-collapse\ncrisis hours (Logistic Regression: F1 0.915, PR-AUC 0.918, both above the\nbaseline's 0.858/0.836) at very high precision (0.992). This is genuine\ncross-coin generalization, not a coin-identity shortcut — the leaky\nfeature that could have explained a false positive result here was already\nremoved before this run.\n\n**Direction TEST_ON_USDC — the baseline wins decisively.** A model\ntrained on UST's crisis pattern (which, per the label design above,\nincludes everything from early destabilization to total collapse) misses\nroughly half of USDC's actual crisis hours (best recall 0.532) when\ntested against USDC's milder, partial depeg."
+  },
+  {
+   "id": "FINDINGS.md#32",
+   "file": "FINDINGS.md",
+   "heading_path": "Findings > ML crisis classifier: beats the baseline generalizing mild→severe, loses badly severe→mild > Results (same held-out test rows, model vs. rule-based baseline)",
+   "text": "The original design discussion flagged two possible contributing factors\nhere: harder pattern transfer (severe→mild), and a training-size\nasymmetry. **Only the first holds up against the actual training data —\nthe training-size concern doesn't apply to what was actually built and\nshould be retracted, not repeated.** The training-size worry was valid\nagainst the *original* pre-redesign LOCO plan (each coin training on its\nown calm+crisis data, giving UST only ~1,050 rows), but the redesign\nconfirmed for the leave-one-coin-out split (both directions draw CALM\nrows from the same 11,579-row USDC pool, since UST has none) resolved it:\nper the job log, `Direction TEST_ON_USDC` actually trains on **more**\ntotal rows (12,629 vs. 12,288) and **more** crisis-class rows (1,050 UST\nvs. 709 USDC) than `Direction TEST_ON_UST`, not fewer. So this direction's\nweaker result is attributable to harder pattern transfer alone — training\non a severe/collapsed pattern doesn't transfer well to detecting a milder\none, because the underlying failure modes are structurally different\n(algorithmic death spiral vs. collateral-backed bank-run), not because of\na training-data shortage. The baseline's near-perfect performance here\n(F1 0.995) makes sense too: `price_severity` and `volume_trade_severity`\nwere literally validated against USDC crisis data during the baseline's\nown construction, so this is close to in-distribution territory for it."
+  },
+  {
+   "id": "FINDINGS.md#33",
+   "file": "FINDINGS.md",
+   "heading_path": "Findings > ML crisis classifier: beats the baseline generalizing mild→severe, loses badly severe→mild > Did the trend/velocity features actually help? A more precise answer than \"yes\"",
+   "text": "Feature importances (Random Forest, both directions) after removing the\nleaky feature:\n\n| feature | TEST_ON_UST | TEST_ON_USDC |\n|---|---|---|\n| price_severity_rolling_mean_3h | 0.42 | 0.41 |\n| volume_trade_severity | 0.25 | 0.23 |\n| price_severity | 0.23 | 0.28 |\n| price_severity_velocity | 0.03 | 0.04 |\n| price_severity_rolling_slope_3h | 0.03 | 0.01 |\n| cluster_id (one-hot, summed) | 0.05 | 0.03 |\n| trend_available flag | ~0.00 | 0.01 |\n\nThe **rolling mean** (a smoothed recent-severity average) is consistently\nthe single most important feature in both directions — meaningfully ahead\nof the raw point-in-time `price_severity` it's smoothing. But the features\nbuilt specifically to capture *directionality* — `price_severity_velocity`\n(hour-over-hour rate) and `price_severity_rolling_slope_3h` (3-hour trend)\n— contribute only marginally (0.01–0.04) in both models. **The honest\nfinding is narrower than \"trend/velocity fixed the baseline's blind\nspot\": noise-reduction via smoothing helped meaningfully, but genuine\ntrajectory/direction signal contributed only a small, secondary amount.**\nWhether a longer lookback window, a different velocity formulation, or\nmore training data would change this is an open question for future work,\nnot something this pass resolves."
+  },
+  {
+   "id": "FINDINGS.md#34",
+   "file": "FINDINGS.md",
+   "heading_path": "Findings > Does the risk score provide genuine early warning, not just after-the-fact detection?",
+   "text": "Every finding above establishes that `risk_score` correctly separates calm\nfrom crisis periods. None of it establishes *when* — whether an elevated\nreading appears before, during, or only after a depeg is already visible\non a price chart. That's a different, harder question, and it's the one\nthat actually justifies calling this an early-warning system rather than\njust a labeling exercise. This measures it directly, against real data,\nnot asserted.\n\n**Method** (deliberately independent of `risk_score` itself, to avoid a\ncircular result): a genuine \"elevated\" threshold — calm-period mean +\n2·standard deviations of `risk_score`, computed only from\n`baseline_status = 'RELIABLE'` rows outside the labeled crisis window —\nagainst an objective, price-based depeg onset — the first **sustained**\n(≥2 consecutive hours) hour where `|implied_price - $1| ≥ 1%`, or the\nprice is invalid/zero-value. Both the signal and the onset require\nsustained (≥2h), not single-hour, crossings: a single-hour\n`implied_price = $1.1666` print on 2023-03-08 (`is_valid_price = true`,\n`anomaly_flag = NONE` — a thin-trade artifact none of the existing\nanomaly categories catch) would otherwise be mistaken for either. Run\nagainst the full available history for each pair (USDC_USDT/curve:\nDec 2022–May 2023; UST_USDC/curve: Apr–Jun 2022), not just the labeled\ncrisis windows, so lead time and false-alarm rate are both measured\nagainst real surrounding data."
+  },
+  {
+   "id": "FINDINGS.md#35",
+   "file": "FINDINGS.md",
+   "heading_path": "Findings > Does the risk score provide genuine early warning, not just after-the-fact detection? > USDC (March 2023): the claim holds, with a measured number attached",
+   "text": "- Elevated threshold: 7.18 (calm mean 4.37, stdev 1.40, n=4,107 calm hours)\n- First sustained warning signal: **2023-03-08 00:00 UTC** (score 9.90)\n- Sustained price-based depeg onset: **2023-03-11 00:00 UTC** ($0.9887)\n- **Lead time: 72 hours (3 days)**\n- 12 other sustained-elevation episodes across ~6 months of surrounding\n  data (false alarms by this definition) — all brief, peaks 7.7–11.2,\n  well below the crisis peak of 81.18, so clearly distinguishable in\n  magnitude from the real event\n- Stayed elevated for all 168 hours of the labeled crisis window, no dips\n- Recovery (score back under threshold, price back within 1% of $1)\n  detected 25 hours after the labeled window ends"
+  },
+  {
+   "id": "FINDINGS.md#36",
+   "file": "FINDINGS.md",
+   "heading_path": "Findings > Does the risk score provide genuine early warning, not just after-the-fact detection? > UST (May 2022): the claim does *not* hold — and that's the more important result",
+   "text": "Computing UST's own \"calm\" mean/stdev would be circular: this document\nalready establishes (see \"UST has no reliable baseline\" above) that UST\nhas no period in this dataset representing genuine calm behavior. Instead,\nUST_USDC's series is checked against the **same fixed 7.18 threshold\nderived from USDC's calm distribution** — both use the same 0-100\n`risk_score` scale, so this is a legitimate cross-pair reference, not an\napples-to-oranges comparison.\n\nBy that fixed threshold, UST_USDC is *already above it at the very first\navailable hour of data* — 2022-04-15, three full weeks before the labeled\ncrisis window even starts — with 34 separate sustained-elevation episodes\nbefore the window begins (peak score 56.31). Measured lead time: **zero**,\nbecause there's no genuine \"before\" to measure from within this dataset —\nnot \"the system failed to warn,\" but \"the available data starts already\ninside the elevated state.\" Whether real advance warning existed further\nback than 2022-04-15 is a real open question this dataset can't answer,\nsince the data doesn't extend further back — stated plainly, not glossed\nover."
+  },
+  {
+   "id": "FINDINGS.md#37",
+   "file": "FINDINGS.md",
+   "heading_path": "Findings > Does the risk score provide genuine early warning, not just after-the-fact detection? > What this means for how this project should be described",
+   "text": "The honest, defensible claim is: **this system provides measured,\nnon-trivial early warning (72 hours) for a temporary, bank-run-style\ndepeg (USDC) with a low false-alarm rate, and correctly fails to provide\nmeaningful lead time for an asset that was already destabilized before\nthis dataset's coverage begins (UST) — a real distinction the system\ndraws, not a limitation it hides.** That is meaningfully different from\n(and more defensible than) an unqualified claim that the system \"detects\ndepegs early,\" which would imply a guarantee this single-pair, two-event\nmeasurement can't support. It's also different from framing this as\nmachine-learning prediction: this measurement is entirely about the\nrule-based `risk_score`, not the classifier, and rests on two historical\nevents — real evidence for what it is, not a validated general-purpose\npredictor."
+  },
+  {
+   "id": "FINDINGS.md#38",
+   "file": "FINDINGS.md",
+   "heading_path": "Findings > Guarantee: the published K-Means cluster assignments are frozen, permanently",
+   "text": "**Computed in:** `spark/persist_clustering_model.scala`, models saved under\n`spark/models/stress_clustering/` (HDFS). Read by\n`spark/stream_alchemy_live.scala`.\n\nThis is a documented guarantee, not just an implementation detail — stated\nexplicitly because the live-streaming design created a real risk of\nsilently violating it otherwise.\n\n**The guarantee**: the historical K-Means cluster assignments reported\nthroughout this document (cluster 0 = 15,307 rows, cluster 1 = 63, cluster\n2 = 12, cluster 3 = exactly the 221 `ZERO_VALUE_TRADE` rows, and every\nnumber derived from them — the crisis-classifier feature set, the\nrule-based baseline's `cluster_severity` component) will **never be\naltered by a future pipeline run**. `stress_clustering.scala`'s original\n`K-Means.fit()` was run exactly once; `persist_clustering_model.scala`\nre-fits the identical pipeline on the identical data, **verifies** (not\nassumes) that the re-fit reproduces the published `meridian.stress_clusters`\nassignments row-for-row before saving anything (confirmed: 15,603 rows\ncompared, 0 mismatches), and persists the resulting `StandardScalerModel`\nand `KMeansModel` to disk. Every consumer of live/current data — the\nStructured Streaming consumer, and any future batch job scoring new\nrows — must use `.transform()` against these frozen models (nearest-centroid\nassignment) and must never call `.fit()` on historical+live data combined."
+  },
+  {
+   "id": "FINDINGS.md#39",
+   "file": "FINDINGS.md",
+   "heading_path": "Findings > Guarantee: the published K-Means cluster assignments are frozen, permanently",
+   "text": "**Why this matters**: `KMeans.fit()` is not idempotent-by-construction —\nre-fitting on a differently-composed dataset (historical + accumulating\nlive rows) could shift centroid positions and therefore reassign cluster\nmembership for rows already published and analyzed in this document. A\npipeline that silently re-fit periodically would mean every number in the\n\"Stress-pattern clustering\" section above could quietly become inaccurate\nover time without anyone noticing — exactly the failure mode this\nguarantee exists to prevent."
+  },
+  {
+   "id": "ARCHITECTURE.md#1",
+   "file": "ARCHITECTURE.md",
+   "heading_path": "Architecture",
+   "text": "Meridian is organized into five layers, from raw data ingestion through to\nthe user-facing dashboard."
+  },
+  {
+   "id": "ARCHITECTURE.md#2",
+   "file": "ARCHITECTURE.md",
+   "heading_path": "Architecture > 1. Data Sources Layer",
+   "text": "- On-chain transaction / pool-state data — split into two sources by\n  time horizon (see [DATA_SOURCES.md](DATA_SOURCES.md)):\n  - **Dune Analytics** for historical backfill (one-time, already run for\n    an initial validation window — see below)\n  - **Alchemy WebSocket** (direct RPC) for the live streaming feed (ongoing)\n- Stablecoin price feeds\n- Historical depeg incident records (curated)\n- Exchange price data"
+  },
+  {
+   "id": "ARCHITECTURE.md#3",
+   "file": "ARCHITECTURE.md",
+   "heading_path": "Architecture > 2. Data Integration Layer",
+   "text": "- **Historical backfill (Dune):** `ingestion/dune_test_pull.py` executes\n  ad-hoc SQL against Dune's `dex.trades` table via their SQL execution API,\n  aggregating pool trades into hourly buckets. Validated against the March\n  2023 USDC depeg (Curve 3pool) — the implied price series clearly captured\n  the drop to ~$0.88. This is a one-time/periodic backfill, not a running\n  process.\n- **Live streaming (Alchemy):** `ingestion/alchemy_live_feed.py` subscribes\n  to on-chain events over a WebSocket (`eth_subscribe` with a `logs`\n  filter) across 4 pools — Curve 3pool (covers USDC_USDT + USDC_DAI) +\n  Uniswap V2 USDC_USDT + Uniswap V2 USDC_DAI, full parity with the\n  historical backfill's coverage (UST is dead — no live pool activity to\n  track). Runs indefinitely under a systemd `--user` service\n  (`systemd/meridian-live-feed.service`), not a one-shot process. Feeds\n  `spark/stream_alchemy_live.scala` (see the Analytics layer below) via\n  small, atomically-renamed JSON files in a landing directory — not a\n  direct connection, since Spark Structured Streaming has no native\n  WebSocket source (confirmed against Spark's docs before designing this;\n  only File, Kafka, and testing-only Socket/Rate sources exist, and Kafka\n  is new infrastructure this project has deliberately avoided, same\n  precedent as the \"no HBase/Zookeeper\" descoping).\n  - Curve pools and Uniswap V2 pools have genuinely different event models:"
+  },
+  {
+   "id": "ARCHITECTURE.md#4",
+   "file": "ARCHITECTURE.md",
+   "heading_path": "Architecture > 2. Data Integration Layer",
+   "text": "Uniswap V2 emits both `Sync` (reserve state) and `Swap` (trade) events;\n    Curve only emits `TokenExchange` (trade) — there's no native\n    reserve-update event on Curve, so the live feed script synthesizes an\n    equivalent `RESERVE_SNAPSHOT` record via an `eth_call` to the pool's\n    `balances()` function after each trade, rather than pretending Curve has\n    a `Sync` event it doesn't.\n  - **Resilience**: a WebSocket subscription does not replay missed\n    events — a machine sleep/disconnect of hours+ loses events from the\n    push stream entirely. On reconnect (in-process, with backoff) or\n    process restart, the gap is filled via `eth_getLogs` for the missed\n    block range, tagged `source='alchemy_getlogs_replay'` (vs\n    `'alchemy_live'` for genuine real-time push events) so the two stay\n    distinguishable downstream. Alchemy's free tier caps `eth_getLogs` at\n    a 10-block range per call (confirmed empirically, not documented\n    upfront) — chunked automatically, since the whole point of gap-fill is\n    recovering from potentially thousands of missed blocks.\n  - **USD volume**: historical `volume_usd` came from Dune's own real\n    market-price valuation; live on-chain events only give token-to-token\n    ratios. Fetches a live USD reference price per stablecoin from\n    CoinGecko's keyless public API (confirmed no API key needed at this\n    call volume) rather than assuming 1 stablecoin == $1, which would be\n    wrong exactly during an active depeg."
+  },
+  {
+   "id": "ARCHITECTURE.md#5",
+   "file": "ARCHITECTURE.md",
+   "heading_path": "Architecture > 2. Data Integration Layer",
+   "text": "- **Event timestamps**: every record carries `event_ts` (the real\n    on-chain block timestamp, via `eth_getBlockByNumber`), not just\n    `received_at` (when this process happened to observe it) — required\n    for correctness, since a gap-filled event recovered hours or days late\n    would otherwise get bucketed into the wrong hour if windowed on\n    `received_at`.\n- Sqoop for transferring curated historical incident records from a staging\n  relational DB"
+  },
+  {
+   "id": "ARCHITECTURE.md#6",
+   "file": "ARCHITECTURE.md",
+   "heading_path": "Architecture > 3. Storage Layer",
+   "text": "- **HDFS** for raw ingested data\n- **Hive** for the structured/partitioned query layer\n- **MongoDB** for flexible semi-structured documents (pool-state JSON,\n  price API responses)"
+  },
+  {
+   "id": "ARCHITECTURE.md#7",
+   "file": "ARCHITECTURE.md",
+   "heading_path": "Architecture > 4. Analytics & Management Layer",
+   "text": "- **Spark** for baseline (calm-market) and crisis-window liquidity/price-\n  deviation statistics (`spark/baseline_crisis_stats.scala`, results in\n  `meridian.baseline_stats` / `meridian.crisis_stats`) — chosen over\n  MapReduce for this computation once it stopped being lab-constrained,\n  since percentiles and stddev are native Spark SQL aggregates rather than\n  hand-rolled MapReduce logic. A separate MapReduce job may still be built\n  to satisfy Lab 3's specific requirement (see\n  [LAB_MAPPING.md](LAB_MAPPING.md)) — that's a lab-coverage need distinct\n  from this actual statistics computation, which is now Spark's job.\n  **Not every pair gets scored against its own baseline** — see\n  [FINDINGS.md](FINDINGS.md) for why UST has no reliable baseline in this\n  dataset, and the two-path design that implies for the risk model below.\n- **Spark (GraphX)** for PageRank-based wallet/pool influence ranking\n  (`spark/wallet_pagerank.scala`, results in `meridian.wallet_pagerank` /\n  `meridian.wallet_labels`). Requires wallet-level trade data\n  (`taker`/`tx_from`/`tx_to` per individual trade), which the hourly-\n  aggregated backfill doesn't have — a separate raw pull\n  (`ingestion/dune_wallet_pull.py` → `meridian.wallet_trades_raw`, ~135K\n  rows across the 4 tracked pools) feeds this specifically.\n  - **Bipartite construction**: nodes = wallets + pools, edges = trade\n    volume between a wallet and a pool, **bidirectional** (wallet→pool and"
+  },
+  {
+   "id": "ARCHITECTURE.md#8",
+   "file": "ARCHITECTURE.md",
+   "heading_path": "Architecture > 4. Analytics & Management Layer",
+   "text": "pool→wallet, both weighted by the same volume). A one-directional\n    wallet→pool graph is structurally degenerate for PageRank — pools\n    would accumulate all rank as pure sinks and never redistribute it\n    back, so wallets would only ever get the uniform teleportation score.\n    Bidirectional edges let rank flow both ways, the standard technique\n    for bipartite/recommender-graph PageRank.\n  - **Weighted PageRank is a custom implementation**: GraphX's built-in\n    `Graph.pageRank()` does not support edge weights — it normalizes\n    purely by out-degree. Since higher-volume wallet-pool relationships\n    are meant to carry more influence, this uses a hand-rolled\n    Pregel-based weighted PageRank (edge weights normalized to transition\n    probabilities per source vertex), not the convenience method.\n  - **A large fraction of top-ranked \"wallets\" are contracts, not\n    traders**: verified via `eth_getCode` (`meridian.wallet_labels`), not\n    inferred from address patterns — 29 of the top 35 ranked wallets\n    across all computed windows are contracts (routers, aggregators, or\n    other DeFi infrastructure), not EOAs. This is load-bearing for how\n    results should be read: high PageRank for a contract address means\n    \"lots of trades route through this,\" not \"this is an influential\n    trader.\" See [FINDINGS.md](FINDINGS.md) for the full breakdown and the\n    calm-vs-crisis wallet-concentration analysis.\n- **K-Means clustering (MLlib)** of hourly stress signatures"
+  },
+  {
+   "id": "ARCHITECTURE.md#9",
+   "file": "ARCHITECTURE.md",
+   "heading_path": "Architecture > 4. Analytics & Management Layer",
+   "text": "(`spark/stress_clustering.scala`, results in `meridian.stress_clusters` /\n  `meridian.stress_cluster_profiles`). CURE/Canopy have no native MLlib\n  support and weren't worth hand-rolling once lab-mapping stopped being a\n  project goal, so this uses standardized K-Means instead.\n  - **Unit of clustering is (pair, project, hour)**, not the 2 crisis\n    events themselves — too small an n to cluster meaningfully. Features:\n    price/volume/trade_count deviation plus an anomaly-flag indicator.\n  - **Two-path feature design, extended beyond the original price-only\n    proposal**: RELIABLE pairs get z-scores against their own\n    `baseline_stats` (calm-window) mean/stddev. `NO_RELIABLE_BASELINE`\n    (UST) pairs get peg-deviation for price (no calm baseline to score\n    against) — and, since `baseline_stats`' own volume/trade_count numbers\n    for UST are contaminated by the same pre/post-collapse blended window\n    as its price numbers, volume/trade_count use a fresh self-referential\n    full-history mean/stddev instead of `baseline_stats`. No UST rows are\n    silently dropped; only the 4 genuinely-undefined `NAN_PRICE` rows are\n    excluded (RELIABLE pairs only).\n  - **k=4, chosen empirically** via elbow (WSSSE) + silhouette sweep over\n    k=2..10, sanity-checked against the known USDC Mar 2023 and UST May\n    2022 crisis windows — see [FINDINGS.md](FINDINGS.md) for the full\n    sweep, the sanity-check results, and why the high silhouette scores"
+  },
+  {
+   "id": "ARCHITECTURE.md#10",
+   "file": "ARCHITECTURE.md",
+   "heading_path": "Architecture > 4. Analytics & Management Layer",
+   "text": "across nearly all k don't by themselves indicate a well-tuned k.\n- **Spark Structured Streaming** live consumer\n  (`spark/stream_alchemy_live.scala`) — watches the landing directory\n  `ingestion/alchemy_live_feed.py` writes to (File source; no native\n  WebSocket source exists in Structured Streaming), aggregates to the same\n  hourly grain as the batch pipeline (10-minute trigger — a freshness\n  choice, not a resource-conservation one, since a streaming query's\n  micro-batches are cheap ticks within one long-running application, not\n  fresh job launches like Hive-on-MapReduce elsewhere in this project),\n  and appends into the SAME Hive tables the batch pipeline uses\n  (`meridian.stablecoin_pool_hourly`, `meridian.risk_scores_baseline`).\n  Same storage as the historical data, but the dashboard presents this as\n  a separate \"current\" view rather than splicing 2026 live readings onto\n  the March 2023/May 2022 crisis-timeline charts — a ~3+ year gap spliced\n  into one chart would be misleading regardless of how it's labeled, and\n  `baseline_stats` itself was computed from Dec 2022-May 2023 data, so\n  scoring current readings against it without re-validation is a separate,\n  flagged (not yet resolved) methodological question.\n  - **Cluster assignment never re-fits K-Means.** Live rows are scored via\n    `.transform()` against the frozen `StandardScalerModel`/`KMeansModel`\n    persisted by `spark/persist_clustering_model.scala` (verified"
+  },
+  {
+   "id": "ARCHITECTURE.md#11",
+   "file": "ARCHITECTURE.md",
+   "heading_path": "Architecture > 4. Analytics & Management Layer",
+   "text": "byte-identical to the published `meridian.stress_clusters` assignments\n    before being saved — 15,603 rows compared, 0 mismatches). See\n    FINDINGS.md's \"Guarantee\" section — re-fitting on historical+live\n    combined would risk silently shifting the already-published historical\n    cluster numbers this document reports elsewhere.\n  - **Watermark (2h) + append output mode**, not update mode: emits each\n    hourly window's aggregate exactly once, only after the watermark has\n    passed it, avoiding multiple partial-row inserts for the same hour\n    that a plain (non-ACID) Hive table can't de-duplicate.\n  - Runs indefinitely under a systemd `--user` service\n    (`systemd/meridian-stream-consumer.service`), same rationale as the\n    live feed ingester above — `nohup` (this project's convention for\n    single long batch jobs) has no auto-restart on crash or reboot, which\n    matters for something meant to run indefinitely, not just once.\n- **Rule-based baseline risk score** (`spark/risk_scores_baseline.scala`,\n  results in `meridian.risk_scores_baseline`) — built deliberately *before*\n  any ML model training, so a trained model has a concrete, explainable\n  score to validate against rather than nothing. Composite `risk_score`\n  (0-100) combines four independently-normalized `[0,1]` components:\n  price deviation severity and volume/trade_count deviation severity\n  (reused from `meridian.stress_clusters`, weight 0.40/0.25), cluster"
+  },
+  {
+   "id": "ARCHITECTURE.md#12",
+   "file": "ARCHITECTURE.md",
+   "heading_path": "Architecture > 4. Analytics & Management Layer",
+   "text": "membership severity (a lookup table grounded in each cluster's actual\n  raw profile, weight 0.15 — deliberately low since cluster membership is\n  *derived from* the other features and a higher weight would double-count\n  the same signal), and top-10-wallet PageRank concentration for the row's\n  window (weight 0.20, zeroed for UST rows — see\n  [FINDINGS.md](FINDINGS.md) for why that signal is validated for USDC but\n  inverted/unreliable for UST). Validated against the known USDC Mar 2023\n  and UST May 2022 crisis windows: calm hours score tightly around a\n  median of 4.36, every crisis-labeled category scores substantially\n  higher (medians 12-39) — see FINDINGS.md for the full distribution and\n  two notable nuances the validation surfaced.\n- **MLlib crisis classifier** (`spark/crisis_features.scala` +\n  `spark/crisis_classifier.scala`, results in `meridian.crisis_features` /\n  `meridian.crisis_classifier_predictions` / `meridian.crisis_classifier_metrics`)\n  — trained specifically to fix the rule-based baseline's documented\n  blind spot (magnitude-only, no trend/trajectory). Binary CALM/CRISIS\n  labels grounded in independently-known historical crisis dates (not\n  derived from our own severity metrics, to keep the model-vs-baseline\n  comparison meaningful). Validated via leave-one-coin-out: train on\n  USDC, test on UST (and vice versa, necessarily coin-blended for the\n  CALM class since UST has no calm rows at all in this dataset). Result:"
+  },
+  {
+   "id": "ARCHITECTURE.md#13",
+   "file": "ARCHITECTURE.md",
+   "heading_path": "Architecture > 4. Analytics & Management Layer",
+   "text": "a model trained only on USDC's milder depeg genuinely **beats** the\n  baseline generalizing to UST's structurally different collapse (F1 0.915\n  vs. 0.858), but loses decisively in the harder reverse direction (severe\n  UST pattern → mild USDC pattern, F1 0.611 vs. 0.995). A first training\n  run surfaced a leakage-adjacent feature (`wallet_concentration_severity`,\n  a window-constant near-proxy for the label) that had to be found and\n  removed before these results could be trusted — see\n  [FINDINGS.md](FINDINGS.md) for the full writeup, including a more\n  precise-than-expected finding on whether the trend/velocity features\n  actually earned their place."
+  },
+  {
+   "id": "ARCHITECTURE.md#14",
+   "file": "ARCHITECTURE.md",
+   "heading_path": "Architecture > 5. Application Layer",
+   "text": "- **Next.js findings dashboard** (`dashboard/`, see\n  [README](../dashboard/README.md)) — a technical-reviewer-facing page\n  presenting the project's real, already-computed results: current\n  `risk_score` per pair (including the live Alchemy feed's\n  `current_risk_live`, updated by the streaming consumer — see the Live\n  streaming subsection in [SETUP.md](SETUP.md)), the USDC/UST crisis\n  timelines on a shared price axis, the ML classifier's honest win/loss\n  comparison against the baseline, and the wallet PageRank\n  contract-vs-EOA finding. It never queries Hive directly, live or\n  otherwise — confirmed via measurement (46-56s for a trivial\n  single-table `COUNT(*)`, even on a warmed-up cluster) that live Hive\n  queries are unsuitable for a request-driven page, since Hive runs on\n  the MapReduce execution engine here (see Known Integration Fixes in\n  [CLAUDE.md](../CLAUDE.md)) and its per-query container/JVM startup cost\n  dominates regardless of data volume."
+  },
+  {
+   "id": "ARCHITECTURE.md#15",
+   "file": "ARCHITECTURE.md",
+   "heading_path": "Architecture > 5. Application Layer",
+   "text": "**Deployed data flow (Supabase + Render), replacing the earlier\n  static-JSON-at-build-time approach:** `spark/export_dashboard_data.scala`\n  still materializes the same fixed queries into JSON under\n  `dashboard/data/*.json` (rerun manually after any pipeline update, same\n  operating model as every other batch job in this project) — but that\n  JSON is now an intermediate artifact, not what the deployed page reads.\n  `ingestion/push_to_supabase.py` pushes it to a free-tier Supabase\n  Postgres project (`supabase/schema.sql`; public read-only via Row Level\n  Security, writes via a secret key that bypasses RLS, run locally only —\n  see `.env.example`). A small FastAPI service (`backend/main.py`),\n  deployed on Render's free tier, reads Supabase with a read-only\n  publishable key and exposes `GET /api/dashboard-data` (all 7 tables,\n  one combined response) and `GET /health` (a genuine Supabase query, not\n  a stub). The Vercel-deployed dashboard's Next.js Server Components\n  fetch that endpoint server-to-server with a 60-second revalidate window\n  (`dashboard/lib/data.ts`) — this was chosen specifically over a\n  client-side fetch or a Vercel API-route proxy because server-to-server\n  calls aren't subject to browser CORS, so no CORS configuration is\n  needed anywhere in this chain. New data therefore reaches the deployed\n  dashboard within 60 seconds of a `push_to_supabase.py` run, with no git\n  push or rebuild required — except that **Render must already be live"
+  },
+  {
+   "id": "ARCHITECTURE.md#16",
+   "file": "ARCHITECTURE.md",
+   "heading_path": "Architecture > 5. Application Layer",
+   "text": "and correctly configured with valid Supabase credentials before a\n  Vercel build runs**, since `revalidate` fetches are also used for\n  build-time static generation; a build triggered before that will fail\n  cleanly rather than deploy something broken (confirmed by testing\n  locally with `RENDER_API_URL` unset). Full provisioning steps in\n  SETUP.md's \"Live backend (Supabase + Render)\" section.\n\n  Two free-tier constraints worth flagging explicitly, not burying:\n  Supabase's free project pauses after 7 days with no traffic (recoverable\n  from its dashboard, but an avoidable interruption) and Render's free web\n  service spins down after 15 minutes idle, adding a cold-start delay to\n  the next request. Both are addressed with a single UptimeRobot monitor\n  (free tier, 5-minute interval) pinging Render's `/health`, which in turn\n  genuinely queries Supabase on every ping — real traffic to both, not a\n  keepalive stub. The real cost: Render's free tier grants 750 instance-\n  hours/month, and staying awake 24/7 this way consumes roughly 720-744 of\n  those hours — effectively the entire monthly allowance. That's fine for\n  a single Render service with no other usage on the account, but would\n  become a real constraint if this account hosts anything else on Render.\n\n  No fallback to static JSON is implemented if Render is unreachable at\n  request time — a deliberate, confirmed scope decision to ship the pure\n  replacement first rather than add fallback complexity speculatively."
+  },
+  {
+   "id": "ARCHITECTURE.md#17",
+   "file": "ARCHITECTURE.md",
+   "heading_path": "Architecture > 5. Application Layer",
+   "text": "**Recent activity graph.** The dashboard's \"Recent activity\" section is a\n  descriptive view of the live feed, not a risk score. `GET\n  /api/recent-swap-activity?window=15m|1h|6h|24h[&pair=&pool=&source=]`\n  returns zero-filled, UTC-aligned bar buckets (1 min / 5 min / 30 min /\n  2 h respectively) plus a summary and the retention boundary;\n  `GET /api/recent-swap-events` still returns the raw rows (25 by default,\n  and now accepts the same filters plus `start`/`end`/`limit` to inspect one\n  bucket). Both bucket and filter by `observed_at` (when the feed saw the\n  swap), not `event_ts` (the on-chain block time) — the graph describes feed\n  activity, and gap-filled events have an old `event_ts` but a fresh\n  `observed_at`. Storage retention (latest 100 rows / 48 hours in\n  `recent_swap_events`) is independent of the graph window and the display\n  limit, so a 24h window can show empty bars purely because of retention;\n  the response reports `window_exceeds_retention` and the UI says so. The\n  browser reaches these endpoints through Next.js route handlers\n  (`dashboard/app/api/recent-swap-*`) since the Render API has no CORS, and\n  refreshes every 20 seconds."
+  },
+  {
+   "id": "ARCHITECTURE.md#18",
+   "file": "ARCHITECTURE.md",
+   "heading_path": "Architecture > Workflow Diagram (Description)",
+   "text": "```\nDune (historical, one-time)  ─┐\n                               ├─→  HDFS  →  Hive / MongoDB  →  Spark / MapReduce  →  JSON export  →  Supabase  →  Render API  →  Dashboard\nAlchemy WS (live, ongoing)   ─┘\n```\n\nRaw on-chain and market data lands in HDFS (and MongoDB for semi-structured\ndocuments), gets structured and partitioned in Hive, is processed by Spark\nand MapReduce jobs for statistics, clustering, ranking, and risk scoring.\nHistorical (Dune) and live (Alchemy) records share the same eventual Hive\nschema (`meridian.stablecoin_pool_hourly` — see\n[hive/schema.sql](../hive/schema.sql)), distinguished by the `source` column\n(`dune` vs `alchemy_live`), so downstream analytics don't need to know\nwhich pipeline a row came from. The dashboard does not query any of this\nlive — a batch export step materializes the small, pre-known slice of\nresults it needs into JSON, which `ingestion/push_to_supabase.py` pushes\nto Supabase; the deployed dashboard reads from there via the Render API,\npolling every 60 seconds, rather than reading the JSON file directly (see\nthe Application Layer section above for the full chain and its free-tier\nconstraints)."
+  },
+  {
+   "id": "SCOPE.md#1",
+   "file": "SCOPE.md",
+   "heading_path": "Scope > Locked Decisions",
+   "text": "- **Project name:** Meridian\n- **Domain:** Stablecoin depeg / liquidity stress early warning\n- **Explicitly OUT of scope for now:** HBase, Zookeeper, GenAI/generative\n  components\n- **Historical depeg case studies for validation:**\n  - TerraUSD (May 2022)\n  - USDC (March 2023, SVB-related)\n- **On-chain data source: RESOLVED — dual-source split by time horizon**\n  - **Dune Analytics** for historical backfill (one-time, complete for the\n    initial validation window; March 2023 USDC depeg confirmed visible in\n    the data)\n  - **Alchemy WebSocket** (direct RPC) for the live streaming feed (ongoing)\n  - See [ARCHITECTURE.md](ARCHITECTURE.md) and [DATA_SOURCES.md](DATA_SOURCES.md)\n    for the full detail — BigQuery was considered and dropped as redundant\n    with Dune for the historical need"
+  },
+  {
+   "id": "SCOPE.md#2",
+   "file": "SCOPE.md",
+   "heading_path": "Scope > Pending Decisions",
+   "text": "> These are open and should **not** be assumed. Resolve explicitly before\n> depending on them elsewhere.\n\n- **Which stablecoins to cover:** candidates are USDT, USDC, DAI, FRAX\n- **Which chain(s):** Ethereum mainnet only, or multi-chain\n- **Time range for historical data**\n- **Lab 2 (word count) mapping** — see [LAB_MAPPING.md](LAB_MAPPING.md)"
+  },
+  {
+   "id": "DATA_SOURCES.md#1",
+   "file": "DATA_SOURCES.md",
+   "heading_path": "Data Sources > Chosen (active) > Dune Analytics — historical backfill",
+   "text": "- **Role:** One-time/periodic historical backfill, not a running process\n- **Access method:** Ad-hoc SQL execution via Dune's API\n  (`POST /api/v1/sql/execute` against `dex.trades`), polled for completion\n  via `GET /api/v1/execution/{id}/results`\n- **Auth:** `DUNE_API_KEY` in `.env` — see `.env.example`\n- **Cost:** Credit-based. A 5-day, 1-pool hourly-aggregated test pull used\n  **0.13 credits** against a 2500-credit billing period allowance (checked\n  live via `POST /api/v1/usage`) — effectively free at this project's scale.\n  A full 6-month backfill across 3 pool/pair combinations was estimated at\n  ~15 credits total (see chat history / commit history around\n  `hive/schema.sql` for the full estimate).\n- **Rate limits:** None hit in testing. `sql.execute` requires only `Read`\n  scope — ad-hoc SQL does **not** require the paid Analyst plan (that's only\n  needed for the separate \"save a named query\" endpoint, which we don't use)\n- **Validated:** March 2023 USDC depeg is clearly visible — implied\n  USDC/USDT price on Curve 3pool bottomed at $0.8808 at 2023-03-11 07:00 UTC,\n  matching the widely-reported ~$0.88 low\n- **Script:** `ingestion/dune_test_pull.py`"
+  },
+  {
+   "id": "DATA_SOURCES.md#2",
+   "file": "DATA_SOURCES.md",
+   "heading_path": "Data Sources > Chosen (active) > Alchemy — live streaming feed",
+   "text": "- **Role:** Ongoing live feed, intended to back the Spark Structured\n  Streaming component\n- **Access method:** WebSocket JSON-RPC pubsub (`eth_subscribe` with a\n  `logs` filter) against `wss://eth-mainnet.g.alchemy.com/v2/{key}`, plus\n  `eth_call` over the HTTPS endpoint for contract reads (token metadata,\n  Curve pool balances)\n- **Auth:** `ALCHEMY_API_KEY` in `.env` — see `.env.example`\n- **Cost:** Free tier\n- **Rate limits:** Free tier `eth_getLogs` (used only for diagnostic\n  historical checks, not the live path) is capped at a 10-block range per\n  call. The live `eth_subscribe` path used for actual ingestion has no such\n  range restriction — it streams events as they occur.\n- **Real-world activity note:** Both pools we're watching (Curve 3pool,\n  Uniswap V2 USDC/USDT) currently see roughly **1 event every 15-20\n  minutes each** in calm conditions (measured by sampling recent blocks) —\n  far below their 2023 depeg-era volume. A live test window needs to be at\n  least several minutes, ideally 10+, to reliably observe real events.\n- **Script:** `ingestion/alchemy_live_feed.py`"
+  },
+  {
+   "id": "DATA_SOURCES.md#3",
+   "file": "DATA_SOURCES.md",
+   "heading_path": "Data Sources > Candidates (not currently used) > Google BigQuery public Ethereum dataset",
+   "text": "- **Dataset:** `bigquery-public-data.crypto_ethereum`\n- **Access method:** SQL queries via BigQuery\n- **Cost:** Needs a GCP account with billing enabled; free tier query\n  allowance available\n- **Rate limits:** Governed by GCP free tier query quota\n- **Status:** Not needed — Dune covers the same historical need"
+  },
+  {
+   "id": "DATA_SOURCES.md#4",
+   "file": "DATA_SOURCES.md",
+   "heading_path": "Data Sources > Candidates (not currently used) > CoinGecko / exchange APIs",
+   "text": "- **Access method:** REST API\n- **Cost:** Free tier available\n- **Rate limits:** Free tier request limits apply\n- **Notes:** For centralized price feed cross-referencing\n- **Status:** Not yet integrated; may be added later for cross-referencing\n  DEX-implied prices against centralized exchange prices"
+  },
+  {
+   "id": "DATA_SOURCES.md#5",
+   "file": "DATA_SOURCES.md",
+   "heading_path": "Data Sources > Open Items",
+   "text": "- [ ] CoinGecko integration decision (cross-reference vs. skip)\n- [ ] Which additional stablecoin pairs/pools beyond the initial\n  Curve 3pool + Uniswap V2 USDC/USDT to cover for the full backfill (see\n  `SCOPE.md` pending decisions — note this file has moved ahead of that\n  one since the source question is now resolved)"
+  }
+ ]
+}
