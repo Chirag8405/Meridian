@@ -2,6 +2,8 @@
 Description=Meridian: export and publish dashboard data
 Requires=meridian-hadoop-stack.service
 After=meridian-hadoop-stack.service
+# Commit the freshly exported data right after a successful publish (see systemd/autocommit-dashboard-data.sh)
+OnSuccess=meridian-data-autocommit.service
 
 [Service]
 Type=oneshot
