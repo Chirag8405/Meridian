@@ -60,3 +60,6 @@ data/processed/*
 
 # --- Vercel CLI local artifacts ---
 .vercel
+
+# GenAI judge experiment: derived from series_*.json, rebuilt by `run.py judge-windows` (deterministic, seed 11)
+genai/eval/judge/windows.json

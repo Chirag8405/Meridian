@@ -659,3 +659,18 @@ Phase 3 (evaluation, `genai/eval`, this PR):
 - Harness: per-question timeout raised 120s -> 300s after test-040 timed out
   while waiting on the tokens/minute throttle (not a product failure); that
   one question has not been re-run (quota).
+
+Phase 4 preparation (done before any LLM call; fixed before looking at results):
+- Label: a window ending at hour t is positive iff a sustained depeg (>= 2 consecutive hours
+  with |price-1| >= 1% or no valid price, the evaluation_summary definition) is ongoing or begins
+  within the next 72 hours. 24h windows, stride 6h, history gaps not imputed (>= 20 of 24 rows).
+- Predictors on identical windows: rule (score >= 7.18 on two consecutive hours), price alarm at 1%
+  and at 0.5% (two consecutive hours), majority class, LLM judge (anonymised raw features only).
+- Subset for the LLM: up to 30 positive + 30 negative windows per event, seed 11 (per-class
+  reduced from 40 to 30 to fit the 200K tokens/day limit).
+- Plan correction: the UST series yields only 23 usable windows (sparse hourly data), and all
+  are positive, so UST can only report recall; it is never pooled with USDC.
+- First non-LLM numbers (USDC, 708 windows, 22 positive): rule P=0.60 R=0.95 FAR=0.02;
+  1% price alarm P=1.00 R=0.41 FAR=0.00; 0.5% price alarm P=0.71 R=0.45 FAR=0.006.
+- Not done: lead time per predictor (a per-window flag series does not give a clean first-flag
+  time for the sampled subset); the judge is compared on window-level precision/recall/false-alarm.
