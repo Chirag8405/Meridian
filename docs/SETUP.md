@@ -347,3 +347,17 @@ python genai/eval/run.py report              # writes genai/eval/results/REPORT.
 pytest genai/eval/test_eval_units.py         # scoring-code unit tests, no network
 ```
 Runs resume from `genai/eval/results/*.json`; delete a record (or pass `--force`) to redo it.
+
+### LLM-judge experiment (Part C) preparation
+
+```
+# 1. export the two historical hourly series with rule scores from Hive (long: detach it)
+source /home/chirag/bigdata/env.sh
+nohup timeout 1h $SPARK_HOME/bin/spark-shell -i spark/export_judge_series.scala > /tmp/judge_export.log 2>&1 &
+# 2. build anonymised 24h windows, labels, and the non-LLM predictors (no API calls)
+python genai/eval/run.py judge-windows
+python genai/eval/run.py judge --score       # rule / price-alarm / majority results only
+# 3. run the LLM judge (spends Groq quota: ~1.2K tokens per window, ~75 USDC + 23 UST windows)
+python genai/eval/run.py judge --model openai/gpt-oss-120b
+```
+`genai/eval/judge/windows.json` is derived and git-ignored; `series_*.json` are committed.

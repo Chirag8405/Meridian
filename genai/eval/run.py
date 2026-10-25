@@ -1,4 +1,4 @@
-"""CLI dispatcher: python genai/eval/run.py <snapshot|questions|chat|advisory|mutation|report> [...]"""
+"""CLI dispatcher: python genai/eval/run.py <snapshot|questions|chat|advisory|mutation|judge-windows|judge|report> [...]"""
 
 import importlib
 import sys
@@ -9,6 +9,8 @@ COMMANDS = {
     "chat": ("chat_eval", "main"),
     "advisory": ("advisory_eval", "main"),
     "mutation": ("mutation_eval", "main"),
+    "judge-windows": ("judge_windows", "main"),
+    "judge": ("judge_eval", "main"),
     "report": ("report", "main"),
 }
 

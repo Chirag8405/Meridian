@@ -1,0 +1,324 @@
+{
+ "definition": "see genai/eval/judge_windows.py docstring",
+ "events": {
+  "USDC": {
+   "windows_total": 708,
+   "positives_total": 22,
+   "subset_total": 52,
+   "subset_positives": 22,
+   "predictors": {
+    "rule": {
+     "all_windows": {
+      "n": 708,
+      "tp": 21,
+      "fp": 14,
+      "fn": 1,
+      "tn": 672,
+      "precision": 0.6,
+      "recall": 0.955,
+      "f1": 0.737,
+      "false_alarm_rate": 0.02,
+      "recall_ci95": [
+       0.782,
+       0.992
+      ],
+      "false_alarm_ci95": [
+       0.012,
+       0.034
+      ]
+     },
+     "llm_subset": {
+      "n": 52,
+      "tp": 21,
+      "fp": 0,
+      "fn": 1,
+      "tn": 30,
+      "precision": 1.0,
+      "recall": 0.955,
+      "f1": 0.977,
+      "false_alarm_rate": 0.0,
+      "recall_ci95": [
+       0.782,
+       0.992
+      ],
+      "false_alarm_ci95": [
+       0,
+       0.114
+      ]
+     }
+    },
+    "price_1pct": {
+     "all_windows": {
+      "n": 708,
+      "tp": 9,
+      "fp": 0,
+      "fn": 13,
+      "tn": 686,
+      "precision": 1.0,
+      "recall": 0.409,
+      "f1": 0.581,
+      "false_alarm_rate": 0.0,
+      "recall_ci95": [
+       0.233,
+       0.613
+      ],
+      "false_alarm_ci95": [
+       0,
+       0.006
+      ]
+     },
+     "llm_subset": {
+      "n": 52,
+      "tp": 9,
+      "fp": 0,
+      "fn": 13,
+      "tn": 30,
+      "precision": 1.0,
+      "recall": 0.409,
+      "f1": 0.581,
+      "false_alarm_rate": 0.0,
+      "recall_ci95": [
+       0.233,
+       0.613
+      ],
+      "false_alarm_ci95": [
+       0,
+       0.114
+      ]
+     }
+    },
+    "price_05pct": {
+     "all_windows": {
+      "n": 708,
+      "tp": 10,
+      "fp": 4,
+      "fn": 12,
+      "tn": 682,
+      "precision": 0.714,
+      "recall": 0.455,
+      "f1": 0.556,
+      "false_alarm_rate": 0.006,
+      "recall_ci95": [
+       0.269,
+       0.653
+      ],
+      "false_alarm_ci95": [
+       0.002,
+       0.015
+      ]
+     },
+     "llm_subset": {
+      "n": 52,
+      "tp": 10,
+      "fp": 0,
+      "fn": 12,
+      "tn": 30,
+      "precision": 1.0,
+      "recall": 0.455,
+      "f1": 0.625,
+      "false_alarm_rate": 0.0,
+      "recall_ci95": [
+       0.269,
+       0.653
+      ],
+      "false_alarm_ci95": [
+       0,
+       0.114
+      ]
+     }
+    },
+    "majority": {
+     "all_windows": {
+      "n": 708,
+      "tp": 0,
+      "fp": 0,
+      "fn": 22,
+      "tn": 686,
+      "precision": null,
+      "recall": 0.0,
+      "f1": null,
+      "false_alarm_rate": 0.0,
+      "recall_ci95": [
+       0.0,
+       0.149
+      ],
+      "false_alarm_ci95": [
+       0,
+       0.006
+      ]
+     },
+     "llm_subset": {
+      "n": 52,
+      "tp": 0,
+      "fp": 0,
+      "fn": 22,
+      "tn": 30,
+      "precision": null,
+      "recall": 0.0,
+      "f1": null,
+      "false_alarm_rate": 0.0,
+      "recall_ci95": [
+       0.0,
+       0.149
+      ],
+      "false_alarm_ci95": [
+       0,
+       0.114
+      ]
+     }
+    }
+   }
+  },
+  "UST": {
+   "windows_total": 23,
+   "positives_total": 23,
+   "subset_total": 23,
+   "subset_positives": 23,
+   "predictors": {
+    "rule": {
+     "all_windows": {
+      "n": 23,
+      "tp": 20,
+      "fp": 0,
+      "fn": 3,
+      "tn": 0,
+      "precision": 1.0,
+      "recall": 0.87,
+      "f1": 0.93,
+      "false_alarm_rate": null,
+      "recall_ci95": [
+       0.679,
+       0.955
+      ],
+      "false_alarm_ci95": null
+     },
+     "llm_subset": {
+      "n": 23,
+      "tp": 20,
+      "fp": 0,
+      "fn": 3,
+      "tn": 0,
+      "precision": 1.0,
+      "recall": 0.87,
+      "f1": 0.93,
+      "false_alarm_rate": null,
+      "recall_ci95": [
+       0.679,
+       0.955
+      ],
+      "false_alarm_ci95": null
+     }
+    },
+    "price_1pct": {
+     "all_windows": {
+      "n": 23,
+      "tp": 20,
+      "fp": 0,
+      "fn": 3,
+      "tn": 0,
+      "precision": 1.0,
+      "recall": 0.87,
+      "f1": 0.93,
+      "false_alarm_rate": null,
+      "recall_ci95": [
+       0.679,
+       0.955
+      ],
+      "false_alarm_ci95": null
+     },
+     "llm_subset": {
+      "n": 23,
+      "tp": 20,
+      "fp": 0,
+      "fn": 3,
+      "tn": 0,
+      "precision": 1.0,
+      "recall": 0.87,
+      "f1": 0.93,
+      "false_alarm_rate": null,
+      "recall_ci95": [
+       0.679,
+       0.955
+      ],
+      "false_alarm_ci95": null
+     }
+    },
+    "price_05pct": {
+     "all_windows": {
+      "n": 23,
+      "tp": 22,
+      "fp": 0,
+      "fn": 1,
+      "tn": 0,
+      "precision": 1.0,
+      "recall": 0.957,
+      "f1": 0.978,
+      "false_alarm_rate": null,
+      "recall_ci95": [
+       0.79,
+       0.992
+      ],
+      "false_alarm_ci95": null
+     },
+     "llm_subset": {
+      "n": 23,
+      "tp": 22,
+      "fp": 0,
+      "fn": 1,
+      "tn": 0,
+      "precision": 1.0,
+      "recall": 0.957,
+      "f1": 0.978,
+      "false_alarm_rate": null,
+      "recall_ci95": [
+       0.79,
+       0.992
+      ],
+      "false_alarm_ci95": null
+     }
+    },
+    "majority": {
+     "all_windows": {
+      "n": 23,
+      "tp": 23,
+      "fp": 0,
+      "fn": 0,
+      "tn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "false_alarm_rate": null,
+      "recall_ci95": [
+       0.857,
+       1
+      ],
+      "false_alarm_ci95": null
+     },
+     "llm_subset": {
+      "n": 23,
+      "tp": 23,
+      "fp": 0,
+      "fn": 0,
+      "tn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "false_alarm_rate": null,
+      "recall_ci95": [
+       0.857,
+       1
+      ],
+      "false_alarm_ci95": null
+     }
+    }
+   }
+  }
+ },
+ "caveats": [
+  "UST has no genuinely calm baseline (docs/FINDINGS.md); its negatives are few and its series starts already destabilised. UST is never pooled with USDC.",
+  "Two events, one pair each: counts and 95% Wilson intervals are reported; no significance claim is made.",
+  "The rule score uses baseline statistics and cluster/wallet signals the judge does not see; the judge sees only raw hourly behaviour.",
+  "Pre-training leakage is reduced (no dates, names, absolute prices) but not eliminated: the shape of a famous depeg may still be recognised.",
+  "One run per window at temperature 0; run-to-run variance is not measured."
+ ]
+}
