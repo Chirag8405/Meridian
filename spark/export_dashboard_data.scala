@@ -47,20 +47,28 @@ writeJson("current_risk.json", arrayJson(currentRisk.toJSON.collect()))
 // section, separate from current_risk.json above (which stays historical-
 // snapshot framing for all 7 pairs, unchanged) — UST never appears here
 // since it has no live pool activity to track.
-val sch = spark.table("meridian.stablecoin_pool_hourly").select("pair", "project", "window_start_ts", "source")
+// price_dev is derived here from the frozen baseline_stats, with the exact
+// formula spark/stream_alchemy_live.scala scored the row with. It is NOT
+// read from meridian.stress_clusters: that table is a batch output with no
+// rows for live windows, so joining it silently dropped every live row and
+// left "Live now" empty.
+val sch = spark.table("meridian.stablecoin_pool_hourly").select("pair", "project", "window_start_ts", "source", "implied_price")
+val liveBaseline = spark.table("meridian.baseline_stats")
+  .filter($"baseline_status" === "RELIABLE")
+  .select("pair", "project", "mean_price", "stddev_price")
 val rsbLive = spark.table("meridian.risk_scores_baseline")
   .join(sch, Seq("pair", "project", "window_start_ts"))
   .filter($"source".isin("alchemy_live", "alchemy_getlogs_replay"))
+  .join(liveBaseline, Seq("pair", "project"))
+  .withColumn("price_dev", ($"implied_price" - $"mean_price") / $"stddev_price")
   .as("live")
-val liveFeatures = spark.table("meridian.stress_clusters")
-  .select("pair", "project", "window_start_ts", "price_dev")
-val rsbLiveWithFeatures = rsbLive.join(liveFeatures, Seq("pair", "project", "window_start_ts"))
+val rsbLiveWithFeatures = rsbLive
 val latestLive = rsbLiveWithFeatures.groupBy("pair", "project").agg(max("window_start_ts").as("max_ts")).as("latest")
 val currentRiskLive = rsbLiveWithFeatures.join(latestLive,
     $"live.pair" === $"latest.pair" && $"live.project" === $"latest.project" &&
     $"live.window_start_ts" === $"latest.max_ts")
   .select($"live.pair", $"live.project", $"live.risk_score", $"live.window_start_ts", $"live.source",
-      $"price_dev", $"live.cluster_id", $"live.cluster_severity",
+      $"live.price_dev", $"live.cluster_id", $"live.cluster_severity",
       $"live.wallet_concentration_severity")
   .orderBy("pair", "project")
 writeJson("current_risk_live.json", arrayJson(currentRiskLive.toJSON.collect()))
