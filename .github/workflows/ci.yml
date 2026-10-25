@@ -82,6 +82,9 @@ jobs:
           cache-dependency-path: dashboard/package-lock.json
       - run: npm ci
       - run: npm run lint
+      # Next 16 declares global types (LayoutProps, ...) in generated files that a clean checkout
+      # does not have; `next typegen` creates them without a full build.
+      - run: ./node_modules/.bin/next typegen
       - run: ./node_modules/.bin/tsc --noEmit
       # `next build` is deliberately not run: it fetches live data from the Render API at build time,
       # so it would fail whenever Render is asleep. Vercel builds every push anyway.

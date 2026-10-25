@@ -404,7 +404,7 @@ secret-free; `CI passed` is the aggregate status:
 |---|---|
 | backend | `py_compile` of backend, ingestion and genai Python; `pytest backend/tests`; `pytest genai/eval` (Python 3.14, as on Render) |
 | corpus-fresh | `python genai/build_corpus.py --check` (the assistant's committed search corpus matches the docs) |
-| dashboard | `npm ci`, `eslint`, `tsc --noEmit` (Node 24) |
+| dashboard | `npm ci`, `eslint`, `next typegen` (Next 16's generated global types), `tsc --noEmit` (Node 24) |
 | hygiene | `git diff --check` for the PR's changes; `bash -n` on every `*.sh` |
 
 Not in CI on purpose: `next build` (fetches live data from Render at build time and would fail whenever Render
