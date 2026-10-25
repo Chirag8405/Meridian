@@ -35,3 +35,8 @@ def test_committed_corpus_is_fresh():
     r = subprocess.run([sys.executable, str(root / "genai" / "build_corpus.py"), "--check"], capture_output=True)
     assert r.returncode == 0, r.stderr.decode()
     assert json.loads((root / "backend/assistant/corpus.json").read_text())["chunks"]
+
+
+def test_calculated_reaches_the_formula_section():
+    hits = load_index().search("How is the risk score calculated?", k=3)
+    assert any(h["heading_path"].endswith("Formula") for h in hits)

@@ -11,8 +11,9 @@ class LLMError(Exception):
 
 
 class GroqClient:
-    def __init__(self, settings: Settings):
+    def __init__(self, settings: Settings, transport=None):
         self.s = settings
+        self._transport = transport  # tests inject httpx.MockTransport
 
     async def complete(self, messages: list[dict], tools: list[dict] | None = None) -> dict:
         if not self.s.api_key:
@@ -25,15 +26,20 @@ class GroqClient:
         }
         if tools:
             body["tools"] = tools
-        try:
-            async with httpx.AsyncClient(timeout=self.s.llm_timeout_seconds) as client:
-                resp = await client.post(
-                    GROQ_URL, headers={"Authorization": f"Bearer {self.s.api_key}"}, json=body
-                )
-        except httpx.TimeoutException:
-            raise LLMError("timeout") from None
-        except httpx.HTTPError:
-            raise LLMError("network") from None
+        # One retry on HTTP 400: Groq returns 400 when the model emits a malformed tool call
+        # (seen in the evaluation); a second sample usually succeeds.
+        for attempt in range(2):
+            try:
+                async with httpx.AsyncClient(timeout=self.s.llm_timeout_seconds, transport=self._transport) as client:
+                    resp = await client.post(
+                        GROQ_URL, headers={"Authorization": f"Bearer {self.s.api_key}"}, json=body
+                    )
+            except httpx.TimeoutException:
+                raise LLMError("timeout") from None
+            except httpx.HTTPError:
+                raise LLMError("network") from None
+            if resp.status_code != 400:
+                break
         if resp.status_code != 200:
             raise LLMError(f"http_{resp.status_code}")
         try:

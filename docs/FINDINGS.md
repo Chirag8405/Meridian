@@ -650,3 +650,17 @@ pipeline that silently re-fit periodically would mean every number in the
 "Stress-pattern clustering" section above could quietly become inaccurate
 over time without anyone noticing — exactly the failure mode this
 guarantee exists to prevent.
+
+## GenAI assistant: measured faithfulness (and where it fails)
+
+The grounded assistant (`backend/assistant`, plan in `docs/GENAI_ASSISTANT_PLAN.md`) is
+evaluated offline in `genai/eval`; the full tables, failures and limitations are in
+`genai/eval/results/REPORT.md`. Headline numbers from that report (all with denominators
+there): on 47 frozen test questions gpt-oss-20b answered 36 correctly (77%); the numeric
+grounding check caught 100 of 105 deliberately changed numbers; across 100 synthetic advisory rows no model invented a number, but
+`gpt-oss-120b` added an unrequested risk verdict ("moderate level of risk") in 97 of them.
+These are small-sample, single-run results, not a general accuracy claim. The test run
+predates later fixes (prediction-refusal wording, injection sanitiser, retrieval query
+expansion, one retry on Groq HTTP 400); re-running the test split after those fixes is
+pending the daily token quota.
+
