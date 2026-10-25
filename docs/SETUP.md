@@ -387,7 +387,8 @@ job commits those files to `origin/main` so they stop piling up as uncommitted c
 - Check: `systemctl --user list-timers | grep autocommit`, `journalctl --user -u meridian-data-autocommit -n 20`.
 - Stop it: `systemctl --user disable --now meridian-data-autocommit.timer` (the `OnSuccess=` hook then still runs it
   after each publish; remove that line from the publish unit as well to stop completely).
-- **Side effect to know about:** every commit to `main` triggers a Render deploy (a backend restart: cold start, empty
-  assistant cache and rate-limit counters) and a Vercel deploy. With a commit every two hours this is a restart every
-  two hours. Fix: on Render set a build filter so only changes under `backend/` redeploy
-  (`render services update srv-dap8af6gekts738556ug --build-filter-path 'backend/**'`), and/or an Ignored Build Step on Vercel.
+- **Side effect to know about (verified with two test commits):** each commit to `main` triggers a **Vercel**
+  deploy (a harmless rebuild every two hours; the live data comes from Render, not from the build). It does **not**
+  trigger a Render deploy, because the Render service's root directory is `backend/` and these commits only touch
+  `dashboard/data`. To stop the Vercel rebuilds, set an Ignored Build Step in the Vercel project settings
+  (for example `git diff --quiet HEAD^ HEAD -- . ':!data'` run from the dashboard root).
