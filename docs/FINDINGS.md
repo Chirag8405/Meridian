@@ -653,14 +653,24 @@ guarantee exists to prevent.
 
 ## GenAI assistant: measured faithfulness (and where it fails)
 
-The grounded assistant (`backend/assistant`, plan in `docs/GENAI_ASSISTANT_PLAN.md`) is
-evaluated offline in `genai/eval`; the full tables, failures and limitations are in
-`genai/eval/results/REPORT.md`. Headline numbers from that report (all with denominators
-there): on 47 frozen test questions gpt-oss-20b answered 36 correctly (77%); the numeric
-grounding check caught 100 of 105 deliberately changed numbers; across 100 synthetic advisory rows no model invented a number, but
-`gpt-oss-120b` added an unrequested risk verdict ("moderate level of risk") in 97 of them.
-These are small-sample, single-run results, not a general accuracy claim. The test run
-predates later fixes (prediction-refusal wording, injection sanitiser, retrieval query
-expansion, one retry on Groq HTTP 400); re-running the test split after those fixes is
-pending the daily token quota.
+The grounded assistant (`backend/assistant`, plan in `docs/GENAI_ASSISTANT_PLAN.md`) is evaluated offline in
+`genai/eval`; full tables, failure lists and limitations are in `genai/eval/results/REPORT.md`. Headline numbers
+(denominators are in the report):
 
+- **Chat accuracy, 47 frozen test questions, gpt-oss-20b:** 36 correct (77%) in the first run; 40 correct (85%) after a
+  round of fixes. Only two of the changes have a direct cause (a prediction-refusal pattern, and a harness timeout in the
+  first run); the rest is run-to-run variation, so 85% is an upper bound on the improvement, not a measured effect. A
+  persistent failure class: asking for "all four pools" can make the model pass a bogus filter, get zero rows and report
+  "no data" (`test-016`).
+- **Numeric grounding check:** caught 117 of 122 single-number mutations of correct answers; the 5 misses are edits inside
+  timestamps or a wallet address, where the check is deliberately component-wise. It is value-based, so it cannot catch a
+  correct number attached to the wrong claim; the gold-answer scoring is what measures that.
+- **Advisories, 100 synthetic rows per model:** no model invented a number (all 299 returned advisories). Unrequested
+  verdicts ("a moderate level of risk"; heuristic detector): gpt-oss-120b 97/100, gpt-oss-20b (production) 18/99,
+  qwen3.8-27b 1/100.
+- **LLM judge vs the rule score (USDC, 52 sampled windows, 22 positive):** the rule score flagged 21 of 22 depeg-ahead
+  windows with no false alarms on the 30 negatives; gpt-oss-120b flagged 12 of 22 with 7 false alarms; qwen3.8-27b flagged
+  9 of 22 with none. On UST every window is positive (the series begins already destabilised), so all predictors look
+  good there and it says nothing about discrimination. Two events, one run per window.
+
+These are small-sample, single-run results, not a general accuracy claim.

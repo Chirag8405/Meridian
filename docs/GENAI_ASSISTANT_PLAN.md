@@ -1,7 +1,7 @@
 # Plan: Grounded GenAI Assistant, Faithfulness Evaluation, and LLM-vs-Rules Judge
 
-Status (2026-10-25): Phases 0-3 implemented (assistant backend, /assistant page,
-evaluation harness and first results). Phase 4 (Part C, LLM judge) not started.
+Status (2026-10-29): Phases 0-4 implemented and run (assistant backend, /assistant page,
+evaluation harness and results, LLM-judge experiment).
 See "Implementation log" at the end for deviations from this plan.
 
 This document is written so that an AI agent (or a human) with no prior
@@ -430,7 +430,7 @@ well as the rule-based `risk_score` (threshold 7.18 from USDC calm data)?
 - Evaluate on USDC_MAR2023 and UST_MAY2022 *separately*. UST has no RELIABLE
   calm baseline (`calm_caveat`), so UST windows are reported with that caveat
   and never pooled into a single headline number.
-- Temperature 0 (or lowest allowed), fixed seed if supported, 3 repeats per
+- Lowest practical temperature, fixed seed if supported, 3 repeats per
   window to report variance. Cache all responses to disk so a re-run does not
   re-bill/re-limit.
 - Statistics: with two events, do not claim significance. Report counts and
@@ -674,3 +674,14 @@ Phase 4 preparation (done before any LLM call; fixed before looking at results):
   1% price alarm P=1.00 R=0.41 FAR=0.00; 0.5% price alarm P=0.71 R=0.45 FAR=0.006.
 - Not done: lead time per predictor (a per-window flag series does not give a clean first-flag
   time for the sampled subset); the judge is compared on window-level precision/recall/false-alarm.
+
+Results run on 2026-10-29 (quota reset):
+- Test split re-run after the fixes: 36/47 -> 40/47 (the before-fix file is kept as
+  `genai/eval/results/before-fixes_chat_openai_gpt-oss-20b_test.json`). Only `test-066` (prediction-refusal
+  regex) and `test-040` (first-run harness timeout) have a direct cause; the rest is noise. `test-051` is
+  unresolved (HTTP 400 first run; 429 / timeout on re-runs). `test-016` shows a real weakness: a bogus tool
+  filter returns zero rows and the model reports "no data" (optional fix: return the valid filter values).
+- Advisory run for gpt-oss-20b completed (99/100 rows; 1 row rate-limited on every retry, excluded).
+- Judge (Part C), gpt-oss-120b and qwen3.8-27b, one run per window at temperature
+  0.1, no unparseable replies: both LLMs worse than the rule score on the USDC subset (see REPORT.md).
+- The plan's "re-measure variance" item was not done: one run per window/question throughout.

@@ -33,8 +33,9 @@ Phased checklist for Meridian.
         "ML is fancier" comparison.
 - [x] Dashboard (Vercel + Render + Supabase; see ARCHITECTURE.md Application Layer)
 - [x] GenAI: risk advisories, grounded assistant, offline evaluation (see GENAI_ASSISTANT_PLAN.md)
-- [ ] GenAI: LLM-as-judge experiment (Part C): preparation merged, model runs pending
-- [ ] GenAI: re-run the frozen test split after the post-evaluation fixes
+- [x] GenAI: LLM-as-judge experiment (Part C): run with gpt-oss-120b and qwen3.8-27b; both worse than the rule score
+- [x] GenAI: frozen test split re-run after the post-evaluation fixes (36/47 to 40/47)
+- [ ] GenAI (optional): when a tool filter returns zero rows, return the valid filter values so the model can retry (`test-016`)
 
 ## Descoped (decided 2026-10-25: not required; core BDA requirements are fulfilled)
 

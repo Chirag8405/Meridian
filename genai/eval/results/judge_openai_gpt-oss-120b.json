@@ -1,0 +1,830 @@
+{
+ "model": "openai/gpt-oss-120b",
+ "records": {
+  "USDC-20221203T00": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 0.95,
+    "reason": "price has stayed >1% below $1 for multiple consecutive hours"
+   },
+   "raw": "{\"depeg_risk\":\"high\",\"confidence\":0.95,\"reason\":\"price has stayed >1% below $1 for multiple consecutive hours\"}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1425
+  },
+  "USDC-20221205T18": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.93,
+    "reason": "Price stays within \u00b10.03% of the peg with no consecutive 1% deviations."
+   },
+   "raw": "{\n  \"depeg_risk\": \"low\",\n  \"confidence\": 0.93,\n  \"reason\": \"Price stays within \u00b10.03% of the peg with no consecutive 1% deviations.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 990
+  },
+  "USDC-20221209T12": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.85,
+    "reason": "Price stays within \u00b10.02% of peg with no consecutive \u22651% deviations."
+   },
+   "raw": "{\n  \"depeg_risk\": \"low\",\n  \"confidence\": 0.85,\n  \"reason\": \"Price stays within \u00b10.02% of peg with no consecutive \u22651% deviations.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1051
+  },
+  "USDC-20221211T00": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 0.75,
+    "reason": "Recent price repeatedly exceeds 1% below peg with past multi\u2011hour depegs, indicating elevated risk"
+   },
+   "raw": "{\"depeg_risk\":\"high\",\"confidence\":0.75,\"reason\":\"Recent price repeatedly exceeds 1% below peg with past multi\u2011hour depegs, indicating elevated risk\"}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1521
+  },
+  "USDC-20221217T06": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 0.95,
+    "reason": "Price has been >1% below $1 for several consecutive hours, indicating a sustained depeg is already in effect."
+   },
+   "raw": "{\"depeg_risk\":\"high\",\"confidence\":0.95,\"reason\":\"Price has been >1% below $1 for several consecutive hours, indicating a sustained depeg is already in effect.\"}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1334
+  },
+  "USDC-20221218T06": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.85,
+    "reason": "Price stays within \u00b10.04% of the peg with no upward trend, indicating low likelihood of a sustained \u22651% depeg soon."
+   },
+   "raw": "{\n  \"depeg_risk\": \"low\",\n  \"confidence\": 0.85,\n  \"reason\": \"Price stays within \u00b10.04% of the peg with no upward trend, indicating low likelihood of a sustained \u22651% depeg soon.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1053
+  },
+  "USDC-20221224T00": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.85,
+    "reason": "No price deviation reaches 1% and no consecutive hours show such a gap, indicating low immediate depeg risk"
+   },
+   "raw": "{\"depeg_risk\":\"low\",\"confidence\":0.85,\"reason\":\"No price deviation reaches 1% and no consecutive hours show such a gap, indicating low immediate depeg risk\"}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1139
+  },
+  "USDC-20230111T18": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 0.86,
+    "reason": "Price has stayed >1% below $1 for several consecutive hours, indicating an ongoing depeg."
+   },
+   "raw": "{\n  \"depeg_risk\": \"high\",\n  \"confidence\": 0.86,\n  \"reason\": \"Price has stayed >1% below $1 for several consecutive hours, indicating an ongoing depeg.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1264
+  },
+  "USDC-20230120T00": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.9,
+    "reason": "Prices stay within \u00b10.02% of the peg with no consecutive 1% deviations."
+   },
+   "raw": "{\n  \"depeg_risk\": \"low\",\n  \"confidence\": 0.9,\n  \"reason\": \"Prices stay within \u00b10.02% of the peg with no consecutive 1% deviations.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1151
+  },
+  "USDC-20230121T12": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 0.98,
+    "reason": "Price has stayed >1% below $1 for the past 24 hours, meeting the sustained depeg criteria"
+   },
+   "raw": "{\"depeg_risk\":\"high\",\"confidence\":0.98,\"reason\":\"Price has stayed >1% below $1 for the past 24 hours, meeting the sustained depeg criteria\"}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1035
+  },
+  "USDC-20230131T06": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.7,
+    "reason": "Recent price is within 1% of the peg and no two\u2011hour consecutive >1% deviation, indicating low immediate depeg risk"
+   },
+   "raw": "{\n  \"depeg_risk\": \"low\",\n  \"confidence\": 0.7,\n  \"reason\": \"Recent price is within 1% of the peg and no two\u2011hour consecutive >1% deviation, indicating low immediate depeg risk\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1422
+  },
+  "USDC-20230202T06": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 0.95,
+    "reason": "price has stayed >1% below $1 for 18+ consecutive hours"
+   },
+   "raw": "{\"depeg_risk\":\"high\",\"confidence\":0.95,\"reason\":\"price has stayed >1% below $1 for 18+ consecutive hours\"}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1836
+  },
+  "USDC-20230211T12": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.97,
+    "reason": "Price stays within \u00b10.04% of $1 for all 24 hours, far below the 1% depeg threshold"
+   },
+   "raw": "{\n  \"depeg_risk\": \"low\",\n  \"confidence\": 0.97,\n  \"reason\": \"Price stays within \u00b10.04% of $1 for all 24 hours, far below the 1% depeg threshold\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1049
+  },
+  "USDC-20230215T18": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.85,
+    "reason": "price deviations stay far below 1% and show no downward trend"
+   },
+   "raw": "{\"depeg_risk\":\"low\",\"confidence\":0.85,\"reason\":\"price deviations stay far below 1% and show no downward trend\"}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1033
+  },
+  "USDC-20230224T00": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.95,
+    "reason": "price deviation stays well within the 1% threshold"
+   },
+   "raw": "{\"depeg_risk\":\"low\",\"confidence\":0.95,\"reason\":\"price deviation stays well within the 1% threshold\"}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1252
+  },
+  "USDC-20230308T00": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.73,
+    "reason": "price has briefly crossed the 1% threshold but never stayed there for two consecutive hours recently"
+   },
+   "raw": "{\n  \"depeg_risk\": \"low\",\n  \"confidence\": 0.73,\n  \"reason\": \"price has briefly crossed the 1% threshold but never stayed there for two consecutive hours recently\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1679
+  },
+  "USDC-20230308T06": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.85,
+    "reason": "No two consecutive hours show \u22651% deviation and recent data show stable, sub\u20111% fluctuations."
+   },
+   "raw": "{\n  \"depeg_risk\": \"low\",\n  \"confidence\": 0.85,\n  \"reason\": \"No two consecutive hours show \u22651% deviation and recent data show stable, sub\u20111% fluctuations.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1477
+  },
+  "USDC-20230308T12": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.85,
+    "reason": "No two consecutive hours show \u22651% deviation and recent price remains near the peg."
+   },
+   "raw": "{\n  \"depeg_risk\": \"low\",\n  \"confidence\": 0.85,\n  \"reason\": \"No two consecutive hours show \u22651% deviation and recent price remains near the peg.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1405
+  },
+  "USDC-20230308T18": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.85,
+    "reason": "No price deviation \u22651% in the past 24\u202fh and all prices are valid, indicating low immediate depeg risk"
+   },
+   "raw": "{\"depeg_risk\":\"low\",\"confidence\":0.85,\"reason\":\"No price deviation \u22651% in the past 24\u202fh and all prices are valid, indicating low immediate depeg risk\"}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1051
+  },
+  "USDC-20230309T00": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.8,
+    "reason": "No price deviation \u22651% for \u22652 hours and no price invalid flags; volume spikes have not moved price off peg"
+   },
+   "raw": "{\n  \"depeg_risk\": \"low\",\n  \"confidence\": 0.8,\n  \"reason\": \"No price deviation \u22651% for \u22652 hours and no price invalid flags; volume spikes have not moved price off peg\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1155
+  },
+  "USDC-20230309T06": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.85,
+    "reason": "No price deviation \u22651% in any recent hour and no invalid prices, indicating no sustained depeg currently or imminent."
+   },
+   "raw": "{\n  \"depeg_risk\": \"low\",\n  \"confidence\": 0.85,\n  \"reason\": \"No price deviation \u22651% in any recent hour and no invalid prices, indicating no sustained depeg currently or imminent.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1143
+  },
+  "USDC-20230309T12": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.85,
+    "reason": "All price deviations stay well below 1% and show no upward trend toward a sustained depeg."
+   },
+   "raw": "{\n  \"depeg_risk\": \"low\",\n  \"confidence\": 0.85,\n  \"reason\": \"All price deviations stay well below 1% and show no upward trend toward a sustained depeg.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1124
+  },
+  "USDC-20230309T18": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 0.78,
+    "reason": "Two separate 2\u2011hour periods in the last day showed price >1% off peg, indicating a sustained depeg pattern may recur."
+   },
+   "raw": "{\n  \"depeg_risk\": \"high\",\n  \"confidence\": 0.78,\n  \"reason\": \"Two separate 2\u2011hour periods in the last day showed price >1% off peg, indicating a sustained depeg pattern may recur.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1396
+  },
+  "USDC-20230310T00": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 0.95,
+    "reason": "Price has stayed >1% above the peg for several consecutive hours, including the most recent period"
+   },
+   "raw": "{\n  \"depeg_risk\": \"high\",\n  \"confidence\": 0.95,\n  \"reason\": \"Price has stayed >1% above the peg for several consecutive hours, including the most recent period\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1567
+  },
+  "USDC-20230310T06": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.9,
+    "reason": "All price deviations are well below 1% with no consecutive hours near that threshold."
+   },
+   "raw": "{\n  \"depeg_risk\": \"low\",\n  \"confidence\": 0.9,\n  \"reason\": \"All price deviations are well below 1% with no consecutive hours near that threshold.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1106
+  },
+  "USDC-20230310T12": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 0.95,
+    "reason": "Several consecutive hours already show price deviations \u22651% from the peg"
+   },
+   "raw": "{\n  \"depeg_risk\": \"high\",\n  \"confidence\": 0.95,\n  \"reason\": \"Several consecutive hours already show price deviations \u22651% from the peg\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1544
+  },
+  "USDC-20230310T18": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.85,
+    "reason": "Price stays within \u00b10.03% of peg with no 1%+ deviation in any two\u2011hour span"
+   },
+   "raw": "{\"depeg_risk\":\"low\",\"confidence\":0.85,\"reason\":\"Price stays within \u00b10.03% of peg with no 1%+ deviation in any two\u2011hour span\"}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1153
+  },
+  "USDC-20230311T00": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.85,
+    "reason": "Price deviation hasn't reached 1% for two consecutive hours and recent trend is moving back toward the peg"
+   },
+   "raw": "{\n  \"depeg_risk\": \"low\",\n  \"confidence\": 0.85,\n  \"reason\": \"Price deviation hasn't reached 1% for two consecutive hours and recent trend is moving back toward the peg\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1498
+  },
+  "USDC-20230311T06": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 0.95,
+    "reason": "price has been below -1% for several consecutive hours, currently -8.7%"
+   },
+   "raw": "{\"depeg_risk\":\"high\",\"confidence\":0.95,\"reason\":\"price has been below -1% for several consecutive hours, currently -8.7%\"}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1040
+  },
+  "USDC-20230311T12": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 0.99,
+    "reason": "Price has been >1% below $1 for over 20 consecutive hours, indicating an ongoing sustained depeg"
+   },
+   "raw": "{\"depeg_risk\":\"high\",\"confidence\":0.99,\"reason\":\"Price has been >1% below $1 for over 20 consecutive hours, indicating an ongoing sustained depeg\"}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1373
+  },
+  "USDC-20230311T18": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 0.95,
+    "reason": "Hours 0 and -1 both show >1% deviation from $1"
+   },
+   "raw": "{\"depeg_risk\":\"high\",\"confidence\":0.95,\"reason\":\"Hours 0 and -1 both show >1% deviation from $1\"}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1093
+  },
+  "USDC-20230312T06": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 0.99,
+    "reason": "price has been >1% below peg for 24 consecutive hours"
+   },
+   "raw": "{\"depeg_risk\":\"high\",\"confidence\":0.99,\"reason\":\"price has been >1% below peg for 24 consecutive hours\"}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1048
+  },
+  "USDC-20230312T12": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 0.85,
+    "reason": "Price has been >1% below peg for over 24 consecutive hours, indicating an ongoing sustained depeg"
+   },
+   "raw": "{\"depeg_risk\":\"high\",\"confidence\":0.85,\"reason\":\"Price has been >1% below peg for over 24 consecutive hours, indicating an ongoing sustained depeg\"}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1056
+  },
+  "USDC-20230312T18": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 0.95,
+    "reason": "price has been >1% below peg for over 24 consecutive hours"
+   },
+   "raw": "{\"depeg_risk\":\"high\",\"confidence\":0.95,\"reason\":\"price has been >1% below peg for over 24 consecutive hours\"}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1003
+  },
+  "USDC-20230313T00": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 0.99,
+    "reason": "price has been >1% below peg for over 24 consecutive hours"
+   },
+   "raw": "{\"depeg_risk\":\"high\",\"confidence\":0.99,\"reason\":\"price has been >1% below peg for over 24 consecutive hours\"}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1061
+  },
+  "USDC-20230313T06": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 0.95,
+    "reason": "Price has stayed >1% below $1 for several consecutive hours, indicating an ongoing sustained depeg"
+   },
+   "raw": "{\"depeg_risk\":\"high\",\"confidence\":0.95,\"reason\":\"Price has stayed >1% below $1 for several consecutive hours, indicating an ongoing sustained depeg\"}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1096
+  },
+  "USDC-20230313T12": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 0.95,
+    "reason": "Price has stayed >1% below $1 for many consecutive hours, already meeting the sustained depeg criteria"
+   },
+   "raw": "{\"depeg_risk\":\"high\",\"confidence\":0.95,\"reason\":\"Price has stayed >1% below $1 for many consecutive hours, already meeting the sustained depeg criteria\"}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1148
+  },
+  "USDC-20230331T00": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.85,
+    "reason": "Price stays within \u00b10.04% of peg and no sustained deviation trend."
+   },
+   "raw": "{\"depeg_risk\":\"low\",\"confidence\":0.85,\"reason\":\"Price stays within \u00b10.04% of peg and no sustained deviation trend.\"}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1023
+  },
+  "USDC-20230404T06": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.85,
+    "reason": "Price deviations stay near -0.04% with no upward trend, far below the 1% depeg threshold"
+   },
+   "raw": "{\n  \"depeg_risk\": \"low\",\n  \"confidence\": 0.85,\n  \"reason\": \"Price deviations stay near -0.04% with no upward trend, far below the 1% depeg threshold\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1080
+  },
+  "USDC-20230406T00": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.97,
+    "reason": "price stays within \u00b10.05% of peg, far from 1% threshold"
+   },
+   "raw": "{\"depeg_risk\":\"low\",\"confidence\":0.97,\"reason\":\"price stays within \u00b10.05% of peg, far from 1% threshold\"}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1066
+  },
+  "USDC-20230415T06": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.86,
+    "reason": "Price stays within \u00b10.1% of the peg with no recent spikes, indicating stable behavior."
+   },
+   "raw": "{\n  \"depeg_risk\": \"low\",\n  \"confidence\": 0.86,\n  \"reason\": \"Price stays within \u00b10.1% of the peg with no recent spikes, indicating stable behavior.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1006
+  },
+  "USDC-20230420T06": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.85,
+    "reason": "price stays within \u00b10.07% of peg, far from 1% threshold"
+   },
+   "raw": "{\"depeg_risk\":\"low\",\"confidence\":0.85,\"reason\":\"price stays within \u00b10.07% of peg, far from 1% threshold\"}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 934
+  },
+  "USDC-20230423T00": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 0.95,
+    "reason": "Hours -11 and -10 showed price deviations >1% for two consecutive hours, indicating a sustained depeg is already occurring"
+   },
+   "raw": "{\"depeg_risk\":\"high\",\"confidence\":0.95,\"reason\":\"Hours -11 and -10 showed price deviations >1% for two consecutive hours, indicating a sustained depeg is already occurring\"}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1175
+  },
+  "USDC-20230509T12": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.85,
+    "reason": "Price stays within \u00b10.1% of peg with no recent spikes, indicating low depeg risk"
+   },
+   "raw": "{\"depeg_risk\":\"low\",\"confidence\":0.85,\"reason\":\"Price stays within \u00b10.1% of peg with no recent spikes, indicating low depeg risk\"}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1051
+  },
+  "USDC-20230512T00": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.85,
+    "reason": "price deviation stays well within \u00b10.1% and shows no upward trend toward 1%"
+   },
+   "raw": "{\"depeg_risk\":\"low\",\"confidence\":0.85,\"reason\":\"price deviation stays well within \u00b10.1% and shows no upward trend toward 1%\"}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1033
+  },
+  "USDC-20230516T18": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.86,
+    "reason": "price deviation stays around -0.04% far below the 1% threshold with no upward trend"
+   },
+   "raw": "{\n  \"depeg_risk\": \"low\",\n  \"confidence\": 0.86,\n  \"reason\": \"price deviation stays around -0.04% far below the 1% threshold with no upward trend\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1204
+  },
+  "USDC-20230518T18": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.85,
+    "reason": "Price deviation stays well within \u00b10.03% and never reaches the 1% threshold for consecutive hours"
+   },
+   "raw": "{\n  \"depeg_risk\": \"low\",\n  \"confidence\": 0.85,\n  \"reason\": \"Price deviation stays well within \u00b10.03% and never reaches the 1% threshold for consecutive hours\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1118
+  },
+  "USDC-20230523T12": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.95,
+    "reason": "price deviations stay well under the 1% threshold"
+   },
+   "raw": "{\"depeg_risk\":\"low\",\"confidence\":0.95,\"reason\":\"price deviations stay well under the 1% threshold\"}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1012
+  },
+  "USDC-20230526T06": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.85,
+    "reason": "Price stays within \u00b10.02% of the peg with no consecutive 1% deviations."
+   },
+   "raw": "{\n  \"depeg_risk\": \"low\",\n  \"confidence\": 0.85,\n  \"reason\": \"Price stays within \u00b10.02% of the peg with no consecutive 1% deviations.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1060
+  },
+  "USDC-20230527T06": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.92,
+    "reason": "Price deviations stay far below 1% and show no trend toward a sustained depeg"
+   },
+   "raw": "{\"depeg_risk\":\"low\",\"confidence\":0.92,\"reason\":\"Price deviations stay far below 1% and show no trend toward a sustained depeg\"}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1251
+  },
+  "USDC-20230527T18": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.86,
+    "reason": "price deviation stays well under 1% and shows no consecutive >1% moves despite volume spikes"
+   },
+   "raw": "{\n  \"depeg_risk\": \"low\",\n  \"confidence\": 0.86,\n  \"reason\": \"price deviation stays well under 1% and shows no consecutive >1% moves despite volume spikes\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1144
+  },
+  "USDC-20230529T18": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.85,
+    "reason": "price deviation stays around -0.02% to -0.03% with no upward trend, far below the 1% threshold"
+   },
+   "raw": "{\n  \"depeg_risk\": \"low\",\n  \"confidence\": 0.85,\n  \"reason\": \"price deviation stays around -0.02% to -0.03% with no upward trend, far below the 1% threshold\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1112
+  },
+  "UST-20220508T18": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 0.9,
+    "reason": "4 consecutive hours >1% below peg and current hour has no valid price"
+   },
+   "raw": "{\"depeg_risk\":\"high\",\"confidence\":0.9,\"reason\":\"4 consecutive hours >1% below peg and current hour has no valid price\"}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1144
+  },
+  "UST-20220509T00": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 0.71,
+    "reason": "Frequent past >1% deviations and volume spikes suggest a sustained depeg could reoccur soon"
+   },
+   "raw": "{\"depeg_risk\":\"high\",\"confidence\":0.71,\"reason\":\"Frequent past >1% deviations and volume spikes suggest a sustained depeg could reoccur soon\"}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1637
+  },
+  "UST-20220509T06": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 0.95,
+    "reason": "Two consecutive recent hours show price >1% off peg, indicating a sustained depeg already in progress"
+   },
+   "raw": "{\n  \"depeg_risk\": \"high\",\n  \"confidence\": 0.95,\n  \"reason\": \"Two consecutive recent hours show price >1% off peg, indicating a sustained depeg already in progress\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1242
+  },
+  "UST-20220509T12": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 0.78,
+    "reason": "Frequent >1% deviations and multiple recent consecutive depegs suggest a high chance of a sustained depeg soon"
+   },
+   "raw": "{\"depeg_risk\":\"high\",\"confidence\":0.78,\"reason\":\"Frequent >1% deviations and multiple recent consecutive depegs suggest a high chance of a sustained depeg soon\"}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1662
+  },
+  "UST-20220509T18": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 0.95,
+    "reason": "Two consecutive hours (\u20111 and 0) show >1% deviation, indicating a sustained depeg is already in progress"
+   },
+   "raw": "{\"depeg_risk\":\"high\",\"confidence\":0.95,\"reason\":\"Two consecutive hours (\u20111 and 0) show >1% deviation, indicating a sustained depeg is already in progress\"}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1294
+  },
+  "UST-20220510T00": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 0.96,
+    "reason": "Already 2+ consecutive hours with >1% negative deviation, indicating a sustained depeg"
+   },
+   "raw": "{\"depeg_risk\":\"high\",\"confidence\":0.96,\"reason\":\"Already 2+ consecutive hours with >1% negative deviation, indicating a sustained depeg\"}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1189
+  },
+  "UST-20220510T06": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 0.95,
+    "reason": "price has been >1% below $1 for over 20 consecutive hours"
+   },
+   "raw": "{\"depeg_risk\":\"high\",\"confidence\":0.95,\"reason\":\"price has been >1% below $1 for over 20 consecutive hours\"}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1051
+  },
+  "UST-20220510T12": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 0.95,
+    "reason": "price has stayed >1% below peg for over 24 consecutive hours"
+   },
+   "raw": "{\"depeg_risk\":\"high\",\"confidence\":0.95,\"reason\":\"price has stayed >1% below peg for over 24 consecutive hours\"}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1040
+  },
+  "UST-20220510T18": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 0.99,
+    "reason": "Price has been >1% below peg for over 24 consecutive hours"
+   },
+   "raw": "{\n  \"depeg_risk\": \"high\",\n  \"confidence\": 0.99,\n  \"reason\": \"Price has been >1% below peg for over 24 consecutive hours\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1005
+  },
+  "UST-20220511T00": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 0.95,
+    "reason": "Price has been >1% off the peg for many consecutive hours, indicating an ongoing sustained depeg."
+   },
+   "raw": "{\n  \"depeg_risk\": \"high\",\n  \"confidence\": 0.95,\n  \"reason\": \"Price has been >1% off the peg for many consecutive hours, indicating an ongoing sustained depeg.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1058
+  },
+  "UST-20220511T06": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 0.99,
+    "reason": "price has been >1% below the peg for over 24 consecutive hours"
+   },
+   "raw": "{\"depeg_risk\":\"high\",\"confidence\":0.99,\"reason\":\"price has been >1% below the peg for over 24 consecutive hours\"}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1008
+  },
+  "UST-20220511T12": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 0.98,
+    "reason": "Price has been >1% below the peg for over 24 consecutive hours"
+   },
+   "raw": "{\n  \"depeg_risk\": \"high\",\n  \"confidence\": 0.98,\n  \"reason\": \"Price has been >1% below the peg for over 24 consecutive hours\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1030
+  },
+  "UST-20220511T18": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 0.99,
+    "reason": "Price has been >1% below the $1 peg for over 24 consecutive hours"
+   },
+   "raw": "{\"depeg_risk\":\"high\",\"confidence\":0.99,\"reason\":\"Price has been >1% below the $1 peg for over 24 consecutive hours\"}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1016
+  },
+  "UST-20220512T00": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 0.99,
+    "reason": "Price has been >1% below peg for all 24 hours, meeting the sustained depeg criteria"
+   },
+   "raw": "{\"depeg_risk\":\"high\",\"confidence\":0.99,\"reason\":\"Price has been >1% below peg for all 24 hours, meeting the sustained depeg criteria\"}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1013
+  },
+  "UST-20220512T06": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 0.99,
+    "reason": "price has been >1% below peg for >2 consecutive hours"
+   },
+   "raw": "{\"depeg_risk\":\"high\",\"confidence\":0.99,\"reason\":\"price has been >1% below peg for >2 consecutive hours\"}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1039
+  },
+  "UST-20220512T12": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 0.99,
+    "reason": "Price has been >1% below $1 for all 24 hours, indicating a sustained depeg already in progress"
+   },
+   "raw": "{\"depeg_risk\":\"high\",\"confidence\":0.99,\"reason\":\"Price has been >1% below $1 for all 24 hours, indicating a sustained depeg already in progress\"}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1003
+  },
+  "UST-20220512T18": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 0.95,
+    "reason": "Price has been >1% below peg for over 24 consecutive hours, indicating an ongoing sustained depeg."
+   },
+   "raw": "{\"depeg_risk\":\"high\",\"confidence\":0.95,\"reason\":\"Price has been >1% below peg for over 24 consecutive hours, indicating an ongoing sustained depeg.\"}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1010
+  },
+  "UST-20220513T00": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 0.99,
+    "reason": "Price has been >1% below the peg for all 24 consecutive hours"
+   },
+   "raw": "{\"depeg_risk\":\"high\",\"confidence\":0.99,\"reason\":\"Price has been >1% below the peg for all 24 consecutive hours\"}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 997
+  },
+  "UST-20220513T06": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 0.99,
+    "reason": "Price has been far below the $1 peg for many consecutive hours, indicating an ongoing sustained depeg"
+   },
+   "raw": "{\"depeg_risk\":\"high\",\"confidence\":0.99,\"reason\":\"Price has been far below the $1 peg for many consecutive hours, indicating an ongoing sustained depeg\"}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1024
+  },
+  "UST-20220513T12": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 0.99,
+    "reason": "Price has been >1% below the peg for 24 consecutive hours, indicating an ongoing sustained depeg."
+   },
+   "raw": "{\n  \"depeg_risk\": \"high\",\n  \"confidence\": 0.99,\n  \"reason\": \"Price has been >1% below the peg for 24 consecutive hours, indicating an ongoing sustained depeg.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1039
+  },
+  "UST-20220513T18": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 0.98,
+    "reason": "Price has been >1% off the peg for 24 consecutive hours, indicating an ongoing sustained depeg."
+   },
+   "raw": "{\n  \"depeg_risk\": \"high\",\n  \"confidence\": 0.98,\n  \"reason\": \"Price has been >1% off the peg for 24 consecutive hours, indicating an ongoing sustained depeg.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1021
+  },
+  "UST-20220514T00": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 0.99,
+    "reason": "Price has been ~-90% off the $1 peg for many consecutive hours, indicating an ongoing sustained depeg."
+   },
+   "raw": "{\"depeg_risk\":\"high\",\"confidence\":0.99,\"reason\":\"Price has been ~-90% off the $1 peg for many consecutive hours, indicating an ongoing sustained depeg.\"}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1110
+  },
+  "UST-20220514T06": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 0.9,
+    "reason": "price has been >1% off peg for many consecutive hours"
+   },
+   "raw": "{\"depeg_risk\":\"high\",\"confidence\":0.9,\"reason\":\"price has been >1% off peg for many consecutive hours\"}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1048
+  }
+ }
+}
