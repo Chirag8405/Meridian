@@ -93,10 +93,18 @@ model, produces the risk assessment**:
   shown.
 
 It is measured, not just demoed (`genai/eval`, full tables and failures in
-[`genai/eval/results/REPORT.md`](genai/eval/results/REPORT.md)): on a frozen 47-question test set the assistant
-answered 36 correctly (77%); the grounding check caught 100 of 105 deliberately altered numbers; and an advisory
-comparison across three models found no invented numbers but one model adding unrequested risk verdicts in 97 of
-100 advisories. Small samples, single runs. Design, decisions and deviations:
+[`genai/eval/results/REPORT.md`](genai/eval/results/REPORT.md)):
+- **Assistant:** 40 of 47 frozen test questions answered correctly (85%) after a round of fixes; 36 of 47 (77%)
+  before them, and part of that change is run-to-run noise.
+- **Grounding check:** caught 117 of 122 deliberately altered numbers (the misses are edits inside timestamps and addresses).
+- **Advisories (100 synthetic rows per model):** no model invented a number, but `gpt-oss-120b` added an
+  unrequested risk verdict in 97 of 100, `gpt-oss-20b` (the production model) in 18 of 99, and `qwen3.8-27b` in 1 of 100.
+- **LLM judge vs the rule-based score** (can a model flag an approaching depeg from raw hourly data?): on USDC the rule
+  scored recall 0.95 with no false alarms on the sampled windows; `gpt-oss-120b` recall 0.55 with 23% false alarms;
+  `qwen3.8-27b` recall 0.41 with none. The LLMs did worse than the rule here. UST can't discriminate (every window is
+  positive).
+
+Small samples (two events, tens of questions), single runs. Design, decisions and deviations:
 [`docs/GENAI_ASSISTANT_PLAN.md`](docs/GENAI_ASSISTANT_PLAN.md).
 
 ## Tech stack

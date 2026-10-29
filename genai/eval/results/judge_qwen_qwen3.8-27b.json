@@ -1,0 +1,830 @@
+{
+ "model": "qwen/qwen3.8-27b",
+ "records": {
+  "USDC-20221203T00": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.95,
+    "reason": "Price deviations remain well below the 1% threshold (max ~0.025%) with no data quality anomalies."
+   },
+   "raw": "{\n\"depeg_risk\": \"low\",\n\"confidence\": 0.95,\n\"reason\": \"Price deviations remain well below the 1% threshold (max ~0.025%) with no data quality anomalies.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 923
+  },
+  "USDC-20221205T18": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.95,
+    "reason": "Price deviations remain well below the 1% threshold, ranging only between -0.0036% and -0.025% across all 24 hours."
+   },
+   "raw": "{\n\"depeg_risk\": \"low\",\n\"confidence\": 0.95,\n\"reason\": \"Price deviations remain well below the 1% threshold, ranging only between -0.0036% and -0.025% across all 24 hours.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 981
+  },
+  "USDC-20221209T12": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.98,
+    "reason": "The maximum observed price deviation is approximately 0.02%, which is far below the 1% threshold for a depeg."
+   },
+   "raw": "{\n\"depeg_risk\": \"low\",\n\"confidence\": 0.98,\n\"reason\": \"The maximum observed price deviation is approximately 0.02%, which is far below the 1% threshold for a depeg.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 962
+  },
+  "USDC-20221211T00": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.95,
+    "reason": "Price deviations remain well below the 1% threshold across all 24 hours with no data quality anomalies."
+   },
+   "raw": "{\n\"depeg_risk\": \"low\",\n\"confidence\": 0.95,\n\"reason\": \"Price deviations remain well below the 1% threshold across all 24 hours with no data quality anomalies.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 891
+  },
+  "USDC-20221217T06": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.95,
+    "reason": "Price deviations remain well below the 1% threshold, ranging only from -0.0076% to -0.0297% across all 24 hours."
+   },
+   "raw": "{\n\"depeg_risk\": \"low\",\n\"confidence\": 0.95,\n\"reason\": \"Price deviations remain well below the 1% threshold, ranging only from -0.0076% to -0.0297% across all 24 hours.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 986
+  },
+  "USDC-20221218T06": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.99,
+    "reason": "Price deviations remain consistently below 0.04%, far below the 1% threshold for a sustained depeg."
+   },
+   "raw": "{\n\"depeg_risk\": \"low\",\n\"confidence\": 0.99,\n\"reason\": \"Price deviations remain consistently below 0.04%, far below the 1% threshold for a sustained depeg.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 959
+  },
+  "USDC-20221224T00": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.95,
+    "reason": "Maximum observed price deviation is 0.0154%, which is far below the 1% threshold for a depeg."
+   },
+   "raw": "{\n\"depeg_risk\": \"low\",\n\"confidence\": 0.95,\n\"reason\": \"Maximum observed price deviation is 0.0154%, which is far below the 1% threshold for a depeg.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 974
+  },
+  "USDC-20230111T18": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.98,
+    "reason": "Price deviations remain below 0.03% across all 24 hours, far below the 1% threshold for a depeg."
+   },
+   "raw": "{\n\"depeg_risk\": \"low\",\n\"confidence\": 0.98,\n\"reason\": \"Price deviations remain below 0.03% across all 24 hours, far below the 1% threshold for a depeg.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 946
+  },
+  "USDC-20230120T00": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.98,
+    "reason": "Price deviations remain below 0.02% across all 24 hours, far below the 1% threshold for a depeg."
+   },
+   "raw": "{\n\"depeg_risk\": \"low\",\n\"confidence\": 0.98,\n\"reason\": \"Price deviations remain below 0.02% across all 24 hours, far below the 1% threshold for a depeg.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 972
+  },
+  "USDC-20230121T12": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.95,
+    "reason": "The price deviation has remained well below the 1% threshold (max ~0.05%) throughout the entire 24-hour window, indicating no sustained depeg is underway or imminent."
+   },
+   "raw": "{\n\"depeg_risk\": \"low\",\n\"confidence\": 0.95,\n\"reason\": \"The price deviation has remained well below the 1% threshold (max ~0.05%) throughout the entire 24-hour window, indicating no sustained depeg is underway or imminent.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 978
+  },
+  "USDC-20230131T06": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.98,
+    "reason": "Price deviations remain consistently below 0.03%, far below the 1% threshold for a depeg."
+   },
+   "raw": "{\n\"depeg_risk\": \"low\",\n\"confidence\": 0.98,\n\"reason\": \"Price deviations remain consistently below 0.03%, far below the 1% threshold for a depeg.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 953
+  },
+  "USDC-20230202T06": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.98,
+    "reason": "Price deviations remain well below the 1% threshold, ranging only from -0.0077% to -0.0253% across all 24 hours."
+   },
+   "raw": "{\n\"depeg_risk\": \"low\",\n\"confidence\": 0.98,\n\"reason\": \"Price deviations remain well below the 1% threshold, ranging only from -0.0077% to -0.0253% across all 24 hours.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 985
+  },
+  "USDC-20230211T12": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.98,
+    "reason": "Price deviations remain consistently below 0.04%, far below the 1% threshold for a sustained depeg."
+   },
+   "raw": "{\n\"depeg_risk\": \"low\",\n\"confidence\": 0.98,\n\"reason\": \"Price deviations remain consistently below 0.04%, far below the 1% threshold for a sustained depeg.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 930
+  },
+  "USDC-20230215T18": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.98,
+    "reason": "Price deviation remains consistently below 0.06% across all 24 hours, far below the 1% threshold for a depeg."
+   },
+   "raw": "{\n\"depeg_risk\": \"low\",\n\"confidence\": 0.98,\n\"reason\": \"Price deviation remains consistently below 0.06% across all 24 hours, far below the 1% threshold for a depeg.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 958
+  },
+  "USDC-20230224T00": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.98,
+    "reason": "Price deviations remain consistently below 0.03%, far below the 1% threshold for a depeg."
+   },
+   "raw": "{\n\"depeg_risk\": \"low\",\n\"confidence\": 0.98,\n\"reason\": \"Price deviations remain consistently below 0.03%, far below the 1% threshold for a depeg.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 918
+  },
+  "USDC-20230308T00": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.98,
+    "reason": "The maximum observed price deviation is 0.0124%, which is significantly below the 1% threshold for a depeg."
+   },
+   "raw": "{\n\"depeg_risk\": \"low\",\n\"confidence\": 0.98,\n\"reason\": \"The maximum observed price deviation is 0.0124%, which is significantly below the 1% threshold for a depeg.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 895
+  },
+  "USDC-20230308T06": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.99,
+    "reason": "Price deviations remain well below the 1% threshold and all data points are valid, indicating no sustained depeg."
+   },
+   "raw": "{\n\"depeg_risk\": \"low\",\n\"confidence\": 0.99,\n\"reason\": \"Price deviations remain well below the 1% threshold and all data points are valid, indicating no sustained depeg.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 920
+  },
+  "USDC-20230308T12": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.98,
+    "reason": "Price deviations remain well below the 1% threshold across all 24 hours with no data quality anomalies."
+   },
+   "raw": "{\n\"depeg_risk\": \"low\",\n\"confidence\": 0.98,\n\"reason\": \"Price deviations remain well below the 1% threshold across all 24 hours with no data quality anomalies.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 931
+  },
+  "USDC-20230308T18": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.98,
+    "reason": "Price deviations remain well below the 1% threshold across all 24 hours with no data quality anomalies."
+   },
+   "raw": "{\n\"depeg_risk\": \"low\",\n\"confidence\": 0.98,\n\"reason\": \"Price deviations remain well below the 1% threshold across all 24 hours with no data quality anomalies.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 920
+  },
+  "USDC-20230309T00": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.98,
+    "reason": "Price deviations remain well below the 1% threshold across all 24 hours with no data quality anomalies."
+   },
+   "raw": "{\n\"depeg_risk\": \"low\",\n\"confidence\": 0.98,\n\"reason\": \"Price deviations remain well below the 1% threshold across all 24 hours with no data quality anomalies.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 970
+  },
+  "USDC-20230309T06": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.98,
+    "reason": "Price deviations remain well below the 1% threshold across all 24 hours with no data anomalies."
+   },
+   "raw": "{\n\"depeg_risk\": \"low\",\n\"confidence\": 0.98,\n\"reason\": \"Price deviations remain well below the 1% threshold across all 24 hours with no data anomalies.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 966
+  },
+  "USDC-20230309T12": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.98,
+    "reason": "The maximum observed price deviation is 0.0167%, which is significantly below the 1% threshold for a depeg."
+   },
+   "raw": "{\n\"depeg_risk\": \"low\",\n\"confidence\": 0.98,\n\"reason\": \"The maximum observed price deviation is 0.0167%, which is significantly below the 1% threshold for a depeg.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 972
+  },
+  "USDC-20230309T18": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.95,
+    "reason": "Maximum observed price deviation is 0.0167%, which is far below the 1% threshold for a depeg."
+   },
+   "raw": "{\n\"depeg_risk\": \"low\",\n\"confidence\": 0.95,\n\"reason\": \"Maximum observed price deviation is 0.0167%, which is far below the 1% threshold for a depeg.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 929
+  },
+  "USDC-20230310T00": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.98,
+    "reason": "The maximum price deviation observed is 0.0169%, which is significantly below the 1% threshold for a depeg."
+   },
+   "raw": "{\n\"depeg_risk\": \"low\",\n\"confidence\": 0.98,\n\"reason\": \"The maximum price deviation observed is 0.0169%, which is significantly below the 1% threshold for a depeg.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 972
+  },
+  "USDC-20230310T06": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.95,
+    "reason": "The maximum observed price deviation is 0.0169%, which is significantly below the 1% threshold for a depeg."
+   },
+   "raw": "{\n\"depeg_risk\": \"low\",\n\"confidence\": 0.95,\n\"reason\": \"The maximum observed price deviation is 0.0169%, which is significantly below the 1% threshold for a depeg.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 954
+  },
+  "USDC-20230310T12": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.98,
+    "reason": "Price deviations remain below 0.02% across all 24 hours, far below the 1% threshold for a depeg."
+   },
+   "raw": "{\n\"depeg_risk\": \"low\",\n\"confidence\": 0.98,\n\"reason\": \"Price deviations remain below 0.02% across all 24 hours, far below the 1% threshold for a depeg.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 960
+  },
+  "USDC-20230310T18": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.95,
+    "reason": "The current price deviation of -0.0274% is far below the 1% threshold, and there is no evidence of a sustained depeg in the recent data."
+   },
+   "raw": "{\n\"depeg_risk\": \"low\",\n\"confidence\": 0.95,\n\"reason\": \"The current price deviation of -0.0274% is far below the 1% threshold, and there is no evidence of a sustained depeg in the recent data.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 983
+  },
+  "USDC-20230311T00": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 0.98,
+    "reason": "The price deviation has exceeded the 1% threshold in the most recent hour and is accelerating rapidly, indicating an active and sustained depeg event."
+   },
+   "raw": "{\n\"depeg_risk\": \"high\",\n\"confidence\": 0.98,\n\"reason\": \"The price deviation has exceeded the 1% threshold in the most recent hour and is accelerating rapidly, indicating an active and sustained depeg event.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 976
+  },
+  "USDC-20230311T06": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 0.99,
+    "reason": "The stablecoin has been depegged by more than 1% for the last 10 consecutive hours, with the deviation accelerating sharply to -8.67%."
+   },
+   "raw": "{\n\"depeg_risk\": \"high\",\n\"confidence\": 0.99,\n\"reason\": \"The stablecoin has been depegged by more than 1% for the last 10 consecutive hours, with the deviation accelerating sharply to -8.67%.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 982
+  },
+  "USDC-20230311T12": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 0.99,
+    "reason": "The stablecoin has been trading at least 1% below the peg for the last 10 consecutive hours, indicating a sustained depeg is already underway."
+   },
+   "raw": "{\n\"depeg_risk\": \"high\",\n\"confidence\": 0.99,\n\"reason\": \"The stablecoin has been trading at least 1% below the peg for the last 10 consecutive hours, indicating a sustained depeg is already underway.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 973
+  },
+  "USDC-20230311T18": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 1.0,
+    "reason": "The stablecoin has been trading at least 1% away from its peg for the entire 24-hour window, indicating a sustained depeg is already underway."
+   },
+   "raw": "{\n\"depeg_risk\": \"high\",\n\"confidence\": 1.0,\n\"reason\": \"The stablecoin has been trading at least 1% away from its peg for the entire 24-hour window, indicating a sustained depeg is already underway.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 976
+  },
+  "USDC-20230312T06": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 0.95,
+    "reason": "The stablecoin has been trading at least 3% below its peg for the entire 24-hour window, indicating a sustained depeg is already underway."
+   },
+   "raw": "{\n\"depeg_risk\": \"high\",\n\"confidence\": 0.95,\n\"reason\": \"The stablecoin has been trading at least 3% below its peg for the entire 24-hour window, indicating a sustained depeg is already underway.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 942
+  },
+  "USDC-20230312T12": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 0.95,
+    "reason": "The stablecoin has been trading at least 3% below its peg for the entire 24-hour window, indicating a sustained depeg is already underway."
+   },
+   "raw": "{\n\"depeg_risk\": \"high\",\n\"confidence\": 0.95,\n\"reason\": \"The stablecoin has been trading at least 3% below its peg for the entire 24-hour window, indicating a sustained depeg is already underway.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 944
+  },
+  "USDC-20230312T18": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 1.0,
+    "reason": "The price has remained at least 1% away from the $1 peg for all 24 recorded hours, indicating a sustained depeg is already underway."
+   },
+   "raw": "{\n\"depeg_risk\": \"high\",\n\"confidence\": 1.0,\n\"reason\": \"The price has remained at least 1% away from the $1 peg for all 24 recorded hours, indicating a sustained depeg is already underway.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 939
+  },
+  "USDC-20230313T00": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 0.95,
+    "reason": "The stablecoin has been trading at least 1% below the peg for the entire 24-hour window, indicating a sustained depeg is already underway."
+   },
+   "raw": "{\n\"depeg_risk\": \"high\",\n\"confidence\": 0.95,\n\"reason\": \"The stablecoin has been trading at least 1% below the peg for the entire 24-hour window, indicating a sustained depeg is already underway.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 972
+  },
+  "USDC-20230313T06": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 0.95,
+    "reason": "The stablecoin has been trading at least 1% below the peg for the entire 24-hour window, indicating a sustained depeg is already underway."
+   },
+   "raw": "{\n\"depeg_risk\": \"high\",\n\"confidence\": 0.95,\n\"reason\": \"The stablecoin has been trading at least 1% below the peg for the entire 24-hour window, indicating a sustained depeg is already underway.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 974
+  },
+  "USDC-20230313T12": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.95,
+    "reason": "The price deviation has stabilized near -1.2% with no signs of further deterioration or data anomalies."
+   },
+   "raw": "{\n\"depeg_risk\": \"low\",\n\"confidence\": 0.95,\n\"reason\": \"The price deviation has stabilized near -1.2% with no signs of further deterioration or data anomalies.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 965
+  },
+  "USDC-20230331T00": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.99,
+    "reason": "Price deviations remain well below the 1% threshold, ranging only from -0.0044% to -0.0337% across all 24 hours."
+   },
+   "raw": "{\n\"depeg_risk\": \"low\",\n\"confidence\": 0.99,\n\"reason\": \"Price deviations remain well below the 1% threshold, ranging only from -0.0044% to -0.0337% across all 24 hours.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 940
+  },
+  "USDC-20230404T06": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.98,
+    "reason": "Price deviation remains consistently below 0.05% across all 24 hours, far below the 1% threshold for a sustained depeg."
+   },
+   "raw": "{\n\"depeg_risk\": \"low\",\n\"confidence\": 0.98,\n\"reason\": \"Price deviation remains consistently below 0.05% across all 24 hours, far below the 1% threshold for a sustained depeg.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 977
+  },
+  "USDC-20230406T00": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.95,
+    "reason": "Price deviations remain consistently below 0.05% across all 24 hours, far below the 1% threshold for a sustained depeg."
+   },
+   "raw": "{\n\"depeg_risk\": \"low\",\n\"confidence\": 0.95,\n\"reason\": \"Price deviations remain consistently below 0.05% across all 24 hours, far below the 1% threshold for a sustained depeg.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 975
+  },
+  "USDC-20230415T06": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.95,
+    "reason": "Price deviation remains consistently below 0.11% across all 24 hours, far below the 1% threshold for a depeg."
+   },
+   "raw": "{\n\"depeg_risk\": \"low\",\n\"confidence\": 0.95,\n\"reason\": \"Price deviation remains consistently below 0.11% across all 24 hours, far below the 1% threshold for a depeg.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 958
+  },
+  "USDC-20230420T06": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.98,
+    "reason": "Price deviations remain well below the 1% threshold, ranging only between -0.03% and -0.06% across all 24 hours."
+   },
+   "raw": "{\n\"depeg_risk\": \"low\",\n\"confidence\": 0.98,\n\"reason\": \"Price deviations remain well below the 1% threshold, ranging only between -0.03% and -0.06% across all 24 hours.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 888
+  },
+  "USDC-20230423T00": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.95,
+    "reason": "Price deviations remain below 0.02% and all data points are valid, showing no signs of a depeg."
+   },
+   "raw": "{\n\"depeg_risk\": \"low\",\n\"confidence\": 0.95,\n\"reason\": \"Price deviations remain below 0.02% and all data points are valid, showing no signs of a depeg.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 848
+  },
+  "USDC-20230509T12": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.95,
+    "reason": "Price deviations remain well below the 1% threshold and all data points are valid, indicating no sustained depeg risk."
+   },
+   "raw": "{\n\"depeg_risk\": \"low\",\n\"confidence\": 0.95,\n\"reason\": \"Price deviations remain well below the 1% threshold and all data points are valid, indicating no sustained depeg risk.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 877
+  },
+  "USDC-20230512T00": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.95,
+    "reason": "Price deviations remain consistently below 0.1% and all data points are valid, showing no signs of a sustained depeg."
+   },
+   "raw": "{\n\"depeg_risk\": \"low\",\n\"confidence\": 0.95,\n\"reason\": \"Price deviations remain consistently below 0.1% and all data points are valid, showing no signs of a sustained depeg.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 933
+  },
+  "USDC-20230516T18": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.95,
+    "reason": "Price deviations remain consistently below 0.06%, far below the 1% threshold for a sustained depeg."
+   },
+   "raw": "{\n\"depeg_risk\": \"low\",\n\"confidence\": 0.95,\n\"reason\": \"Price deviations remain consistently below 0.06%, far below the 1% threshold for a sustained depeg.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 932
+  },
+  "USDC-20230518T18": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.95,
+    "reason": "Price deviations remain well below the 1% threshold across all 24 hours with no data anomalies."
+   },
+   "raw": "{\n\"depeg_risk\": \"low\",\n\"confidence\": 0.95,\n\"reason\": \"Price deviations remain well below the 1% threshold across all 24 hours with no data anomalies.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 948
+  },
+  "USDC-20230523T12": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.98,
+    "reason": "Price deviations remain well below the 1% threshold (max ~0.04%) with no data quality anomalies."
+   },
+   "raw": "{\n\"depeg_risk\": \"low\",\n\"confidence\": 0.98,\n\"reason\": \"Price deviations remain well below the 1% threshold (max ~0.04%) with no data quality anomalies.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 879
+  },
+  "USDC-20230526T06": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.99,
+    "reason": "Price deviations remain below 0.03% across all 24 hours, far below the 1% threshold for a sustained depeg."
+   },
+   "raw": "{\n\"depeg_risk\": \"low\",\n\"confidence\": 0.99,\n\"reason\": \"Price deviations remain below 0.03% across all 24 hours, far below the 1% threshold for a sustained depeg.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 940
+  },
+  "USDC-20230527T06": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.95,
+    "reason": "Price deviations remain well below the 1% threshold, with the maximum observed deviation being only 0.0298%."
+   },
+   "raw": "{\n\"depeg_risk\": \"low\",\n\"confidence\": 0.95,\n\"reason\": \"Price deviations remain well below the 1% threshold, with the maximum observed deviation being only 0.0298%.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 941
+  },
+  "USDC-20230527T18": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.95,
+    "reason": "Price deviations remain well below the 1% threshold, with no invalid prices or sustained anomalies observed in the last 24 hours."
+   },
+   "raw": "{\n\"depeg_risk\": \"low\",\n\"confidence\": 0.95,\n\"reason\": \"Price deviations remain well below the 1% threshold, with no invalid prices or sustained anomalies observed in the last 24 hours.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 844
+  },
+  "USDC-20230529T18": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.95,
+    "reason": "Price deviations remain consistently below 0.04%, far below the 1% threshold for a depeg."
+   },
+   "raw": "{\n\"depeg_risk\": \"low\",\n\"confidence\": 0.95,\n\"reason\": \"Price deviations remain consistently below 0.04%, far below the 1% threshold for a depeg.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 933
+  },
+  "UST-20220508T18": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 0.95,
+    "reason": "The pool has experienced severe, sustained depegs exceeding 20% for the majority of the last 24 hours, indicating a persistent failure to maintain the peg."
+   },
+   "raw": "{\n\"depeg_risk\": \"high\",\n\"confidence\": 0.95,\n\"reason\": \"The pool has experienced severe, sustained depegs exceeding 20% for the majority of the last 24 hours, indicating a persistent failure to maintain the peg.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 893
+  },
+  "UST-20220509T00": {
+   "parsed": {
+    "depeg_risk": "low",
+    "confidence": 0.95,
+    "reason": "The most recent 6 hours show stable prices within 1% of the peg, indicating the previous volatility has subsided."
+   },
+   "raw": "{\n\"depeg_risk\": \"low\",\n\"confidence\": 0.95,\n\"reason\": \"The most recent 6 hours show stable prices within 1% of the peg, indicating the previous volatility has subsided.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 849
+  },
+  "UST-20220509T06": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 0.95,
+    "reason": "The pool exhibits extreme, recurring price deviations (up to -56%) and zero-value trades, indicating a sustained and severe depeg condition."
+   },
+   "raw": "{\n\"depeg_risk\": \"high\",\n\"confidence\": 0.95,\n\"reason\": \"The pool exhibits extreme, recurring price deviations (up to -56%) and zero-value trades, indicating a sustained and severe depeg condition.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 880
+  },
+  "UST-20220509T12": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 0.95,
+    "reason": "The pool exhibits frequent and severe price deviations (up to -50%) and zero-value trades, indicating a sustained depeg condition is already underway."
+   },
+   "raw": "{\n\"depeg_risk\": \"high\",\n\"confidence\": 0.95,\n\"reason\": \"The pool exhibits frequent and severe price deviations (up to -50%) and zero-value trades, indicating a sustained depeg condition is already underway.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 877
+  },
+  "UST-20220509T18": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 0.95,
+    "reason": "The pool has experienced multiple instances of severe depeg (deviations >10%) in the last 24 hours, with the most recent reading showing a -41% deviation and extreme volume spikes, indicating an ongoing and sustained loss of peg."
+   },
+   "raw": "{\n\"depeg_risk\": \"high\",\n\"confidence\": 0.95,\n\"reason\": \"The pool has experienced multiple instances of severe depeg (deviations >10%) in the last 24 hours, with the most recent reading showing a -41% deviation and extreme volume spikes, indicating an ongoing and sustained loss of peg.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 899
+  },
+  "UST-20220510T00": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 1.0,
+    "reason": "The price has been deviating more than 1% from the peg for the last 12 consecutive hours, with the deviation worsening to -62.5% in the most recent hour."
+   },
+   "raw": "{\n\"depeg_risk\": \"high\",\n\"confidence\": 1.0,\n\"reason\": \"The price has been deviating more than 1% from the peg for the last 12 consecutive hours, with the deviation worsening to -62.5% in the most recent hour.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 963
+  },
+  "UST-20220510T06": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 1.0,
+    "reason": "The stablecoin has been trading at least 1% away from its peg for the entire 24-hour window, indicating a sustained depeg is already underway."
+   },
+   "raw": "{\n\"depeg_risk\": \"high\",\n\"confidence\": 1.0,\n\"reason\": \"The stablecoin has been trading at least 1% away from its peg for the entire 24-hour window, indicating a sustained depeg is already underway.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 960
+  },
+  "UST-20220510T12": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 0.99,
+    "reason": "The stablecoin has been trading at least 1% away from its peg for the entire 24-hour window, indicating a sustained depeg is already underway."
+   },
+   "raw": "{\n\"depeg_risk\": \"high\",\n\"confidence\": 0.99,\n\"reason\": \"The stablecoin has been trading at least 1% away from its peg for the entire 24-hour window, indicating a sustained depeg is already underway.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 997
+  },
+  "UST-20220510T18": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 1.0,
+    "reason": "The stablecoin has been trading at a deviation of over 20% from its peg for the entire 24-hour window, indicating a sustained depeg is already underway."
+   },
+   "raw": "{\n\"depeg_risk\": \"high\",\n\"confidence\": 1.0,\n\"reason\": \"The stablecoin has been trading at a deviation of over 20% from its peg for the entire 24-hour window, indicating a sustained depeg is already underway.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 977
+  },
+  "UST-20220511T00": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 1.0,
+    "reason": "The price deviation has been consistently between 22% and 73% away from the peg for all 24 recorded hours, indicating a sustained depeg is already underway."
+   },
+   "raw": "{\n\"depeg_risk\": \"high\",\n\"confidence\": 1.0,\n\"reason\": \"The price deviation has been consistently between 22% and 73% away from the peg for all 24 recorded hours, indicating a sustained depeg is already underway.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1004
+  },
+  "UST-20220511T06": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 1.0,
+    "reason": "The stablecoin has been trading at a deviation of over 22% from its peg for the entire 24-hour window, indicating a sustained depeg is already underway."
+   },
+   "raw": "{\n\"depeg_risk\": \"high\",\n\"confidence\": 1.0,\n\"reason\": \"The stablecoin has been trading at a deviation of over 22% from its peg for the entire 24-hour window, indicating a sustained depeg is already underway.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1004
+  },
+  "UST-20220511T12": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 1.0,
+    "reason": "The stablecoin has been trading at a deviation of over 40% from its peg for the entire 24-hour window, indicating a sustained and severe depeg is already underway."
+   },
+   "raw": "{\n\"depeg_risk\": \"high\",\n\"confidence\": 1.0,\n\"reason\": \"The stablecoin has been trading at a deviation of over 40% from its peg for the entire 24-hour window, indicating a sustained and severe depeg is already underway.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1008
+  },
+  "UST-20220511T18": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 1.0,
+    "reason": "The stablecoin has been trading at a deviation of over 48% from its peg for the entire 24-hour window, indicating a sustained and severe depeg is already underway."
+   },
+   "raw": "{\n\"depeg_risk\": \"high\",\n\"confidence\": 1.0,\n\"reason\": \"The stablecoin has been trading at a deviation of over 48% from its peg for the entire 24-hour window, indicating a sustained and severe depeg is already underway.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1002
+  },
+  "UST-20220512T00": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 1.0,
+    "reason": "The price deviation has remained between -46% and -86% for all 24 hours, indicating a sustained depeg is already underway."
+   },
+   "raw": "{\n\"depeg_risk\": \"high\",\n\"confidence\": 1.0,\n\"reason\": \"The price deviation has remained between -46% and -86% for all 24 hours, indicating a sustained depeg is already underway.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 997
+  },
+  "UST-20220512T06": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 1.0,
+    "reason": "The stablecoin has been trading at a deviation of over 46% from its peg for the entire 24-hour window, indicating a sustained and severe depeg is already underway."
+   },
+   "raw": "{\n\"depeg_risk\": \"high\",\n\"confidence\": 1.0,\n\"reason\": \"The stablecoin has been trading at a deviation of over 46% from its peg for the entire 24-hour window, indicating a sustained and severe depeg is already underway.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1006
+  },
+  "UST-20220512T12": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 1.0,
+    "reason": "The stablecoin has been trading at a deviation of over 40% from its peg for the entire 24-hour window, indicating a sustained and severe depeg is already underway."
+   },
+   "raw": "{\n\"depeg_risk\": \"high\",\n\"confidence\": 1.0,\n\"reason\": \"The stablecoin has been trading at a deviation of over 40% from its peg for the entire 24-hour window, indicating a sustained and severe depeg is already underway.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1004
+  },
+  "UST-20220512T18": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 1.0,
+    "reason": "The stablecoin has been trading at a deviation of over 46% from its peg for the entire 24-hour window, indicating a sustained and severe depeg is already underway."
+   },
+   "raw": "{\n\"depeg_risk\": \"high\",\n\"confidence\": 1.0,\n\"reason\": \"The stablecoin has been trading at a deviation of over 46% from its peg for the entire 24-hour window, indicating a sustained and severe depeg is already underway.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1009
+  },
+  "UST-20220513T00": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 1.0,
+    "reason": "The stablecoin has been trading at a deviation of over 49% from its peg for the entire 24-hour window, indicating a sustained and severe depeg is already underway."
+   },
+   "raw": "{\n\"depeg_risk\": \"high\",\n\"confidence\": 1.0,\n\"reason\": \"The stablecoin has been trading at a deviation of over 49% from its peg for the entire 24-hour window, indicating a sustained and severe depeg is already underway.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1003
+  },
+  "UST-20220513T06": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 1.0,
+    "reason": "The stablecoin has been trading at a deviation of over 55% from its peg for the entire 24-hour window, indicating a sustained and severe depeg is already underway."
+   },
+   "raw": "{\n\"depeg_risk\": \"high\",\n\"confidence\": 1.0,\n\"reason\": \"The stablecoin has been trading at a deviation of over 55% from its peg for the entire 24-hour window, indicating a sustained and severe depeg is already underway.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 997
+  },
+  "UST-20220513T12": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 1.0,
+    "reason": "The stablecoin has been trading at a deviation of over 59% from its peg for the entire 24-hour window, indicating a sustained and severe depeg is already underway."
+   },
+   "raw": "{\n\"depeg_risk\": \"high\",\n\"confidence\": 1.0,\n\"reason\": \"The stablecoin has been trading at a deviation of over 59% from its peg for the entire 24-hour window, indicating a sustained and severe depeg is already underway.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1008
+  },
+  "UST-20220513T18": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 1.0,
+    "reason": "The price has been deviating by over 69% from the peg for the entire 24-hour window, far exceeding the 1% threshold for a sustained depeg."
+   },
+   "raw": "{\n\"depeg_risk\": \"high\",\n\"confidence\": 1.0,\n\"reason\": \"The price has been deviating by over 69% from the peg for the entire 24-hour window, far exceeding the 1% threshold for a sustained depeg.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1007
+  },
+  "UST-20220514T00": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 1.0,
+    "reason": "The stablecoin has been trading at a deviation of over 87% from its peg for the entire 24-hour window, indicating a sustained and severe depeg is already underway."
+   },
+   "raw": "{\n\"depeg_risk\": \"high\",\n\"confidence\": 1.0,\n\"reason\": \"The stablecoin has been trading at a deviation of over 87% from its peg for the entire 24-hour window, indicating a sustained and severe depeg is already underway.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 1002
+  },
+  "UST-20220514T06": {
+   "parsed": {
+    "depeg_risk": "high",
+    "confidence": 1.0,
+    "reason": "The stablecoin has been trading at a ~90-95% deviation from its peg for the entire 24-hour window, indicating a sustained and severe depeg is already underway."
+   },
+   "raw": "{\n\"depeg_risk\": \"high\",\n\"confidence\": 1.0,\n\"reason\": \"The stablecoin has been trading at a ~90-95% deviation from its peg for the entire 24-hour window, indicating a sustained and severe depeg is already underway.\"\n}",
+   "finish": "stop",
+   "error": null,
+   "tokens": 920
+  }
+ }
+}

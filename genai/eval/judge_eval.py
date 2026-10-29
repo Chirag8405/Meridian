@@ -110,7 +110,7 @@ def score(all_windows: list[dict], llm: dict[str, dict]) -> dict:
         "Two events, one pair each: counts and 95% Wilson intervals are reported; no significance claim is made.",
         "The rule score uses baseline statistics and cluster/wallet signals the judge does not see; the judge sees only raw hourly behaviour.",
         "Pre-training leakage is reduced (no dates, names, absolute prices) but not eliminated: the shape of a famous depeg may still be recognised.",
-        "One run per window at temperature 0; run-to-run variance is not measured.",
+        "One run per window at temperature 0.1 (the assistant client's fixed setting); run-to-run variance is not measured.",
     ]
     return out
 

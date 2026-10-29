@@ -1,7 +1,7 @@
 {
- "answers_used": 49,
- "mutations": 105,
- "detected": 100,
- "detection_rate": 0.9524,
- "collisions_skipped": 11
+ "answers_used": 53,
+ "mutations": 122,
+ "detected": 117,
+ "detection_rate": 0.959,
+ "collisions_skipped": 16
 }

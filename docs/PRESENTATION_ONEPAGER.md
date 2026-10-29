@@ -38,16 +38,17 @@ many pools and are hard to read in real time, and reading them needs expertise. 
 
 | GenAI measurement | Result |
 |---|---|
-| Assistant accuracy, 47 frozen test questions (gpt-oss-20b) | **36/47 (77%)** (tuned set: 32/33). Failures are listed in the report |
-| Grounding check against deliberately wrong numbers | caught **100 of 105** |
-| Advisories, 100 synthetic rows per model | no model invented a number; **gpt-oss-120b added an unrequested risk verdict in 97/100**, qwen3.8-27b in 1/100 (heuristic detector) |
+| Assistant accuracy, 47 frozen test questions (gpt-oss-20b) | **36/47 (77%)** first run; **40/47 (85%)** after fixes (part of the change is run-to-run noise). Failures are listed in the report |
+| Grounding check against deliberately wrong numbers | caught **117 of 122** |
+| Advisories, 100 synthetic rows per model | no model invented a number; unrequested risk verdicts: gpt-oss-120b 97/100, gpt-oss-20b (production) 18/99, qwen3.8-27b 1/100 (heuristic detector) |
+| Can an LLM flag an approaching depeg as well as the rule score? (USDC, 52 windows) | **No.** Rule: recall 0.95, no false alarms. gpt-oss-120b: recall 0.55, 23% false alarms. qwen3.8-27b: recall 0.41, none |
 
 ## Honest limits (say these out loud)
 - Two historical events, one pair each: this is evidence for what it is, not a general predictor. Not financial advice.
-- The GenAI results are small-sample, single-run, one model for chat, synthetic advisory rows. The test run predates a
-  round of fixes; re-measurement is pending the daily token quota.
+- The GenAI results are small-sample, single-run, one model for chat, synthetic advisory rows. The 77% to 85% change
+  after the fixes includes run-to-run noise.
 - UST has no calm baseline in this dataset, so UST results are reported separately and never pooled.
-- The LLM-as-judge comparison (can a model flag stress as well as the rule?) is prepared but not yet run.
+- The judge comparison covers two events (UST cannot discriminate: every window is positive) and one run per window.
 
 ## One sentence
 *"Meridian unifies scattered on-chain stablecoin signals at scale into a validated risk score, and uses a

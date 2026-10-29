@@ -166,6 +166,52 @@
        0.114
       ]
      }
+    },
+    "llm:openai/gpt-oss-120b": {
+     "llm_subset": {
+      "n": 52,
+      "tp": 12,
+      "fp": 7,
+      "fn": 10,
+      "tn": 23,
+      "precision": 0.632,
+      "recall": 0.545,
+      "f1": 0.585,
+      "false_alarm_rate": 0.233,
+      "recall_ci95": [
+       0.347,
+       0.731
+      ],
+      "false_alarm_ci95": [
+       0.118,
+       0.409
+      ]
+     },
+     "invalid_replies": 0,
+     "windows_answered": 52
+    },
+    "llm:qwen/qwen3.8-27b": {
+     "llm_subset": {
+      "n": 52,
+      "tp": 9,
+      "fp": 0,
+      "fn": 13,
+      "tn": 30,
+      "precision": 1.0,
+      "recall": 0.409,
+      "f1": 0.581,
+      "false_alarm_rate": 0.0,
+      "recall_ci95": [
+       0.233,
+       0.613
+      ],
+      "false_alarm_ci95": [
+       0,
+       0.114
+      ]
+     },
+     "invalid_replies": 0,
+     "windows_answered": 52
     }
    }
   },
@@ -310,6 +356,46 @@
       ],
       "false_alarm_ci95": null
      }
+    },
+    "llm:openai/gpt-oss-120b": {
+     "llm_subset": {
+      "n": 23,
+      "tp": 23,
+      "fp": 0,
+      "fn": 0,
+      "tn": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "false_alarm_rate": null,
+      "recall_ci95": [
+       0.857,
+       1
+      ],
+      "false_alarm_ci95": null
+     },
+     "invalid_replies": 0,
+     "windows_answered": 23
+    },
+    "llm:qwen/qwen3.8-27b": {
+     "llm_subset": {
+      "n": 23,
+      "tp": 22,
+      "fp": 0,
+      "fn": 1,
+      "tn": 0,
+      "precision": 1.0,
+      "recall": 0.957,
+      "f1": 0.978,
+      "false_alarm_rate": null,
+      "recall_ci95": [
+       0.79,
+       0.992
+      ],
+      "false_alarm_ci95": null
+     },
+     "invalid_replies": 0,
+     "windows_answered": 23
     }
    }
   }
@@ -319,6 +405,6 @@
   "Two events, one pair each: counts and 95% Wilson intervals are reported; no significance claim is made.",
   "The rule score uses baseline statistics and cluster/wallet signals the judge does not see; the judge sees only raw hourly behaviour.",
   "Pre-training leakage is reduced (no dates, names, absolute prices) but not eliminated: the shape of a famous depeg may still be recognised.",
-  "One run per window at temperature 0; run-to-run variance is not measured."
+  "One run per window at temperature 0.1 (the assistant client's fixed setting); run-to-run variance is not measured."
  ]
 }
