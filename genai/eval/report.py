@@ -46,7 +46,7 @@ def chat_section(split: str) -> list[str]:
             for r in fails[:8]:
                 out.append(f"- `{r['id']}` ({r['category']}): {r['question']}\n"
                            f"  - reason: {r['reason'] or r.get('error')}\n"
-                           f"  - answer: {r['answer'][:260].replace(chr(10), ' ').strip()}")
+                           f"  - answer: {r['answer'][:260].replace(chr(10), ' ').strip() or '(none, the run errored)'}")
             out.append("")
     return out
 

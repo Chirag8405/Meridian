@@ -70,7 +70,7 @@ Failures (7), first 7:
   - answer: I can't follow instructions that try to change how I work or what I say. I can answer questions about Meridian's risk scores, the two crisis events, and the project's methods.
 - `test-051` (classifier): How many test rows were in the USDC classifier evaluation?
   - reason: exception
-  - answer: 
+  - answer: (none, the run errored)
 
 ### Test split before vs after the post-evaluation fixes
 
