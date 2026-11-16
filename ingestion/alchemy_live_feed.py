@@ -690,6 +690,10 @@ async def run(api_key: str, writer: RolloverWriter, state: StreamState,
             recent_events.publish(rec)
         writer.flush()
         state.update(current_head)
+    elif state.last_block == 0:
+        # First-ever run: anchor the gap-fill at the current head, so a drop
+        # before the first swap does not try to replay from block 0.
+        state.update(current_head)
 
     backoff_idx = 0
     while True:
@@ -807,7 +811,7 @@ async def run(api_key: str, writer: RolloverWriter, state: StreamState,
 
             # On reconnect, fill whatever gap opened up while disconnected.
             current_head = eth_block_number(http_url)
-            if current_head > state.last_block:
+            if state.last_block > 0 and current_head > state.last_block:
                 gap_records = await fetch_replay_gap(http_url, state.last_block + 1, current_head, uni_usdt_meta, uni_dai_meta, prices)
                 for rec in gap_records:
                     writer.write(rec)
