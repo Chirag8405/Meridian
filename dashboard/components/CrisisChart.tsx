@@ -2,13 +2,14 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { TimelinePoint } from "@/lib/data";
+import InfoTip from "./InfoTip";
 
 const WIDTH = 640;
-const HEIGHT = 260;
-const PAD_LEFT = 44;
+const HEIGHT = 284;
+const PAD_LEFT = 52;
 const PAD_RIGHT = 12;
 const PAD_TOP = 16;
-const PAD_BOTTOM = 28;
+const PAD_BOTTOM = 50;
 const Y_MAX = 1.05; // shared domain across both charts — the point of this component
 
 function formatDate(iso: string) {
@@ -140,7 +141,10 @@ export default function CrisisChart({
 
   return (
     <div className="flex-1 min-w-0">
-      <h3 className="font-sans font-semibold text-[15px] text-text-primary mb-0.5">{title}</h3>
+      <h3 className="font-sans font-semibold text-[15px] text-text-primary mb-0.5">
+        {title}
+        <InfoTip k="crisisChart" label={title} />
+      </h3>
       <p className="font-mono text-[12px] text-text-muted mb-3">{dateRangeLabel}</p>
       <svg
         ref={svgRef}
@@ -174,6 +178,37 @@ export default function CrisisChart({
             </text>
           </g>
         ))}
+
+        {/* Axis titles and date ticks */}
+        <text
+          transform={`translate(11 ${PAD_TOP + plotH / 2}) rotate(-90)`}
+          textAnchor="middle"
+          className="font-sans fill-text-muted"
+          fontSize={10}
+        >
+          implied price ($)
+        </text>
+        {[0, Math.floor((points.length - 1) / 2), points.length - 1].map((i, k) => (
+          <text
+            key={k}
+            x={xAt(i)}
+            y={HEIGHT - PAD_BOTTOM + 15}
+            textAnchor={k === 0 ? "start" : k === 2 ? "end" : "middle"}
+            className="font-mono fill-text-muted"
+            fontSize={10}
+          >
+            {formatDate(points[i].window_start_ts)}
+          </text>
+        ))}
+        <text
+          x={PAD_LEFT + plotW / 2}
+          y={HEIGHT - 8}
+          textAnchor="middle"
+          className="font-sans fill-text-muted"
+          fontSize={10}
+        >
+          date (hourly readings)
+        </text>
 
         {/* Price line — drawn in once on mount (declarative dasharray/offset
             driven entirely by React state, see the effect above), then
@@ -271,6 +306,11 @@ export default function CrisisChart({
           <span className="text-text-muted">Hover or focus the chart to read a value</span>
         )}
       </div>
+      <p className="mt-1 font-sans text-[11.5px] leading-snug text-text-muted">
+        <span className="font-medium text-text-secondary">How to read it: </span>
+        the dashed line at $1.00 is the peg; the solid line is the hourly price. &ldquo;low&rdquo; marks the lowest
+        hour and the number at the right edge is the last reading.
+      </p>
     </div>
   );
 }
