@@ -1,4 +1,6 @@
 import type { WalletRankingRow } from "@/lib/data";
+import InfoTip from "./InfoTip";
+import { HowToRead, ProcessTags, WhatIsThis } from "./Explain";
 
 function shortAddr(addr: string) {
   return `${addr.slice(0, 10)}…${addr.slice(-6)}`;
@@ -13,21 +15,26 @@ function RankTable({ title, rows }: { title: string; rows: WalletRankingRow[] })
       <h3 className="font-sans font-semibold text-[15px] text-text-primary mb-1">{title}</h3>
       <p className="font-sans text-[12.5px] text-text-muted mb-3">
         {contracts} of top {rows.length} are contracts, not EOA traders
+        <InfoTip k="contractType" label="Contract vs EOA" />
       </p>
       <table className="w-full border-collapse">
+        <caption className="sr-only">
+          Top 5 addresses by PageRank score in the {title} window
+        </caption>
         <thead>
           <tr className="border-b border-border">
-            <th className="text-left font-sans text-[11px] font-medium text-text-muted pb-1.5 pr-2">
+            <th scope="col" className="text-left font-sans text-[11px] font-medium text-text-muted pb-1.5 pr-2">
               rank
             </th>
-            <th className="text-left font-sans text-[11px] font-medium text-text-muted pb-1.5 pr-2">
+            <th scope="col" className="text-left font-sans text-[11px] font-medium text-text-muted pb-1.5 pr-2">
               address
             </th>
-            <th className="text-left font-sans text-[11px] font-medium text-text-muted pb-1.5 pr-2">
+            <th scope="col" className="text-left font-sans text-[11px] font-medium text-text-muted pb-1.5 pr-2">
               type
             </th>
-            <th className="text-right font-sans text-[11px] font-medium text-text-muted pb-1.5">
+            <th scope="col" className="text-right font-sans text-[11px] font-medium text-text-muted pb-1.5">
               influence
+              <InfoTip k="influence" label="Influence (PageRank score)" />
             </th>
           </tr>
         </thead>
@@ -40,7 +47,7 @@ function RankTable({ title, rows }: { title: string; rows: WalletRankingRow[] })
               <td className="font-mono text-[12px] text-text-secondary py-1.5 pr-2">
                 {shortAddr(r.node_id)}
               </td>
-              <td className="font-sans text-[11.5px] py-1.5 pr-2">
+              <td className="font-sans text-[12px] py-1.5 pr-2">
                 {r.is_contract ? (
                   <span className="text-text-primary font-medium">contract</span>
                 ) : (
@@ -55,7 +62,7 @@ function RankTable({ title, rows }: { title: string; rows: WalletRankingRow[] })
                       style={{ width: `${(r.pagerank_score / maxScore) * 100}%` }}
                     />
                   </div>
-                  <span className="font-mono text-[11px] text-text-primary text-right font-tabular w-[46px] shrink-0">
+                  <span className="font-mono text-[13px] text-text-primary text-right font-tabular w-[52px] shrink-0">
                     {r.pagerank_score.toFixed(4)}
                   </span>
                 </div>
@@ -74,18 +81,29 @@ export default function WalletRankings({ rows }: { rows: WalletRankingRow[] }) {
   const totalContracts = rows.filter((r) => r.is_contract).length;
 
   return (
-    <section aria-labelledby="wallet-heading" className="max-w-5xl mx-auto px-5 py-10 border-t border-border">
+    <section id="wallets" aria-labelledby="wallet-heading" className="max-w-5xl mx-auto px-5 py-10 border-t border-border scroll-mt-4">
+      <div className="flex flex-wrap items-center gap-2 mb-2">
+        <ProcessTags types={["batch"]} />
+        <InfoTip k="pagerank" label="PageRank wallet graph" />
+      </div>
       <h2 id="wallet-heading" className="font-sans font-semibold text-[20px] text-text-primary mb-2 max-w-2xl">
         Who trades during a crisis? Mostly infrastructure, not people.
       </h2>
-      <p className="font-sans text-[13px] text-text-muted mb-8 max-w-2xl">
-        Ranking every wallet by how much trading volume flows through it during each crisis
-        (via PageRank, the same class of algorithm behind Google&apos;s original search
-        ranking) — {totalContracts} of {rows.length} shown here turn out to be contracts
-        (routers, aggregators), not people. Verified against each address&apos;s actual
-        on-chain bytecode, not guessed from naming patterns. A high rank means &quot;a lot of
-        volume routes through this address,&quot; not &quot;this is an influential trader.&quot;
-      </p>
+      <WhatIsThis className="mb-2">
+        Every wallet is ranked by how much trading volume flows through it during each crisis,
+        using PageRank — the same class of algorithm behind Google&apos;s original search
+        ranking. {totalContracts} of the {rows.length} addresses shown turn out to be contracts
+        (routers, aggregators), not people. Each address was checked against its actual on-chain
+        bytecode, not guessed from naming patterns.
+      </WhatIsThis>
+      <HowToRead className="mb-3">
+        Picture a network: every wallet and every pool is a dot, and a line joins a wallet to a
+        pool whenever it traded there (thicker for more volume, and flowing both ways). PageRank
+        gives a dot a high score when lots of volume passes through it. Table columns: rank,
+        shortened address, whether it is a contract or a normal wallet (EOA), and its score with a
+        bar scaled to the top row. A high rank means &quot;a lot of volume routes through this
+        address,&quot; not &quot;this is an influential trader.&quot;
+      </HowToRead>
       <div className="flex flex-col sm:flex-row gap-10 sm:gap-12">
         <RankTable title="USDC · March 2023" rows={usdc} />
         <RankTable title="UST · May 2022" rows={ust} />

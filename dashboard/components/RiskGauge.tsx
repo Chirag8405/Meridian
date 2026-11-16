@@ -13,7 +13,11 @@ export default function RiskGauge({ score }: { score: number }) {
 
   return (
     <div className="mt-2.5">
-      <div className="relative h-[7px] bg-fill w-full">
+      <div
+        className="relative h-[7px] bg-fill w-full"
+        role="img"
+        aria-label={`Risk score ${score.toFixed(1)} on a 0 to 100 scale; typical USDC crisis average is ${HISTORICAL_CRISIS_AVG}`}
+      >
         <div
           className={`h-full transition-[width] duration-500 ${severe ? "bg-accent" : "bg-text-primary"}`}
           style={{ width: `${pct}%` }}

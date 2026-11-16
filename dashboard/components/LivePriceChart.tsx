@@ -1,14 +1,24 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useState } from "react";
 import type { LivePricePoint } from "@/lib/data";
+import InfoTip from "./InfoTip";
 
+// ViewBox is close to the rendered column width (~470px) so SVG text renders
+// near its nominal size instead of being scaled down.
 const WIDTH = 640;
-const HEIGHT = 200;
-const PAD_LEFT = 52;
+const HEIGHT = 246;
+const PAD_LEFT = 64;
 const PAD_RIGHT = 12;
 const PAD_TOP = 16;
-const PAD_BOTTOM = 24;
+const PAD_BOTTOM = 46;
+
+// A reading backed by less than this much traded value is "dust": its implied
+// price is a ratio of two tiny amounts, not a market price. This is a
+// display filter only; the data is never modified.
+const DUST_USD = 1;
+// Distance from $1.00 beyond which a reading is called out in the note below.
+const OUTLIER_DEV = 0.05;
 
 function formatTime(iso: string) {
   return new Date(iso).toLocaleString("en-US", {
@@ -19,8 +29,16 @@ function formatTime(iso: string) {
   });
 }
 
+function formatDay(ms: number) {
+  return new Date(ms).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+}
+
 function formatPrice(v: number) {
   return `$${v.toFixed(4)}`;
+}
+
+function formatVolume(v: number) {
+  return v < 0.01 ? v.toExponential(1) : v.toFixed(2);
 }
 
 // Nearest point in time to a hovered instant, within a series — undefined
@@ -43,20 +61,47 @@ function nearestInTime(points: LivePricePoint[], targetMs: number): LivePricePoi
 
 type Series = { label: string; dash: boolean; points: LivePricePoint[] };
 
-export default function LivePriceChart({ pair, series }: { pair: string; series: Series[] }) {
+export default function LivePriceChart({ pair, series: fullSeries }: { pair: string; series: Series[] }) {
   const [hoverX, setHoverX] = useState<number | null>(null);
+  const [hideDust, setHideDust] = useState(false);
+  const toggleId = useId();
 
+  const fullPoints = fullSeries.flatMap((s) => s.points);
+  const dustPoints = fullPoints.filter((p) => p.volume_usd < DUST_USD);
+  const outliers = fullPoints.filter((p) => Math.abs(p.implied_price - 1) > OUTLIER_DEV);
+  const outliersAllDust = outliers.length > 0 && outliers.every((p) => p.volume_usd < DUST_USD);
+  const worst = outliers.reduce<LivePricePoint | null>(
+    (w, p) => (w === null || Math.abs(p.implied_price - 1) > Math.abs(w.implied_price - 1) ? p : w),
+    null
+  );
+
+  const series: Series[] = hideDust
+    ? fullSeries.map((s) => ({ ...s, points: s.points.filter((p) => p.volume_usd >= DUST_USD) }))
+    : fullSeries;
   const allPoints = series.flatMap((s) => s.points);
+
   if (allPoints.length === 0) {
     return (
       <div className="flex-1 min-w-0">
         <h3 className="font-sans font-semibold text-[15px] text-text-primary mb-1">{pair}</h3>
-        <div className="border border-border p-4 h-[120px] flex items-center">
+        <div className="border border-border p-4 min-h-[120px] flex items-center">
           <p className="font-sans text-[12.5px] text-text-muted">
-            No finalized hourly window yet for this pair — the streaming consumer emits one
-            roughly every 10 minutes once enough live data has arrived. Check back shortly.
+            {hideDust
+              ? "Every hour in this chart is a dust hour, so nothing is left to draw. Untick the filter to see them."
+              : "No finalized hourly window yet for this pair — the streaming consumer emits one roughly every 10 minutes once enough live data has arrived. Check back shortly."}
           </p>
         </div>
+        {hideDust && (
+          <label className="mt-2 flex cursor-pointer items-center gap-2 font-sans text-[12px] text-text-secondary">
+            <input
+              type="checkbox"
+              checked={hideDust}
+              onChange={(e) => setHideDust(e.target.checked)}
+              className="h-4 w-4"
+            />
+            Hide dust hours (under ${DUST_USD} traded)
+          </label>
+        )}
       </div>
     );
   }
@@ -85,6 +130,7 @@ export default function LivePriceChart({ pair, series }: { pair: string; series:
   const timeAtX = (x: number) => tMin + ((x - PAD_LEFT) / plotW) * tSpan;
 
   const yTicks = [yMin, (yMin + yMax) / 2, yMax];
+  const xTicks = [tMin, tMin + tSpan / 2, tMax];
 
   function handlePointerMove(e: React.PointerEvent<SVGRectElement>) {
     const svg = e.currentTarget.ownerSVGElement;
@@ -103,7 +149,7 @@ export default function LivePriceChart({ pair, series }: { pair: string; series:
 
   return (
     <div className="flex-1 min-w-0">
-      <div className="flex items-baseline justify-between mb-1">
+      <div className="flex flex-wrap items-baseline justify-between gap-y-1 mb-1">
         <h3 className="font-sans font-semibold text-[15px] text-text-primary">{pair}</h3>
         <div className="flex gap-3">
           {series.map((s) => (
@@ -125,11 +171,42 @@ export default function LivePriceChart({ pair, series }: { pair: string; series:
         {yTicks.map((v, i) => (
           <g key={i}>
             <line x1={PAD_LEFT} x2={WIDTH - PAD_RIGHT} y1={yAt(v)} y2={yAt(v)} stroke="var(--border)" strokeWidth={1} />
-            <text x={PAD_LEFT - 6} y={yAt(v) + 3} textAnchor="end" className="font-mono fill-text-muted" fontSize={10}>
+            <text x={PAD_LEFT - 6} y={yAt(v) + 4} textAnchor="end" className="font-mono fill-text-muted" fontSize={10}>
               {formatPrice(v)}
             </text>
           </g>
         ))}
+
+        {/* Axis titles and time ticks */}
+        <text
+          transform={`translate(11 ${PAD_TOP + plotH / 2}) rotate(-90)`}
+          textAnchor="middle"
+          className="font-sans fill-text-muted"
+          fontSize={10}
+        >
+          implied price ($)
+        </text>
+        {xTicks.map((t, i) => (
+          <text
+            key={i}
+            x={PAD_LEFT + ((t - tMin) / tSpan) * plotW}
+            y={HEIGHT - PAD_BOTTOM + 16}
+            textAnchor={i === 0 ? "start" : i === xTicks.length - 1 ? "end" : "middle"}
+            className="font-mono fill-text-muted"
+            fontSize={10}
+          >
+            {formatDay(t)}
+          </text>
+        ))}
+        <text
+          x={PAD_LEFT + plotW / 2}
+          y={HEIGHT - 6}
+          textAnchor="middle"
+          className="font-sans fill-text-muted"
+          fontSize={10}
+        >
+          time (hourly windows, your local date)
+        </text>
 
         {series.map((s) => {
           if (s.points.length === 0) return null;
@@ -181,14 +258,14 @@ export default function LivePriceChart({ pair, series }: { pair: string; series:
           style={{ cursor: "crosshair" }}
         />
       </svg>
-      <div className="mt-1 h-5 font-mono text-[11px] text-text-secondary" aria-live="polite">
+      <div className="mt-1 min-h-5 font-mono text-[11px] text-text-secondary" aria-live="polite">
         {hoverReadouts && hoverReadouts.length > 0 ? (
           <span>
             {hoverReadouts.map((r, i) => (
               <span key={r.label}>
                 {i > 0 && "  ·  "}
                 {r.label} <strong className="text-text-primary">{formatPrice(r.point.implied_price)}</strong>
-                {" "}({formatTime(r.point.window_start_ts)})
+                {" "}({formatTime(r.point.window_start_ts)}, ${formatVolume(r.point.volume_usd)} traded)
               </span>
             ))}
           </span>
@@ -198,6 +275,46 @@ export default function LivePriceChart({ pair, series }: { pair: string; series:
           </span>
         )}
       </div>
+
+      {dustPoints.length > 0 && (
+        <div className="mt-2 flex flex-wrap items-center gap-x-1 gap-y-1">
+          <label htmlFor={toggleId} className="flex cursor-pointer items-center gap-2 font-sans text-[12px] text-text-secondary">
+            <input
+              id={toggleId}
+              type="checkbox"
+              checked={hideDust}
+              onChange={(e) => setHideDust(e.target.checked)}
+              className="h-4 w-4"
+            />
+            Hide dust hours (under ${DUST_USD} traded)
+          </label>
+          <InfoTip k="dustToggle" label="Hide dust hours" />
+          <span className="font-mono text-[10.5px] text-text-muted">
+            {hideDust
+              ? `${dustPoints.length} of ${fullPoints.length} hours hidden`
+              : `${dustPoints.length} of ${fullPoints.length} hours are dust`}
+          </span>
+        </div>
+      )}
+
+      {outliers.length > 0 && worst && (
+        <aside aria-label={`Why is there a spike in ${pair}?`} className="mt-2 border border-border border-l-2 border-l-accent bg-fill p-3">
+          <p className="font-sans text-[12.5px] font-semibold text-text-primary">Why is there a spike?</p>
+          <p className="font-sans text-[12px] leading-relaxed text-text-muted mt-1">
+            {outliers.length} reading{outliers.length === 1 ? "" : "s"} here sit more than 5% away from $1.00 (the
+            furthest is {formatPrice(worst.implied_price)}, in an hour with only ${formatVolume(worst.volume_usd)}{" "}
+            traded).
+            {outliersAllDust
+              ? " Every one of them is a dust hour: less than $1 changed hands."
+              : " Not all of them are dust hours, so check the volume before reading them as a depeg."}{" "}
+            A swap&apos;s price is the ratio of the two token amounts, and for a tiny trade that ratio is jumpy and
+            says nothing about the market. The hourly price is the plain average of swap prices, not weighted by
+            size, and the pipeline only flags zero or undefined prices, so one dust swap in a thin hour moves the
+            line. docs/FINDINGS.md calls this kind of print a &ldquo;thin-trade artifact&rdquo;. Nothing has been
+            removed from the data; use the checkbox above to hide dust hours.
+          </p>
+        </aside>
+      )}
     </div>
   );
 }

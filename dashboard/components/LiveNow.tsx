@@ -4,6 +4,8 @@ import { useSyncExternalStore } from "react";
 import type { LiveRiskRow, LivePricePoint } from "@/lib/data";
 import RiskGauge from "./RiskGauge";
 import LivePriceChart from "./LivePriceChart";
+import InfoTip from "./InfoTip";
+import { HowToRead, ProcessTags, WhatIsThis } from "./Explain";
 
 // The idiomatic way to detect "has this mounted on the client" — avoids
 // the effect+setState anti-pattern (which can cascade renders) entirely,
@@ -36,6 +38,44 @@ const SOURCE_LABEL: Record<string, string> = {
   alchemy_getlogs_replay: "gap-filled",
 };
 
+function SourceBadge({ source }: { source: string }) {
+  const label = SOURCE_LABEL[source] ?? source;
+  const live = source === "alchemy_live";
+  return (
+    <span
+      className={`inline-flex items-center border px-1.5 py-0.5 font-sans text-[11px] font-medium leading-none ${
+        live ? "border-accent text-accent" : "border-text-muted text-text-secondary"
+      }`}
+    >
+      {label}
+    </span>
+  );
+}
+
+function SignalLine({
+  name,
+  value,
+  weight,
+  tip,
+}: {
+  name: string;
+  value: string;
+  weight: string;
+  tip: "priceDev" | "clusterSeverity" | "walletConc";
+}) {
+  return (
+    <div className="flex items-baseline justify-between gap-2 font-mono text-[11px]">
+      <dt className="text-text-muted whitespace-nowrap">
+        {name}
+        <InfoTip k={tip} label={name} />
+      </dt>
+      <dd className="text-text-primary font-tabular whitespace-nowrap">
+        {value} <span className="text-text-muted">· {weight}</span>
+      </dd>
+    </div>
+  );
+}
+
 export default function LiveNow({
   rows,
   priceTimeline,
@@ -63,8 +103,8 @@ export default function LiveNow({
   const chartsData = [byPair("USDC_DAI"), byPair("USDC_USDT")];
 
   return (
-    <section aria-labelledby="live-heading" className="max-w-5xl mx-auto px-5 pt-10 pb-2">
-      <div className="flex items-center gap-2 mb-1">
+    <section id="live-now" aria-labelledby="live-heading" className="max-w-5xl mx-auto px-5 pt-10 pb-2 scroll-mt-4">
+      <div className="flex flex-wrap items-center gap-2 mb-1">
         <h2 id="live-heading" className="font-sans font-semibold text-[17px] text-text-primary">
           Live now
         </h2>
@@ -72,15 +112,21 @@ export default function LiveNow({
           <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" aria-hidden="true" />
           live
         </span>
+        <ProcessTags types={["streaming", "ml"]} />
+        <InfoTip k="riskScore" label="Risk score (0–100)" />
       </div>
-      <p className="font-sans text-[13px] text-text-muted mb-5 max-w-2xl">
-        Every bar below is a live reading of the same 0–100 risk score used throughout this
-        page, computed right now from real trades happening on-chain — not historical data.
-        The marker on each bar shows where a real historical crisis has averaged, for scale.
-        Streamed from a WebSocket feed of on-chain trades, scored against the same frozen
-        model as the case studies below. UST doesn&apos;t appear here — it has no live pool
-        activity to track (see the note at the bottom of this page).
-      </p>
+      <WhatIsThis className="mb-2">
+        The newest hourly stress score for each live pool, computed from real Ethereum trades
+        by Spark Structured Streaming and scored with the same frozen K-Means model as the case
+        studies below. UST doesn&apos;t appear here — it has no live pool activity to track.
+      </WhatIsThis>
+      <HowToRead className="mb-5">
+        Each card is one pool (pair · exchange). The big number is the 0–100 score; the bar
+        shows it on that scale and the thin line marks where USDC&apos;s real crisis averaged.
+        Underneath, three of the four sub-signals show their value and weight in the score.
+        Volume / trade anomaly (weight 0.25) is the fourth.
+        <InfoTip k="volumeAnomaly" label="Volume / trade anomaly" />
+      </HowToRead>
 
       {rows.length === 0 ? (
         <div className="border border-border p-4">
@@ -93,7 +139,7 @@ export default function LiveNow({
           {rows.map((r) => (
             <div
               key={`${r.pair}-${r.project}`}
-              className="bg-surface p-4 border-r border-b border-border basis-1/2 sm:basis-1/4 grow"
+              className="bg-surface p-4 border-r border-b border-border basis-full sm:basis-1/2 lg:basis-1/4 grow"
             >
               <div className="font-mono text-[11px] text-text-muted mb-2 truncate">
                 {r.pair} · {r.project}
@@ -102,11 +148,45 @@ export default function LiveNow({
                 {r.risk_score.toFixed(4)}
               </div>
               <RiskGauge score={r.risk_score} />
-              <div className="mt-2 font-mono text-[10px] text-text-muted" suppressHydrationWarning>
-                {mounted ? `updated ${relativeTime(r.window_start_ts)}` : " "}
+              <div className="mt-1 font-sans text-[10.5px] text-text-muted">
+                score bar
+                <InfoTip k="scoreBar" label="Score bar and crisis marker" />
               </div>
-              <div className="mt-1 font-sans text-[10px] text-text-muted">
-                {SOURCE_LABEL[r.source] ?? r.source}
+
+              <dl className="mt-3 space-y-1 border-t border-border pt-2">
+                {r.price_dev != null && (
+                  <SignalLine
+                    name="price dev."
+                    value={`${r.price_dev.toFixed(2)} σ`}
+                    weight="40%"
+                    tip="priceDev"
+                  />
+                )}
+                {r.cluster_severity != null && (
+                  <SignalLine
+                    name="cluster sev."
+                    value={r.cluster_severity.toFixed(2)}
+                    weight="15%"
+                    tip="clusterSeverity"
+                  />
+                )}
+                {r.wallet_concentration_severity != null && (
+                  <SignalLine
+                    name="wallet conc."
+                    value={r.wallet_concentration_severity.toFixed(3)}
+                    weight="20%"
+                    tip="walletConc"
+                  />
+                )}
+              </dl>
+
+              <div className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1">
+                <SourceBadge source={r.source} />
+                <InfoTip k="sourceLive" label="live vs gap-filled" />
+              </div>
+              <div className="mt-1.5 font-mono text-[10px] text-text-muted" suppressHydrationWarning>
+                {mounted ? `window began ${relativeTime(r.window_start_ts)}` : " "}
+                <InfoTip k="updated" label="Window start time" />
               </div>
               {r.advisory && (
                 <p className="mt-3 border-t border-border pt-3 font-sans text-[12px] leading-relaxed text-text-primary">
@@ -119,15 +199,22 @@ export default function LiveNow({
       )}
 
       <div className="mt-8">
-        <h3 className="font-sans font-semibold text-[14px] text-text-primary mb-1">
-          Live price, as it&apos;s trading right now
-        </h3>
-        <p className="font-sans text-[12.5px] text-text-muted mb-4 max-w-2xl">
-          Each finalized hourly window&apos;s implied price, updated as the streaming consumer
-          emits new windows. Unlike the crisis charts below, the price axis here is zoomed to
-          the actual range of live readings, not a fixed $0–$1.05 — a real crisis would still
-          be unmistakable, but small day-to-day movement stays visible too.
-        </p>
+        <div className="flex flex-wrap items-center gap-2 mb-1">
+          <h3 className="font-sans font-semibold text-[15px] text-text-primary">
+            Live price, as it&apos;s trading right now
+          </h3>
+          <ProcessTags types={["streaming"]} />
+          <InfoTip k="livePrice" label="Hourly implied price" />
+        </div>
+        <WhatIsThis className="mb-1">
+          The price implied by each finalized hourly window of swaps (tokens received ÷ tokens
+          sent, so about $1.00 when the two coins trade one-for-one), one line per exchange pool.
+        </WhatIsThis>
+        <HowToRead className="mb-4">
+          X axis: time (local date and hour). Y axis: implied price in dollars, zoomed to the
+          actual range of live readings rather than the fixed $0–$1.05 of the crisis charts.
+          Solid line = Curve, dashed line = Uniswap V2. Hover a point: the readout includes how many dollars traded that hour, so you can tell a spike on a few cents of volume (noise) from a move on real volume. A real depeg would still be unmistakable.
+        </HowToRead>
         <div className="flex flex-col sm:flex-row gap-8 sm:gap-10">
           {chartsData.map(({ pair, series }) => (
             <LivePriceChart key={pair} pair={pair} series={series} />

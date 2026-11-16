@@ -1,6 +1,8 @@
-import Link from "next/link";
 import { getEvaluationSummary, getMetadata } from "@/lib/data";
 import EvaluationTable from "@/components/EvaluationTable";
+import SiteNav from "@/components/SiteNav";
+import InfoTip from "@/components/InfoTip";
+import { ProcessTags, WhatIsThis } from "@/components/Explain";
 
 export default async function EvaluationPage() {
   const rows = await getEvaluationSummary();
@@ -11,16 +13,22 @@ export default async function EvaluationPage() {
   return (
     <main>
       <header className="max-w-5xl mx-auto px-5 pt-8 pb-2">
-        <Link href="/" className="font-mono text-[12px] text-text-muted hover:text-text-primary">
-          ← back to dashboard
-        </Link>
-        <h1 className="font-sans font-semibold text-[20px] tracking-tight text-text-primary mt-2">
-          Evaluation
-        </h1>
-        <p className="font-sans text-[13px] text-text-muted mt-0.5 max-w-2xl">
+        <div className="flex flex-wrap items-baseline justify-between gap-4">
+          <div className="flex flex-wrap items-center gap-2">
+            <h1 className="font-sans font-semibold text-[20px] tracking-tight text-text-primary">
+              Evaluation
+            </h1>
+            <ProcessTags types={["batch"]} />
+            <InfoTip k="leadTime" label="Lead time" />
+          </div>
+          <SiteNav current="evaluation" />
+        </div>
+        <WhatIsThis className="mt-1">
           Does the risk score provide genuine early warning, or does it just relabel a crisis
           after it&apos;s already visible? Measured directly against real data, not assumed.
-        </p>
+          This page is computed once from the frozen historical dataset by
+          <code className="font-mono text-[11.5px]"> spark/evaluation_summary.scala</code>.
+        </WhatIsThis>
       </header>
 
       <section className="max-w-5xl mx-auto px-5 pt-6 pb-4">

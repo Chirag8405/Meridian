@@ -7,6 +7,9 @@ import type {
   RecentSwapActivity,
   RecentSwapEvent,
 } from "@/lib/data";
+import InfoTip from "./InfoTip";
+import { HowToRead, ProcessTags, WhatIsThis } from "./Explain";
+import type { InfoKey } from "@/lib/explain";
 
 const REFRESH_MS = 20_000;
 const WINDOWS: ActivityWindow[] = ["15m", "1h", "6h", "24h"];
@@ -14,11 +17,11 @@ const DETAIL_ROWS = 12;
 const STALE_MINUTES = 30;
 
 const WIDTH = 640;
-const HEIGHT = 180;
-const PAD_LEFT = 32;
+const HEIGHT = 204;
+const PAD_LEFT = 44;
 const PAD_RIGHT = 8;
 const PAD_TOP = 12;
-const PAD_BOTTOM = 24;
+const PAD_BOTTOM = 46;
 
 const noopSubscribe = () => () => {};
 
@@ -248,7 +251,7 @@ function ActivityGraph({
             {i % tickEvery === 0 && (
               <text
                 x={PAD_LEFT + i * slot + slot / 2}
-                y={HEIGHT - 8}
+                y={HEIGHT - PAD_BOTTOM + 14}
                 textAnchor="middle"
                 className="font-mono fill-text-muted"
                 fontSize={10}
@@ -258,6 +261,24 @@ function ActivityGraph({
             )}
           </g>
         ))}
+
+        <text
+          transform={`translate(10 ${PAD_TOP + plotH / 2}) rotate(-90)`}
+          textAnchor="middle"
+          className="font-sans fill-text-muted"
+          fontSize={10}
+        >
+          {`swaps per ${Math.round(activity.bucket_seconds / 60)} min`}
+        </text>
+        <text
+          x={PAD_LEFT + plotW / 2}
+          y={HEIGHT - 6}
+          textAnchor="middle"
+          className="font-sans fill-text-muted"
+          fontSize={10}
+        >
+          time observed by the feed (UTC)
+        </text>
 
         <rect
           x={PAD_LEFT}
@@ -387,13 +408,21 @@ export default function RecentActivity({
   return (
     <section aria-labelledby="recent-activity-heading" className="max-w-5xl mx-auto px-5 pt-5 pb-3">
       <div className="border-t border-border pt-5">
-        <h2 id="recent-activity-heading" className="font-sans font-semibold text-[15px] text-text-primary">
-          Recent activity
-        </h2>
-        <p className="font-sans text-[12.5px] text-text-muted mt-1 mb-4 max-w-2xl">
-          Unscored raw trades as observed by the live feed. Counts are descriptive, not a risk
+        <div className="flex flex-wrap items-center gap-2">
+          <h2 id="recent-activity-heading" className="font-sans font-semibold text-[15px] text-text-primary">
+            Recent activity
+          </h2>
+          <ProcessTags types={["streaming"]} />
+          <InfoTip k="activityChart" label="Recent activity" />
+        </div>
+        <WhatIsThis className="mt-1 mb-1">
+          Raw swaps as the live feed saw them, before any scoring. Counts are descriptive, not a risk
           signal. For risk context, see the hourly Live now view above.
-        </p>
+        </WhatIsThis>
+        <HowToRead className="mb-4">
+          Pick a time window, optionally filter by pair, pool or source, then read the four counters. Each bar is
+          the number of swaps in one time slice; click one to list only that slice&apos;s swaps below.
+        </HowToRead>
 
         {!activity ? (
           <div className="border border-border p-4">
@@ -404,20 +433,23 @@ export default function RecentActivity({
         ) : (
           <>
             <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-3">
-              <div role="group" aria-label="Time window" className="flex border border-border">
-                {WINDOWS.map((w) => (
-                  <button
-                    key={w}
-                    type="button"
-                    aria-pressed={windowSel === w}
-                    onClick={() => changeWindow(w)}
-                    className={`font-mono text-[11px] px-2.5 py-1 ${
-                      windowSel === w ? "bg-text-primary text-surface" : "text-text-primary hover:bg-fill"
-                    }`}
-                  >
-                    {w}
-                  </button>
-                ))}
+              <div className="flex items-center">
+                <div role="group" aria-label="Time window" className="flex border border-border">
+                  {WINDOWS.map((w) => (
+                    <button
+                      key={w}
+                      type="button"
+                      aria-pressed={windowSel === w}
+                      onClick={() => changeWindow(w)}
+                      className={`font-mono text-[11px] px-2.5 py-1 ${
+                        windowSel === w ? "bg-text-primary text-surface" : "text-text-primary hover:bg-fill"
+                      }`}
+                    >
+                      {w}
+                    </button>
+                  ))}
+                </div>
+                <InfoTip k="recentWindow" label="Time window (15m / 1h / 6h / 24h)" />
               </div>
               <Select
                 label="pair"
@@ -439,26 +471,43 @@ export default function RecentActivity({
                 format={(v) => sourceLabel[v as RecentSwapEvent["source"]] ?? v}
                 onChange={(source) => changeFilters({ source: source as ActivityFilters["source"] })}
               />
+              <InfoTip k="recentFilters" label="Pair, pool and source filters" />
             </div>
 
             <dl className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-border border border-border mb-4">
-              {[
-                [`Swaps in ${activity.window}`, String(activity.summary.total)],
+              {(
                 [
-                  "Last observed",
-                  lastObserved ? (mounted ? relativeTime(lastObserved) : " ") : "none retained",
-                ],
-                ["Active pools", String(activity.summary.active_pools)],
-                ["Live / gap-filled", `${activity.summary.live} / ${activity.summary.gap_filled}`],
-              ].map(([k, v]) => (
+                  [`Swaps in ${activity.window}`, String(activity.summary.total), "swapsInWindow"],
+                  [
+                    "Last observed",
+                    lastObserved ? (mounted ? relativeTime(lastObserved) : " ") : "none retained",
+                    "lastObserved",
+                  ],
+                  ["Active pools", String(activity.summary.active_pools), "activePools"],
+                  ["Live / gap-filled", `${activity.summary.live} / ${activity.summary.gap_filled}`, "liveGap"],
+                ] as [string, string, InfoKey][]
+              ).map(([k, v, tip]) => (
                 <div key={k} className="bg-surface px-3 py-2">
-                  <dt className="font-mono text-[10px] text-text-muted">{k}</dt>
+                  <dt className="font-mono text-[10px] text-text-muted">
+                    {k}
+                    <InfoTip k={tip} label={k} />
+                  </dt>
                   <dd className="font-mono text-[13px] text-text-primary" suppressHydrationWarning>
                     {v}
                   </dd>
                 </div>
               ))}
             </dl>
+
+            {activity.summary.total === 0 && events.length > 0 && !bucket && (
+              <p className="font-sans text-[12px] leading-relaxed text-text-muted border border-border bg-fill p-3 mb-3 max-w-2xl">
+                <span className="font-medium text-text-secondary">Why 0 swaps but a list below? </span>
+                The counters and bars only count swaps the feed observed inside the last {activity.window}. The list
+                below shows the newest retained swaps (up to {activity.retention.max_rows} events /{" "}
+                {activity.retention.retention_hours} hours) regardless of the window, so when the feed has been quiet
+                or paused they are older than the window. Try a longer window.
+              </p>
+            )}
 
             {isStale && lastObserved && (
               <p className="font-sans text-[12px] text-text-muted mb-2">
@@ -490,6 +539,11 @@ export default function RecentActivity({
                 {bucket
                   ? `Swaps ${clock(bucket.start)}–${clock(bucket.end)} UTC`
                   : `Latest swaps${hasFilter ? " (filtered)" : ""}`}
+                {!bucket && (
+                  <span className="ml-2 font-sans text-[11px] font-normal text-text-muted">
+                    newest retained, not limited to the window
+                  </span>
+                )}
               </h3>
               {bucket && (
                 <button
