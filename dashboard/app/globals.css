@@ -79,3 +79,14 @@ body {
     transition-duration: 0.001ms !important;
   }
 }
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 16px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
